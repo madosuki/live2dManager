@@ -1,0 +1,3 @@
+[submodule "CubismWebFramework"]
+	path = CubismWebFramework
+	url = https://github.com/madosuki/CubismWebFramework.git
