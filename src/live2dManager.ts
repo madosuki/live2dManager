@@ -1,3 +1,10 @@
+/**
+ * Copyright(c) Live2D Inc. All rights reserved.
+ *
+ * Use of this source code is governed by the Live2D Open Software license
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ */
+
 import {
   CubismFramework,
   Option,
@@ -8,6 +15,7 @@ import {
 } from "../CubismWebFramework/src/type/csmvector";
 import { CubismUserModel } from "../CubismWebFramework/src/model/cubismusermodel";
 import { ICubismModelSetting } from "../CubismWebFramework/src/icubismmodelsetting";
+import { BreathParameterData, CubismBreath } from "../CubismWebFramework/src/effect/cubismbreath";
 import { CubismIdHandle } from "../CubismWebFramework/src/id/cubismid";
 import { CubismDefaultParameterId } from "../CubismWebFramework/src/cubismdefaultparameterid";
 import { CubismModelSettingJson } from "../CubismWebFramework/src/cubismmodelsettingjson";
@@ -100,6 +108,9 @@ export class Live2dModel extends CubismUserModel {
     this._dragX = this._dragManager.getX();
     this._dragY = this._dragManager.getY();
 
+    this._model.loadParameters();
+    this._model.saveParameters();
+
     this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
 
     this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30);
@@ -109,8 +120,14 @@ export class Live2dModel extends CubismUserModel {
       this._dragX * this._dragY * -30
     );
 
+    this._model.addParameterValueById(this._idParamBodyAngleX, this._dragX * 10);
+
     this._model.addParameterValueById(this._idParamEyeBallX, this._dragX);
     this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
+
+    if (this._breath) {
+      this._breath.updateParameters(this._model, deltaTime);
+    }
 
     if (this._physics) {
       this._physics.evaluate(this._model, deltaTime);
@@ -125,8 +142,9 @@ export class Live2dModel extends CubismUserModel {
     index: number,
     textureCount: number
   ): Promise<void> {
-    console.log(`${fileName}`);
+    console.log(`${fileName} in createTextureFromFile`);
     const readResult = await this.readFileFunction(fileName);
+    console.log(`${fileName} bytes: ${readResult.byteLength}`);
 
     const img = new Image();
     const byteArray = new Uint8ClampedArray(readResult);
@@ -267,6 +285,34 @@ export class Live2dModel extends CubismUserModel {
       this._eyeBlinkIds.pushBack(this._modelSetting.getEyeBlinkParameterId(i));
     }
 
+    this._breath = CubismBreath.create();
+    const breathParameters: csmVector<BreathParameterData> = new csmVector();
+    breathParameters.pushBack(
+        new BreathParameterData(this._idParamAngleX, 0.0, 15.0, 6.5345, 0.5)
+    );
+
+    breathParameters.pushBack(
+      new BreathParameterData(this._idParamAngleY, 0.0, 8.0, 3.5345, 0.5)
+    );
+    breathParameters.pushBack(
+      new BreathParameterData(this._idParamAngleZ, 0.0, 10.0, 5.5345, 0.5)
+    );
+    breathParameters.pushBack(
+      new BreathParameterData(this._idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5)
+    );
+    breathParameters.pushBack(
+      new BreathParameterData(
+        CubismFramework.getIdManager().getId(
+          CubismDefaultParameterId.ParamBreath
+        ),
+        0.5,
+        0.5,
+        3.2345,
+        1
+      )
+    );
+    this._breath.setParameters(breathParameters);
+
     const lipSyncIdCount = this._modelSetting.getLipSyncParameterCount();
     for (let i = 0; i < lipSyncIdCount; ++i) {
       this._lipSyncIds.pushBack(this._modelSetting.getLipSyncParameterId(i));
@@ -310,6 +356,7 @@ export class Live2dModel extends CubismUserModel {
     frameBuffer: WebGLFramebuffer | null
   ): void {
     matrix.multiplyByMatrix(this._modelMatrix);
+    this.getRenderer().setMvpMatrix(matrix);
 
     const viewPort = [0, 0, canvasWidth, canvasHeight];
     this.getRenderer().setRenderState(
