@@ -34,6 +34,8 @@ import { CubismPhysics } from "../CubismWebFramework/src/physics/cubismphysics";
 import { CubismMatrix44 } from "../CubismWebFramework/src/math/cubismmatrix44";
 import { CubismViewMatrix } from "../CubismWebFramework/src/math/cubismviewmatrix";
 import { TouchManager } from "./touchmanager";
+import { LAppPal } from "./lapppal";
+import { LAppWavFileHandler } from "./lappwavfilehandler";
 
 function outLog(message: string): void {
     console.log(`log message: ${message}`);
@@ -99,12 +101,17 @@ export class Live2dModel extends CubismUserModel {
   _textures: csmVector<TextureInfo>;
   isCompleteSetup: boolean;
   readFileFunction: (arg: string) => Promise<ArrayBuffer>;
+  _wavFileHandler: LAppWavFileHandler;
+
+  public startLipSync(bytes: ArrayBuffer): void {
+      this._wavFileHandler.startWithBytes(bytes);
+  }
 
   public update(): void {
-    const deltaTimeSeconds = deltaTime;
+    const deltaTimeSeconds = LAppPal.getDeltaTime();
     this._userTimeSeconds += deltaTimeSeconds;
 
-    this._dragManager.update(deltaTime);
+    this._dragManager.update(deltaTimeSeconds);
     this._dragX = this._dragManager.getX();
     this._dragY = this._dragManager.getY();
 
@@ -126,11 +133,21 @@ export class Live2dModel extends CubismUserModel {
     this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
 
     if (this._breath) {
-      this._breath.updateParameters(this._model, deltaTime);
+      this._breath.updateParameters(this._model, deltaTimeSeconds);
     }
 
     if (this._physics) {
       this._physics.evaluate(this._model, deltaTime);
+    }
+
+    if (this._lipsync) {
+      let value = 0.0;
+      this._wavFileHandler.update(deltaTimeSeconds);
+      value = this._wavFileHandler.getRms();
+
+      for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
+          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
+      }
     }
 
     this._model.update();
@@ -437,6 +454,7 @@ export class Live2dModel extends CubismUserModel {
 
     this.isCompleteSetup = false;
     this.readFileFunction = readFileFunction;
+    this._wavFileHandler = new LAppWavFileHandler();
   }
 }
 
@@ -635,7 +653,7 @@ export class Live2dViewer {
         return;
       }
 
-      updateTime();
+      LAppPal.updateTime();
 
       this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
       this.gl.enable(this.gl.DEPTH_TEST);
