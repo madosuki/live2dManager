@@ -105,6 +105,7 @@ export class Live2dModel extends CubismUserModel {
 
   public startLipSync(bytes: ArrayBuffer): void {
       this._wavFileHandler.startWithBytes(bytes);
+      console.log("startLipSync");
   }
 
   public update(): void {
@@ -137,7 +138,7 @@ export class Live2dModel extends CubismUserModel {
     }
 
     if (this._physics) {
-      this._physics.evaluate(this._model, deltaTime);
+      this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
     if (this._lipsync) {
@@ -146,7 +147,9 @@ export class Live2dModel extends CubismUserModel {
       value = this._wavFileHandler.getRms();
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
-          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
+          if (value <= 0.0) break;
+          console.log(this._lipSyncIds.at(i));
+          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 10);
       }
     }
 
@@ -334,6 +337,7 @@ export class Live2dModel extends CubismUserModel {
     for (let i = 0; i < lipSyncIdCount; ++i) {
       this._lipSyncIds.pushBack(this._modelSetting.getLipSyncParameterId(i));
     }
+    console.log(`lip sync ids count: ${lipSyncIdCount}`);
 
     if (!this._modelMatrix) {
       console.log("modelMatrix is null");
@@ -407,18 +411,18 @@ export class Live2dModel extends CubismUserModel {
 
     if (is_old_param_name) {
       this._idParamAngleX =
-        CubismFramework.getIdManager().registerId("PARAM_ANGLE_X");
+        CubismFramework.getIdManager().getId("PARAM_ANGLE_X");
       this._idParamAngleY =
-        CubismFramework.getIdManager().registerId("PARAM_ANGLE_Y");
+        CubismFramework.getIdManager().getId("PARAM_ANGLE_Y");
       this._idParamAngleZ =
-        CubismFramework.getIdManager().registerId("PARAM_ANGLE_Z");
+        CubismFramework.getIdManager().getId("PARAM_ANGLE_Z");
 
       this._idParamEyeBallX =
-        CubismFramework.getIdManager().registerId("PARAM_EYE_BALL_X");
+        CubismFramework.getIdManager().getId("PARAM_EYE_BALL_X");
       this._idParamEyeBallY =
-        CubismFramework.getIdManager().registerId("PARAM_EYE_BALL_Y");
+        CubismFramework.getIdManager().getId("PARAM_EYE_BALL_Y");
       this._idParamBodyAngleX =
-        CubismFramework.getIdManager().registerId("PARAM_BODY_ANGLE_X");
+        CubismFramework.getIdManager().getId("PARAM_BODY_ANGLE_X");
     } else {
       this._idParamAngleX = CubismFramework.getIdManager().getId(
         CubismDefaultParameterId.ParamAngleX

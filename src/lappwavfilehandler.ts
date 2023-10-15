@@ -90,6 +90,7 @@ export class LAppWavFileHandler {
 
     this._lastRms = 0.0;
     if (!this.loadWav(bytes)) {
+        console.log("failed startWithBytes");
         return;
     }
   }
