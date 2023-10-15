@@ -149,7 +149,7 @@ export class Live2dModel extends CubismUserModel {
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
           if (value <= 0.0) break;
           console.log(this._lipSyncIds.at(i));
-          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 10);
+          this._model.addParameterValueById(this._lipSyncIds.at(i), value, 5.0);
       }
     }
 
