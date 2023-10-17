@@ -105,7 +105,6 @@ export class Live2dModel extends CubismUserModel {
 
   public startLipSync(bytes: ArrayBuffer): void {
       this._wavFileHandler.startWithBytes(bytes);
-      console.log("startLipSync");
   }
 
   public update(): void {
@@ -148,7 +147,6 @@ export class Live2dModel extends CubismUserModel {
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
           if (value <= 0.0) break;
-          console.log(this._lipSyncIds.at(i));
           this._model.addParameterValueById(this._lipSyncIds.at(i), value, 5.0);
       }
     }
@@ -162,9 +160,7 @@ export class Live2dModel extends CubismUserModel {
     index: number,
     textureCount: number
   ): Promise<void> {
-    console.log(`${fileName} in createTextureFromFile`);
     const readResult = await this.readFileFunction(fileName);
-    console.log(`${fileName} bytes: ${readResult.byteLength}`);
 
     const img = new Image();
     const byteArray = new Uint8ClampedArray(readResult);
@@ -337,7 +333,6 @@ export class Live2dModel extends CubismUserModel {
     for (let i = 0; i < lipSyncIdCount; ++i) {
       this._lipSyncIds.pushBack(this._modelSetting.getLipSyncParameterId(i));
     }
-    console.log(`lip sync ids count: ${lipSyncIdCount}`);
 
     if (!this._modelMatrix) {
       console.log("modelMatrix is null");
@@ -346,10 +341,6 @@ export class Live2dModel extends CubismUserModel {
     const layout = new csmMap<string, number>();
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
-
-    console.log(
-      `model canvas width: ${this._model.getCanvasWidth()}`
-    );
 
     this.createRenderer();
     await this.loadTextures();
@@ -474,6 +465,7 @@ export class Live2dViewer {
   isDown: boolean;
   _deviceToScreen: CubismMatrix44;
   _touchManager: TouchManager;
+  targetCurrentModelArrayIndex: number;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -490,6 +482,7 @@ export class Live2dViewer {
     this.isDown = false;
 
     this._touchManager = new TouchManager();
+    this.targetCurrentModelArrayIndex = -1;
   }
 
   public onTouchesBegin(pointX: number, pointY: number): void {
@@ -505,7 +498,6 @@ export class Live2dViewer {
   }
 
   public onTouchesEnded(): void {
-    console.log("end");
     this.updateCoordinate(0.0, 0.0);
   }
 
@@ -523,9 +515,22 @@ export class Live2dViewer {
     this._models.pushBack(model);
   }
 
+  public setCurrentModel(index: number): boolean {
+      if (index < 0 || this._models.getSize() <= index) {
+          return false;
+      }
+
+      this.targetCurrentModelArrayIndex = index;
+      return true;
+  }
+
   public updateCoordinate(x: number, y: number): void {
-    const model = this._models.at(0);
-    console.log(`${x}, ${y}`);
+    if (this.targetCurrentModelArrayIndex < 0 ||
+        this._models.getSize() <= this.targetCurrentModelArrayIndex) {
+        return;
+    }
+
+    const model = this._models.at(this.targetCurrentModelArrayIndex);
     model.setDragging(x, y);
   }
 
@@ -690,9 +695,7 @@ export class Live2dViewer {
           }
 
           projection.multiplyByMatrix(this._viewMatrix);
-          // console.log("run");
 
-          // console.log("draw model");
           model.update();
           model.draw(projection, width, height, this.frameBuffer);
         }
