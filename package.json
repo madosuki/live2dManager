@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
-    "prepare": "git init && git submodule add https://github.com/madosuki/CubismWebFramework.git CubismWebFramework && npm run build",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
