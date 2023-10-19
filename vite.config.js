@@ -1,4 +1,4 @@
-import path from 'path';
+import path from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig (() => {
@@ -7,16 +7,16 @@ export default defineConfig (() => {
     publicDir: path.resolve(__dirname, "public"),
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'),
-        '@CubismWebFramework': path.resolve(__dirname, 'CubismWebFramework/src')
+        "@": path.resolve(__dirname, "src"),
+        "@CubismWebFramework": path.resolve(__dirname, "CubismWebFramework/src")
       }
     },
     build: {
-      target: 'es6',
+      target: "es6",
       outDir: path.resolve(__dirname, "dist"),
       lib: {
-        entry: '',
-        name: 'live2dManager'
+        entry: "",
+        name: "live2dManager"
       }
     }
   }
