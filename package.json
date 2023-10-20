@@ -17,7 +17,7 @@
     }
   },
   "scripts": {
-    "prepare": "ls -la . && git init",
+    "prepare": "ls -la . && git init && git submodule add https://github.com/madosuki/CubismWebFramework.git && npm run build",
     "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
