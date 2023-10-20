@@ -17,6 +17,7 @@
     }
   },
   "scripts": {
+    "prepare": "ls -la . && git init",
     "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
