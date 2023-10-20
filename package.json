@@ -2,14 +2,26 @@
   "name": "live2dmanager",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/src/index.js",
-  "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "SEE IN LICENSE.md",
+  "main": "dist/live2dmanager.umd.cjs",
+  "module": "./dist/live2dmanger.js",
+  "type": "module",
+  "types": "./dist/src/index.d.ts",
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/live2dmanager.js",
+      "require": "./dist/live2dmanager.umd.cjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.5",
     "typescript": "^5.2.2",
     "vite": "^4.4.9"
   }

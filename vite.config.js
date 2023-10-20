@@ -1,5 +1,6 @@
 import path from "path";
 import { defineConfig } from "vite";
+import typescript from "@rollup/plugin-typescript";
 
 export default defineConfig (() => {
   return {
@@ -16,8 +17,11 @@ export default defineConfig (() => {
       outDir: path.resolve(__dirname, "dist"),
       lib: {
         entry: "",
-        name: "live2dManager"
+        name: "live2dmanager"
       }
-    }
+    },
+    plugins: [
+      typescript()
+    ]
   }
 });

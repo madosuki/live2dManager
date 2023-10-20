@@ -10,6 +10,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strict": false,
     "paths": {
         "@/*": ["src/*"],
         "@CubismWebFramework/*": ["CubismWebFramework/src/*"]
