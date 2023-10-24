@@ -3,4 +3,5 @@
 **/
 
 export * from "./touchmanager";
-export * from "./live2dManager";
+export * from "./live2dModel";
+export * from "./live2dViewer";
