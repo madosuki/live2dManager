@@ -106,6 +106,25 @@ export class Live2dModel extends CubismUserModel {
   public startLipSync(bytes: ArrayBuffer): void {
       this._wavFileHandler.startWithBytes(bytes);
   }
+  
+  public releaseTextures(): void {
+    for (
+      let ite: iterator<TextureInfo> = this._textures.begin();
+      ite.notEqual(this._textures.end());
+      ite.preIncrement()
+    ) {
+      this._live2dViewer.deleteTexture(ite.ptr().id);
+    }
+    this._textures = null;
+  }
+  
+  public releaseMotions(): void {
+    this._motions.clear();
+  }
+  
+  public releaseExpressions(): void {
+    this._expressions.clear();
+  }
 
   public update(): void {
     const deltaTimeSeconds = LAppPal.getDeltaTime();
@@ -655,7 +674,24 @@ export class Live2dViewer {
 
     return programId;
   }
+  
 
+  public deleteTexture(webGlTexture: WebGLTexture): void {
+    this.gl.deleteTexture(webGlTexture);
+  }
+  
+  public releaseAllModel(): void {
+    this._models.clear();
+  }
+  
+  public release(): void {
+    this.gl.deleteProgram(this._programId);
+    this._viewMatrix = null;
+    this._deviceToScreen = null;
+    
+    CubismFramework.dispose();
+  }
+  
   public run(): void {
     const loop = () => {
       if (!this.gl) {
