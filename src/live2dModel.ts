@@ -45,10 +45,6 @@ class TextureInfo {
   }
 }
 
-let currentFrame = 0.0;
-let lastFrame = 0.0;
-let deltaTime = 0.0;
-
 export class Live2dModel extends CubismUserModel {
   _live2dViewer: Live2dViewer;
   _modelSetting: ICubismModelSetting | null;

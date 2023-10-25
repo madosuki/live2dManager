@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { LAppPal } from './lapppal';
+// import { LAppPal } from './lapppal';
 
 export let s_instance: LAppWavFileHandler = null;
 
