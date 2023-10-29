@@ -19,12 +19,18 @@ import { CubismIdHandle } from "../CubismWebFramework/src/id/cubismid";
 import { CubismDefaultParameterId } from "../CubismWebFramework/src/cubismdefaultparameterid";
 import { CubismModelSettingJson } from "../CubismWebFramework/src/cubismmodelsettingjson";
 import { csmMap } from "../CubismWebFramework/src/type/csmmap";
-import { ACubismMotion } from "../CubismWebFramework/src/motion/acubismmotion";
+import { ACubismMotion, FinishedMotionCallback } from "../CubismWebFramework/src/motion/acubismmotion";
 import { csmRect } from "../CubismWebFramework/src/type/csmrectf";
 import { CubismEyeBlink } from "../CubismWebFramework/src/effect/cubismeyeblink";
 import { CubismMatrix44 } from "../CubismWebFramework/src/math/cubismmatrix44";
+import { CubismMotion } from "../CubismWebFramework/src/motion/cubismmotion";
+import {
+  CubismMotionQueueEntryHandle,
+  InvalidMotionQueueEntryHandleValue
+} from "../CubismWebFramework/src/motion/cubismmotionqueuemanager";
 import { LAppPal } from "./lapppal";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
+import * as LAppDefine from "./lappdefine";
 import { Live2dViewer } from "./live2dViewer";
 
 class TextureInfo {
@@ -250,6 +256,12 @@ export class Live2dModel extends CubismUserModel {
     }
   }
 
+ /**
+  * model3.jsonからモデルを生成する。
+  * model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う。
+  *
+  * @param setting ICubismModelSettingのインスタンス
+  */
   private async setupModel(setting: ICubismModelSetting): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
@@ -380,6 +392,75 @@ export class Live2dModel extends CubismUserModel {
     );
     this.getRenderer().drawModel();
   }
+  
+  /**
+   * 引数で指定したモーションの再生を開始する
+   * @param group モーショングループ名
+   * @param no グループ内の番号
+   * @param priority 優先度
+   * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
+   * @return 開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するisFinished()の引数で使用する。開始できない時は[-1]
+   */
+  public async startMotion(
+    group: string,
+    no: number,
+    priority: number,
+    onFinishedMotionHandler?: FinishedMotionCallback
+  ): Promise<CubismMotionQueueEntryHandle> {
+    if (priority == LAppDefine.PriorityForce) {
+      this._motionManager.setReservePriority(priority);
+    } else if (!this._motionManager.reserveMotion(priority)) {
+      if (this._debugMode) {
+        LAppPal.printMessage("[APP]can't start motion.");
+      }
+      return InvalidMotionQueueEntryHandleValue;
+    }
+
+    const motionFileName = this._modelSetting.getMotionFileName(group, no);
+
+    // ex) idle_0
+    const name = `${group}_${no}`;
+    let motion: CubismMotion = this._motions.getValue(name) as CubismMotion;
+    let autoDelete = false;
+
+    if (motion == null) {
+      const path = `${this._modelHomeDir}${motionFileName}`;
+      const bytes = await this.readFileFunction(path);
+      motion = this.loadMotion(bytes, bytes.byteLength, null, onFinishedMotionHandler);
+      let fadeTime: number = this._modelSetting.getMotionFadeInTimeValue(group, no);
+      if (fadeTime >= 0.0) {
+        motion.setFadeInTime(fadeTime);
+      }
+
+      fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, no);
+      if (fadeTime >= 0.0) {
+        motion.setFadeOutTime(fadeTime);
+      }
+
+      motion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
+      autoDelete = true; // 終了
+    } else {
+      motion.setFinishedMotionHandler(onFinishedMotionHandler);
+    }
+
+    //voice
+    const voice = this._modelSetting.getMotionSoundFileName(group, no);
+    if (voice.localeCompare('') != 0) {
+      let path = voice;
+      path = this._modelHomeDir + path;
+      this._wavFileHandler.start(path);
+    }
+
+    if (this._debugMode) {
+      LAppPal.printMessage(`[APP]start motion: [${group}_${no}`);
+    }
+    return this._motionManager.startMotionPriority(
+      motion,
+      autoDelete,
+      priority
+    );
+  }
+
 
   public constructor(
     modelHomeDir: string,
@@ -440,7 +521,10 @@ export class Live2dModel extends CubismUserModel {
       );
     }
 
-    this._mocConsistency = true;
+    if (LAppDefine.MOCConsistencyValidationEnable) {
+      this._mocConsistency = true;
+    }
+
     this._allMotionCount = 0;
     this._motionCount = 0;
     this._textureCount = 0;
