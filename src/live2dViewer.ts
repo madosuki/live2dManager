@@ -116,14 +116,12 @@ export class Live2dViewer {
         "experimental-webgl"
       ) as WebGLRenderingContext | null);
     if (!this.gl) {
+      console.log(this.gl.getError());
       return;
     }
-    console.log(this.gl.getError());
 
-    this.frameBuffer = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
     if (!this.frameBuffer) {
-      console.log("framebuffer is null");
-      console.log(this.gl.getError());
+      this.frameBuffer = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
     }
 
     this.gl.enable(this.gl.BLEND);
