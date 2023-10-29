@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "preinstall": "rm .gitmodules && git init",
+    "preinstall": "git init",
     "postinstall": "ls -la && git submodule update --init",
     "prepare": "npm run build",
     "build": "vite build",
