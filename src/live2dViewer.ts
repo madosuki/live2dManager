@@ -68,6 +68,10 @@ export class Live2dViewer {
   public onTouchesEnded(): void {
     this.updateCoordinate(0.0, 0.0);
   }
+  
+  public onTouchesCancel(): void {
+    this.updateCoordinate(0.0, 0.0);
+  }
 
   public transformViewX(deviceX: number): number {
     const screenX = this._deviceToScreen.transformX(deviceX);
