@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "preinstall": "git init && git submodule update --init",
+    "preinstall": "rm .gitmodule && git init && git submodule update --init",
     "prepare": "npm run build",
     "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
