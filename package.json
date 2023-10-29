@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "preinstall": "rm .gitmodules",
+    "preinstall": "rm .gitmodules && rm -rf .git",
     "postinstall": "git init && git submodule add https://github.com/madosuki/CubismWebFramework.git",
     "prepare": "npm run build",
     "build": "vite build",
