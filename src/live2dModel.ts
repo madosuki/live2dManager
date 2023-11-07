@@ -84,6 +84,7 @@ export class Live2dModel extends CubismUserModel {
   isCompleteSetup: boolean;
   readFileFunction: (arg: string) => Promise<ArrayBuffer>;
   _wavFileHandler: LAppWavFileHandler;
+  lipSyncWeight: number;
 
   public startLipSync(bytes: ArrayBuffer): void {
     this._wavFileHandler.startWithBytes(bytes);
@@ -151,7 +152,7 @@ export class Live2dModel extends CubismUserModel {
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         if (value <= 0.0) break;
-        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 10.0);
+        this._model.addParameterValueById(this._lipSyncIds.at(i), value, this.lipSyncWeight);
       }
     }
 
@@ -461,6 +462,9 @@ export class Live2dModel extends CubismUserModel {
     );
   }
 
+  public setLipSyncWeight(weight: number): void {
+    this.lipSyncWeight = weight;
+  }
 
   public constructor(
     modelHomeDir: string,
@@ -537,5 +541,6 @@ export class Live2dModel extends CubismUserModel {
     this.isCompleteSetup = false;
     this.readFileFunction = readFileFunction;
     this._wavFileHandler = new LAppWavFileHandler();
+    this.lipSyncWeight = 0.8;
   }
 }
