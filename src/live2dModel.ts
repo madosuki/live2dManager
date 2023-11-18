@@ -84,6 +84,7 @@ export class Live2dModel extends CubismUserModel {
   isCompleteSetup: boolean;
   readFileFunction: (arg: string) => Promise<ArrayBuffer>;
   _wavFileHandler: LAppWavFileHandler;
+  lipSyncWeight: number;
 
   public startLipSync(bytes: ArrayBuffer): void {
     this._wavFileHandler.startWithBytes(bytes);
@@ -151,7 +152,7 @@ export class Live2dModel extends CubismUserModel {
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         if (value <= 0.0) break;
-        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 10.0);
+        this._model.addParameterValueById(this._lipSyncIds.at(i), value, this.lipSyncWeight);
       }
     }
 
@@ -265,45 +266,34 @@ export class Live2dModel extends CubismUserModel {
   private async setupModel(setting: ICubismModelSetting): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
-    console.log(`model fileName: ${modelFileName}`);
 
     if (modelFileName === "") {
       return;
     }
 
     const filePath = `${this._modelHomeDir}${modelFileName}`;
-    console.log(`model file path: ${filePath}`);
     try {
       const bytesResult = await this.readFileFunction(filePath);
-
-      console.log(`bytes length: ${bytesResult.byteLength}`);
       this.loadModel(bytesResult, this._mocConsistency);
     } catch {
       return;
     }
 
     if (!this._moc) {
-      console.log("failed CubismMOc.create()");
-      return;
+      throw new Error("failed CubismMOc.create()");
     }
 
     if (!this._model) {
-      console.log("failed create model");
-      return;
+      throw new Error("failed create model");
     }
 
     if (this._modelSetting.getPhysicsFileName() !== "") {
       const physicsFileName = this._modelSetting.getPhysicsFileName();
-      console.log(`physics filename: ${physicsFileName}`);
 
-      try {
-        const readResult = await this.readFileFunction(
-          `${this._modelHomeDir}${physicsFileName}`
-        );
-        this.loadPhysics(readResult, readResult.byteLength);
-      } catch {
-        console.log("failed load physics");
-      }
+      const readResult = await this.readFileFunction(
+        `${this._modelHomeDir}${physicsFileName}`
+      );
+      this.loadPhysics(readResult, readResult.byteLength);
     }
 
     if (this._modelSetting.getEyeBlinkParameterCount() > 0) {
@@ -364,16 +354,12 @@ export class Live2dModel extends CubismUserModel {
 
   public async loadAssets(): Promise<void> {
     const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
-    try {
-      const readResult = await this.readFileFunction(filePath);
-      const setting = new CubismModelSettingJson(
-        readResult,
-        readResult.byteLength
-      );
-      await this.setupModel(setting);
-    } catch {
-      console.log("failed load assets");
-    }
+    const readResult = await this.readFileFunction(filePath);
+    const setting = new CubismModelSettingJson(
+      readResult,
+      readResult.byteLength
+    );
+    await this.setupModel(setting);
   }
 
   public draw(
@@ -461,6 +447,9 @@ export class Live2dModel extends CubismUserModel {
     );
   }
 
+  public setLipSyncWeight(weight: number): void {
+    this.lipSyncWeight = weight;
+  }
 
   public constructor(
     modelHomeDir: string,
@@ -537,5 +526,6 @@ export class Live2dModel extends CubismUserModel {
     this.isCompleteSetup = false;
     this.readFileFunction = readFileFunction;
     this._wavFileHandler = new LAppWavFileHandler();
+    this.lipSyncWeight = 0.8;
   }
 }
