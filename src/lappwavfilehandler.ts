@@ -35,7 +35,7 @@ export class LAppWavFileHandler {
     s_instance = null;
   }
 
-  public update(deltaTimeSeconds: number) {
+  public update(deltaTimeSeconds: number): boolean {
     let goalOffset: number;
     let rms: number;
 
@@ -84,11 +84,18 @@ export class LAppWavFileHandler {
     return true;
   }
 
-  public startWithBytes(bytes: ArrayBuffer): void {
+  private initValues(): void {
+    // サンプル位参照位置を初期化
     this._sampleOffset = 0;
     this._userTimeSeconds = 0.0;
 
+    // RMS値をリセット
     this._lastRms = 0.0;
+  }
+
+  public startWithBytes(bytes: ArrayBuffer): void {
+    this.initValues();
+    
     if (!this.loadWav(bytes)) {
         console.log("failed startWithBytes");
         return;
@@ -96,12 +103,7 @@ export class LAppWavFileHandler {
   }
 
   public start(filePath: string): void {
-    // サンプル位参照位置を初期化
-    this._sampleOffset = 0;
-    this._userTimeSeconds = 0.0;
-
-    // RMS値をリセット
-    this._lastRms = 0.0;
+    this.initValues();
 
     if (!this.loadWavFile(filePath)) {
       return;
@@ -226,7 +228,7 @@ export class LAppWavFileHandler {
   }
 
   public async loadWav(bytes: ArrayBuffer): Promise<boolean> {
-    if (!this._pcmData) {
+    if (this._pcmData != null) {
         this.releasePcmData();
     }
 

@@ -90,6 +90,10 @@ export class Live2dModel extends CubismUserModel {
     this._wavFileHandler.startWithBytes(bytes);
   }
 
+  public stopLipSync(): void {
+    this._wavFileHandler.releasePcmData();
+  }
+
   public releaseTextures(): void {
     for (
       let ite: iterator<TextureInfo> = this._textures.begin();
