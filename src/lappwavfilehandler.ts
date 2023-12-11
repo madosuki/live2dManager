@@ -283,6 +283,10 @@ export class LAppWavFileHandler {
   }
 
   public releasePcmData(): void {
+    if (this._pcmData == null) {
+      return;
+    }
+    
     for (
       let channelCount = 0;
       channelCount < this._wavFileInfo._numberOfChannels;

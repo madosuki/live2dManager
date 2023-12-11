@@ -91,7 +91,7 @@ export class Live2dModel extends CubismUserModel {
   }
 
   public stopLipSync(): void {
-    // this._wavFileHandler.releasePcmData();
+    this._wavFileHandler.releasePcmData();
   }
 
   public releaseTextures(): void {
