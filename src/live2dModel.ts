@@ -95,6 +95,10 @@ export class Live2dModel extends CubismUserModel {
   }
 
   public releaseTextures(): void {
+    if (this._textures == undefined || this._textures.getSize() === 0) {
+      return;
+    }
+
     for (
       let ite: iterator<TextureInfo> = this._textures.begin();
       ite.notEqual(this._textures.end());
@@ -106,11 +110,15 @@ export class Live2dModel extends CubismUserModel {
   }
 
   public releaseMotions(): void {
-    this._motions.clear();
+    if (this._motions != undefined && this._motions.getSize() > 0) {
+      this._motions.clear();
+    }
   }
 
   public releaseExpressions(): void {
-    this._expressions.clear();
+    if (this._expressions != undefined && this._motions.getSize() > 0) {
+      this._expressions.clear();
+    }
   }
 
   public update(): void {

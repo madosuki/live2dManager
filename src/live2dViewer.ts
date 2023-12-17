@@ -233,10 +233,21 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
+    if (this._models == undefined || this._models.getSize() === 0) {
+      return;
+    }
     this._models.clear();
   }
 
   public release(): void {
+    const modelsSize = this._models.getSize();
+    for (let i = 0; i < modelsSize; i++) {
+      this._models.at(i).releaseTextures();
+      this._models.at(i).releaseExpressions();
+      this._models.at(i).releaseMotions();
+    }
+    this.releaseAllModel();
+
     this.gl.deleteProgram(this._programId);
     this._viewMatrix = null;
     this._deviceToScreen = null;
