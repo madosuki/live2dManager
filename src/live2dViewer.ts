@@ -46,6 +46,8 @@ export class Live2dViewer {
     this._deviceToScreen = new CubismMatrix44();
     this.isSetupComplete = false;
     this.isDown = false;
+    
+    this._models = {};
 
     this._touchManager = new TouchManager();
     this.targetCurrentModelKey = "";
