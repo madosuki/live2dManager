@@ -328,7 +328,6 @@ export class Live2dViewer {
       const projection = new CubismMatrix44();
 
       const model = this._models[this.targetCurrentModelKey];
-
       const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
@@ -345,7 +344,7 @@ export class Live2dViewer {
       }
     };
     
-    if (model.isCompleteSetup) {
+    if (model != undefined && model.isCompleteSetup) {
       draw();
     }
     
