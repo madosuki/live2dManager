@@ -40,7 +40,6 @@ export class Live2dViewer {
     this.canvas.height = 800;
     this.gl = null;
     this.frameBuffer = null;
-    // this._models = new csmVector<Live2dModel>();
 
     this._viewMatrix = new CubismViewMatrix();
     this._cubismOptions = new Option();
@@ -320,7 +319,7 @@ export class Live2dViewer {
 
       const { width, height } = this.canvas;
       const modelKeys = Object.keys(this._models);
-      if (modelKeys.length < 1 || this.targetCurrentModelKey === "") {
+      if (modelKeys.length < 1 || this._models[this.targetCurrentModelKey] != undefined) {
         return;
       }
 
