@@ -9,7 +9,6 @@ import {
   CubismFramework,
   Option,
 } from "../CubismWebFramework/src/live2dcubismframework";
-import { csmVector } from "../CubismWebFramework/src/type/csmvector";
 import { CubismMatrix44 } from "../CubismWebFramework/src/math/cubismmatrix44";
 import { CubismViewMatrix } from "../CubismWebFramework/src/math/cubismviewmatrix";
 import { TouchManager } from "./touchmanager";
@@ -25,7 +24,7 @@ export class Live2dViewer {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
-  _models: csmVector<Live2dModel>;
+  _models: Record<string, Live2dModel>;
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
@@ -33,7 +32,7 @@ export class Live2dViewer {
   isDown: boolean;
   _deviceToScreen: CubismMatrix44;
   _touchManager: TouchManager;
-  targetCurrentModelArrayIndex: number;
+  targetCurrentModelKey: string;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -41,7 +40,7 @@ export class Live2dViewer {
     this.canvas.height = 800;
     this.gl = null;
     this.frameBuffer = null;
-    this._models = new csmVector<Live2dModel>();
+    // this._models = new csmVector<Live2dModel>();
 
     this._viewMatrix = new CubismViewMatrix();
     this._cubismOptions = new Option();
@@ -50,7 +49,7 @@ export class Live2dViewer {
     this.isDown = false;
 
     this._touchManager = new TouchManager();
-    this.targetCurrentModelArrayIndex = -1;
+    this.targetCurrentModelKey = "";
   }
 
   public onTouchesBegin(pointX: number, pointY: number): void {
@@ -83,29 +82,24 @@ export class Live2dViewer {
     return this._viewMatrix.invertTransformY(screenY);
   }
 
-  public addModel(model: Live2dModel): void {
-    this._models.pushBack(model);
+  public addModel(key: string, model: Live2dModel): void {
+    this._models[key] = model;
   }
 
-  public setCurrentModel(index: number): boolean {
-    if (index < 0 || this._models.getSize() <= index) {
+  public setCurrentModel(key: string): boolean {
+    if (Object.keys(this._models) != undefined) {
       return false;
     }
 
-    this.targetCurrentModelArrayIndex = index;
+    this.targetCurrentModelKey = key;
     return true;
   }
 
   public updateCoordinate(x: number, y: number): void {
-    if (
-      this.targetCurrentModelArrayIndex < 0 ||
-      this._models.getSize() <= this.targetCurrentModelArrayIndex
-    ) {
-      return;
+    const model = this._models[this.targetCurrentModelKey];
+    if (model) {
+      model.setDragging(x, y);
     }
-
-    const model = this._models.at(this.targetCurrentModelArrayIndex);
-    model.setDragging(x, y);
   }
 
   private initializeSprite(): void {
@@ -233,19 +227,16 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    if (this._models == undefined || this._models.getSize() === 0) {
-      return;
+    const keys = Object.keys(this._models);
+    for (const i of keys) {
+      this._models[i].releaseTextures();
+      this._models[i].releaseExpressions();
+      this._models[i].releaseMotions();
+      this._models[i].release();
     }
-    this._models.clear();
   }
 
   public release(): void {
-    const modelsSize = this._models.getSize();
-    for (let i = 0; i < modelsSize; i++) {
-      this._models.at(i).releaseTextures();
-      this._models.at(i).releaseExpressions();
-      this._models.at(i).releaseMotions();
-    }
     this.releaseAllModel();
 
     this.gl.deleteProgram(this._programId);
@@ -278,10 +269,10 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
-      const modelCount = this._models.getSize();
-      for (let i = 0; i < modelCount; ++i) {
+      const modelKeys = Object.keys(this._models);
+      for (const i of modelKeys) {
         const projection = new CubismMatrix44();
-        const model = this._models.at(i);
+        const model = this._models[i];
         if (!model.isCompleteSetup) {
           break;
         }
@@ -328,14 +319,14 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
-      const modelCount = this._models.getSize();
-      if (this.targetCurrentModelArrayIndex < 0 || this.targetCurrentModelArrayIndex >= modelCount) {
+      const modelKeys = Object.keys(this._models);
+      if (modelKeys.length < 1 || this.targetCurrentModelKey === "") {
         return;
       }
 
       const projection = new CubismMatrix44();
 
-      const model = this._models.at(this.targetCurrentModelArrayIndex);
+      const model = this._models[this.targetCurrentModelKey];
 
       const draw = () => {
       if (model.getModel()) {
