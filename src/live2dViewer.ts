@@ -320,8 +320,7 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
-      const modelKeys = Object.keys(this._models);
-      if (modelKeys.length < 1 || this._models[this.targetCurrentModelKey] == undefined) {
+      if (this._models[this.targetCurrentModelKey] == undefined) {
         return;
       }
 
