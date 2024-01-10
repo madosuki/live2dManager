@@ -87,7 +87,7 @@ export class Live2dViewer {
   }
 
   public setCurrentModel(key: string): boolean {
-    if (Object.keys(this._models) != undefined) {
+    if (this._models[key] != undefined) {
       return false;
     }
 
