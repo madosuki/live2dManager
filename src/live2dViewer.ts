@@ -105,6 +105,10 @@ export class Live2dViewer {
 
   private initializeSprite(): void {
     const tmp = this.createShader();
+    if (tmp == undefined) {
+        throw new Error("failed createShader");
+    }
+
     this._programId = tmp;
   }
 
