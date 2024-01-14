@@ -163,11 +163,11 @@ export class Live2dViewer {
   }
 
   private createShader(): WebGLProgram | undefined {
-    if (!this.gl) {
+    if (this.gl == undefined) {
       return undefined;
     }
     const vertexShaderId = this.gl.createShader(this.gl.VERTEX_SHADER);
-    if (!vertexShaderId) {
+    if (vertexShaderId == undefined) {
       console.log("vertexShaderId is null");
       return undefined;
     }
@@ -187,7 +187,7 @@ export class Live2dViewer {
     this.gl.compileShader(vertexShaderId);
 
     const fragmentShaderId = this.gl.createShader(this.gl.FRAGMENT_SHADER);
-    if (!fragmentShaderId) {
+    if (fragmentShaderId == undefined) {
       console.log("fragment shader id is null");
       return undefined;
     }
@@ -205,10 +205,6 @@ export class Live2dViewer {
     this.gl.compileShader(fragmentShaderId);
 
     const programId = this.gl.createProgram();
-    if (!programId) {
-      console.log("program id is null");
-      return undefined;
-    }
     this.gl.attachShader(programId, vertexShaderId);
     this.gl.attachShader(programId, fragmentShaderId);
 
