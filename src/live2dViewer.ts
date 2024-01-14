@@ -115,8 +115,7 @@ export class Live2dViewer {
         "experimental-webgl"
       ) as WebGLRenderingContext | null);
     if (!this.gl) {
-      console.log(this.gl.getError());
-      return;
+      throw new Error(this.gl.getError().toString());
     }
 
     if (!this.frameBuffer) {
