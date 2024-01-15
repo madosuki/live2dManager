@@ -296,13 +296,17 @@ export class Live2dViewer {
     loop();
   }
   
+  public updateTime(): void {
+    LAppPal.updateTime();
+  }
+  
   public runSingleModel(): void {
     const loop = () => {
       if (!this.gl) {
         return;
       }
 
-      LAppPal.updateTime();
+      this.updateTime();
 
       this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
       this.gl.enable(this.gl.DEPTH_TEST);
