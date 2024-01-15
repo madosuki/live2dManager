@@ -296,6 +296,10 @@ export class Live2dViewer {
     loop();
   }
   
+  public getNewMatrix44(): CubismMatrix44 {
+    return new CubismMatrix44();
+  }
+  
   public updateTime(): void {
     LAppPal.updateTime();
   }
