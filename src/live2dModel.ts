@@ -376,6 +376,8 @@ export class Live2dModel extends CubismUserModel {
 
   public draw(
     matrix: CubismMatrix44,
+    x: number,
+    y: number,
     canvasWidth: number,
     canvasHeight: number,
     frameBuffer: WebGLFramebuffer | null
@@ -383,7 +385,7 @@ export class Live2dModel extends CubismUserModel {
     matrix.multiplyByMatrix(this._modelMatrix);
     this.getRenderer().setMvpMatrix(matrix);
 
-    const viewPort = [0, 0, canvasWidth, canvasHeight];
+    const viewPort = [x, y, canvasWidth, canvasHeight];
     this.getRenderer().setRenderState(
       frameBuffer as WebGLFramebuffer,
       viewPort

@@ -290,7 +290,7 @@ export class Live2dViewer {
           projection.multiplyByMatrix(this._viewMatrix);
 
           model.update();
-          model.draw(projection, width, height, this.frameBuffer);
+          model.draw(projection, 0, 0, width, height, this.frameBuffer);
         }
       }
       requestAnimationFrame(loop);
@@ -349,7 +349,7 @@ export class Live2dViewer {
         projection.multiplyByMatrix(this._viewMatrix);
 
         model.update();
-        model.draw(projection, width, height, this.frameBuffer);
+        model.draw(projection, 0, 0, width, height, this.frameBuffer);
       }
     };
     
