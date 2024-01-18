@@ -171,7 +171,6 @@ export class Live2dViewer {
       return undefined;
     }
     
-    console.log("create vertex shader");
     const vertexShaderId = this.gl.createShader(this.gl.VERTEX_SHADER);
     if (vertexShaderId == undefined) {
       console.log("vertexShaderId is null");
@@ -192,7 +191,6 @@ export class Live2dViewer {
     this.gl.shaderSource(vertexShaderId, vertexShader);
     this.gl.compileShader(vertexShaderId);
 
-    console.log("create fragment shader");
     const fragmentShaderId = this.gl.createShader(this.gl.FRAGMENT_SHADER);
     if (fragmentShaderId == undefined) {
       console.log("fragment shader id is null");
