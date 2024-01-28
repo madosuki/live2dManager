@@ -170,7 +170,7 @@ export class Live2dModel extends CubismUserModel {
 
     this._model.update();
   }
-
+  
   private async createTextureFromFile(
     fileName: string,
     usePremultiply: boolean,
@@ -546,6 +546,12 @@ export class Live2dModel extends CubismUserModel {
         this._allMotionCount--;
       }
     }
+  }
+  
+  public reloadRenderer(): void {
+    this.deleteRenderer();
+    this.createRenderer();
+    this.loadTextures();
   }
 
   public constructor(
