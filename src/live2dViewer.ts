@@ -113,12 +113,8 @@ export class Live2dViewer {
   }
 
   public initialize(): void {
-    this.gl =
-      this.canvas.getContext("webgl") ||
-      (this.canvas.getContext(
-        "experimental-webgl"
-      ) as WebGLRenderingContext | null);
-    if (!this.gl) {
+    this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
+    if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
     }
 
