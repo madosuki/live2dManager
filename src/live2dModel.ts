@@ -129,11 +129,29 @@ export class Live2dModel extends CubismUserModel {
     this._dragX = this._dragManager.getX();
     this._dragY = this._dragManager.getY();
 
+    // モーションによるパラメーター更新の有無
+    let isMotionUpdated = false;
+    
+    // 前回セーブされたをロード
     this._model.loadParameters();
+    // モーションを更新
+    if (!this._motionManager.isFinished()) {
+      isMotionUpdated = this._motionManager.updateMotion(this._model, deltaTimeSeconds);
+    }
+    // 状態を保存
     this._model.saveParameters();
 
-    this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
+    // まばたき
+    if (!isMotionUpdated && this._eyeBlink != undefined) {
+      this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
+    }
+    
+    // 表情
+    if (this._expressionManager != undefined) {
+      this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
+    }
 
+    // ドラッグによる顔の向きの調整
     this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30);
     this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
     this._model.addParameterValueById(
@@ -141,22 +159,27 @@ export class Live2dModel extends CubismUserModel {
       this._dragX * this._dragY * -30
     );
 
+    // ドラッグによる体の向きの調整
     this._model.addParameterValueById(
       this._idParamBodyAngleX,
       this._dragX * 10
-    );
+    ); // -10から10の値を加える
 
+    // ドラッグによる目の向きの調整
     this._model.addParameterValueById(this._idParamEyeBallX, this._dragX);
     this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
 
-    if (this._breath) {
+    // 呼吸など
+    if (this._breath != undefined) {
       this._breath.updateParameters(this._model, deltaTimeSeconds);
     }
 
-    if (this._physics) {
+    // 物理演算の設定
+    if (this._physics != undefined) {
       this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
+    // リップシンクの設定
     if (this._lipsync) {
       let value = 0.0;
       this._wavFileHandler.update(deltaTimeSeconds);
@@ -166,6 +189,11 @@ export class Live2dModel extends CubismUserModel {
         if (value <= 0.0) break;
         this._model.addParameterValueById(this._lipSyncIds.at(i), value, this.lipSyncWeight);
       }
+    }
+    
+    // ポーズの設定
+    if (this._pose != undefined) {
+      this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
 
     this._model.update();
