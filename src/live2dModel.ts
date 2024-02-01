@@ -124,7 +124,6 @@ export class Live2dModel extends CubismUserModel {
   public update(): void {
     const deltaTimeSeconds = LAppPal.getDeltaTime();
     this._userTimeSeconds += deltaTimeSeconds;
-    console.log(deltaTimeSeconds);
 
     this._dragManager.update(deltaTimeSeconds);
     this._dragX = this._dragManager.getX();
