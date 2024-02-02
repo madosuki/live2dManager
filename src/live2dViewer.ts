@@ -112,7 +112,7 @@ export class Live2dViewer {
     this._programId = tmp;
   }
 
-  public initialize(): void {
+  public initialize(memorySize: number | undefined): void {
     this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
     if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
@@ -159,7 +159,7 @@ export class Live2dViewer {
 
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
-    CubismFramework.initialize();
+    CubismFramework.initialize(memorySize);
     this.updateTime();
     this.initializeSprite();
   }
