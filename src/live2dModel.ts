@@ -8,7 +8,7 @@
 import {
   CubismFramework,
 } from "../CubismWebFramework/src/live2dcubismframework";
-import { csmVector, iterator } from "../CubismWebFramework/src/type/csmvector";
+import { csmVector } from "../CubismWebFramework/src/type/csmvector";
 import { CubismUserModel } from "../CubismWebFramework/src/model/cubismusermodel";
 import { ICubismModelSetting } from "../CubismWebFramework/src/icubismmodelsetting";
 import {
@@ -164,7 +164,7 @@ export class Live2dModel extends CubismUserModel {
     this._model.addParameterValueById(
       this._idParamAngleZ,
       this._dragX * this._dragY * -30
-    );
+    ); // -30から30の値を加える
 
     // ドラッグによる体の向きの調整
     this._model.addParameterValueById(
