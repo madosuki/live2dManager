@@ -99,14 +99,21 @@ export class Live2dModel extends CubismUserModel {
       return;
     }
 
-    for (
-      let ite: iterator<TextureInfo> = this._textures.begin();
-      ite.notEqual(this._textures.end());
-      ite.preIncrement()
-    ) {
-      this._live2dViewer.deleteTexture(ite.ptr().id);
+    for (let i = 0; i < this._textures.getSize(); i++) {
+      this._textures.set(i, null);
     }
-    this._textures = null;
+    this._textures.clear();
+  }
+  
+  public releaseTextureByTexture(texture: WebGLTexture): void {
+    for (let i =  0; i < this._textures.getSize(); i++) {
+      if (this._textures.at(i).id != texture) {
+        continue;
+      }
+      
+      this._textures.set(i, null);
+      this._textures.remove(i);
+    }
   }
 
   public releaseMotions(): void {
