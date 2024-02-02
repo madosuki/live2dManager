@@ -7,33 +7,7 @@
 
 // import { LAppPal } from './lapppal';
 
-export let s_instance: LAppWavFileHandler = null;
-
 export class LAppWavFileHandler {
-  /**
-   * クラスのインスタンス（シングルトン）を返す。
-   * インスタンスが生成されていない場合は内部でインスタンスを生成する。
-   *
-   * @return クラスのインスタンス
-   */
-  public static getInstance(): LAppWavFileHandler {
-    if (s_instance == null) {
-      s_instance = new LAppWavFileHandler();
-    }
-
-    return s_instance;
-  }
-
-  /**
-   * クラスのインスタンス（シングルトン）を解放する。
-   */
-  public static releaseInstance(): void {
-    if (s_instance != null) {
-      s_instance = void 0;
-    }
-
-    s_instance = null;
-  }
 
   public update(deltaTimeSeconds: number): boolean {
     let goalOffset: number;
