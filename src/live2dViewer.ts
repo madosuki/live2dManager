@@ -112,7 +112,7 @@ export class Live2dViewer {
     this._programId = tmp;
   }
 
-  public initialize(memorySize: number | undefined): void {
+  public initialize(memorySize?: number): void {
     this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
     if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
