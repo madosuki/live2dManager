@@ -122,6 +122,7 @@ export class Live2dViewer {
       this.frameBuffer = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
     }
 
+    // 透過設定
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
@@ -159,6 +160,7 @@ export class Live2dViewer {
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
     CubismFramework.initialize();
+    this.updateTime();
     this.initializeSprite();
   }
 
