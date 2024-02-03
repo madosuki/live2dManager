@@ -35,6 +35,7 @@ import { Live2dViewer } from "./live2dViewer";
 
 class TextureInfo {
   public imageUrl: string;
+  public img: HTMLImageElement;
   public id: WebGLTexture | undefined;
   public width: number;
   public height: number;
@@ -260,6 +261,9 @@ export class Live2dModel extends CubismUserModel {
       const textureInfo = new TextureInfo();
       textureInfo.fileName = fileName;
       textureInfo.imageUrl = url;
+      textureInfo.img = img;
+      textureInfo.width = img.width;
+      textureInfo.height = img.height;
       textureInfo.id = _texture;
       textureInfo.usePremulitply = usePremultiply;
       this._textures.pushBack(textureInfo);
