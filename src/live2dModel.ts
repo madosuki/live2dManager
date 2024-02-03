@@ -391,6 +391,12 @@ export class Live2dModel extends CubismUserModel {
       )
     );
     this._breath.setParameters(breathParameters);
+    
+    const userDataFileName = this._modelSetting.getUserDataFile();
+    if (userDataFileName !== "") {
+      const readResult = await this.readFileFunction(`${this._modelHomeDir}${userDataFileName}`);
+      this.loadUserData(readResult, readResult.byteLength);
+    }
 
     const lipSyncIdCount = this._modelSetting.getLipSyncParameterCount();
     for (let i = 0; i < lipSyncIdCount; ++i) {
