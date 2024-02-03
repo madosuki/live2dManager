@@ -36,8 +36,10 @@ export class Live2dViewer {
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    /*
     this.canvas.width = 800;
     this.canvas.height = 800;
+    */
     this.gl = null;
     this.frameBuffer = null;
 
