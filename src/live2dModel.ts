@@ -341,6 +341,7 @@ export class Live2dModel extends CubismUserModel {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${physicsFileName}`
       );
+      console.log(physicsFileName);
       this.loadPhysics(readResult, readResult.byteLength);
     }
     
@@ -350,6 +351,7 @@ export class Live2dModel extends CubismUserModel {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${physicsFileName}`
       );
+      console.log(poseFileName);
       this.loadPose(readResult, readResult.byteLength);
     }
 
