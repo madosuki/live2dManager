@@ -443,10 +443,12 @@ export class Live2dModel extends CubismUserModel {
     }
 
     if (motionGroupCount === 0 || !isPreloadMotion) {
+      this._motionManager.stopAllMotions();
+
       this.createRenderer();
+      this.getRenderer().setIsPremultipliedAlpha(true);
       await this.loadTextures();
       if (this._live2dViewer.gl) {
-        this.getRenderer().setIsPremultipliedAlpha(true);
         this.getRenderer().startUp(this._live2dViewer.gl);
       }
     }
