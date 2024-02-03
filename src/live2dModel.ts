@@ -322,7 +322,8 @@ export class Live2dModel extends CubismUserModel {
     try {
       const bytesResult = await this.readFileFunction(filePath);
       this.loadModel(bytesResult, this._mocConsistency);
-    } catch {
+    } catch(e) {
+      console.log(e)
       return;
     }
 
@@ -421,7 +422,7 @@ export class Live2dModel extends CubismUserModel {
     }
   }
 
-  public async loadAssets(isPreloadMotion: boolean): Promise<void> {
+  public async loadAssets(isPreloadMotion?: boolean): Promise<void> {
     const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
     const readResult = await this.readFileFunction(filePath);
     const setting = new CubismModelSettingJson(
