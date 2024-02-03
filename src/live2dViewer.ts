@@ -15,6 +15,7 @@ import { TouchManager } from "./touchmanager";
 import { LAppPal } from "./lapppal";
 
 import { Live2dModel } from "./live2dModel";
+import { csmMap } from "@CubismWebFramework/type/csmmap";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);
@@ -24,7 +25,7 @@ export class Live2dViewer {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
-  _models: Record<string, Live2dModel>;
+  _models: csmMap<string, Live2dModel>;
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
@@ -47,7 +48,7 @@ export class Live2dViewer {
     this.isSetupComplete = false;
     this.isDown = false;
     
-    this._models = {};
+    this._models = new csmMap();
 
     this._touchManager = new TouchManager();
     this.targetCurrentModelKey = "";
