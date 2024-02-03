@@ -334,15 +334,25 @@ export class Live2dModel extends CubismUserModel {
       throw new Error("failed create model");
     }
 
-    if (this._modelSetting.getPhysicsFileName() !== "") {
-      const physicsFileName = this._modelSetting.getPhysicsFileName();
-
+    // Load Physics
+    const physicsFileName = this._modelSetting.getPhysicsFileName();
+    if (physicsFileName !== "") {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${physicsFileName}`
       );
       this.loadPhysics(readResult, readResult.byteLength);
     }
+    
+    // Load Pose
+    const poseFileName = this._modelSetting.getPoseFileName();
+    if (poseFileName !== "") {
+      const readResult = await this.readFileFunction(
+        `${this._modelHomeDir}${physicsFileName}`
+      );
+      this.loadPose(readResult, readResult.byteLength);
+    }
 
+    // Set Eye Blink params
     if (this._modelSetting.getEyeBlinkParameterCount() > 0) {
       this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
     }
