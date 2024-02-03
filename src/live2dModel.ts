@@ -272,7 +272,7 @@ export class Live2dModel extends CubismUserModel {
       this._textureCount++;
 
       if (this._textureCount >= textureCount) {
-        console.log(`textureCount: ${this._textureCount}`);
+        console.log(`textureCount: ${this._textureCount}, argument textureCount: ${textureCount}`);
         this.isCompleteSetup = true;
       }
     };
