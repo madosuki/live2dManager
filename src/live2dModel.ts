@@ -335,6 +335,24 @@ export class Live2dModel extends CubismUserModel {
     if (!this._model) {
       throw new Error("failed create model");
     }
+    
+    // Load Expression
+    const expressionCount = this._modelSetting.getExpressionCount();
+    for (let i = 0; i < expressionCount; i++) {
+      const expressionName = this._modelSetting.getExpressionFileName(i);
+      const expressionFileName = this._modelSetting.getExpressionFileName(i);
+      
+      const readResult = await this.readFileFunction(`${this._modelHomeDir}${expressionFileName}`);
+      const motion = this.loadExpression(readResult, readResult.byteLength, expressionName);
+      
+      if (this._expressions.getValue(expressionName) != null) {
+        ACubismMotion.delete(this._expressions.getValue(expressionName));
+        this._expressions.setValue(expressionName, null);
+      }
+      
+      this._expressions.setValue(expressionName, motion);
+      this._expressionCount++;
+    }
 
     // Load Physics
     const physicsFileName = this._modelSetting.getPhysicsFileName();
@@ -411,6 +429,9 @@ export class Live2dModel extends CubismUserModel {
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
     
+    this._model.saveParameters();
+    this._allMotionCount = 0;
+    this._motionCount = 0;
     const motionGroupCount: number = this._modelSetting.getMotionGroupCount();
     for (let i = 0; i < motionGroupCount; i++) {
       const groupName = this._modelSetting.getMotionGroupName(i);
