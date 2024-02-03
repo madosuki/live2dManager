@@ -286,20 +286,20 @@ export class Live2dModel extends CubismUserModel {
 
     const usePremultiply = true;
 
-    const textCureCount = this._modelSetting.getTextureCount();
+    const textureCount = this._modelSetting.getTextureCount();
 
-    for (let i = 0; i < textCureCount; ++i) {
+    for (let i = 0; i < textureCount; ++i) {
       const textureFileName = this._modelSetting.getTextureFileName(i);
       if (textureFileName == "") {
         continue;
       }
       const texturePath = `${this._modelHomeDir}${textureFileName}`;
-
+      
       await this.createTextureFromFile(
         texturePath,
         usePremultiply,
         i,
-        textCureCount
+        textureCount
       );
       this.getRenderer().setIsPremultipliedAlpha(usePremultiply);
     }
