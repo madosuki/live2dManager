@@ -140,13 +140,13 @@ export class Live2dModel extends CubismUserModel {
     let isMotionUpdated = false;
     
     // 前回セーブされたをロード
-    this._model.loadParameters();
+    // this._model.loadParameters();
     // モーションを更新
     if (!this._motionManager.isFinished()) {
       isMotionUpdated = this._motionManager.updateMotion(this._model, deltaTimeSeconds);
     }
     // 状態を保存
-    this._model.saveParameters();
+    // this._model.saveParameters();
 
     // まばたき
     if (!isMotionUpdated && this._eyeBlink != undefined) {
