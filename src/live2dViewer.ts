@@ -34,12 +34,10 @@ export class Live2dViewer {
   _touchManager: TouchManager;
   targetCurrentModelKey: string;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, width?: number, height?: number) {
     this.canvas = canvas;
-    /*
-    this.canvas.width = 800;
-    this.canvas.height = 800;
-    */
+    this.canvas.width = width?? 800;
+    this.canvas.height = height?? 800;
     this.gl = null;
     this.frameBuffer = null;
 
