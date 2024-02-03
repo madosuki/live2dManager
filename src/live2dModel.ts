@@ -284,7 +284,7 @@ export class Live2dModel extends CubismUserModel {
   }
 
   private async loadTextures(): Promise<void> {
-    if (!this._modelSetting) {
+    if (!this._modelSetting || this.isCompleteSetup) {
       return;
     }
 
