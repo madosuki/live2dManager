@@ -372,7 +372,7 @@ export class Live2dModel extends CubismUserModel {
     const poseFileName = this._modelSetting.getPoseFileName();
     if (poseFileName !== "") {
       const readResult = await this.readFileFunction(
-        `${this._modelHomeDir}${physicsFileName}`
+        `${this._modelHomeDir}${poseFileName}`
       );
       console.log(poseFileName);
       this.loadPose(readResult, readResult.byteLength);

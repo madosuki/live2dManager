@@ -121,7 +121,6 @@ export class Live2dViewer {
 
     if (!this.frameBuffer) {
       this.frameBuffer = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
-      console.log(`frameBuffer is ${this.frameBuffer}`);
     }
 
     // 透過設定
