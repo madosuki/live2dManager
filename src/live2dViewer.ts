@@ -121,6 +121,7 @@ export class Live2dViewer {
 
     if (!this.frameBuffer) {
       this.frameBuffer = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
+      console.log(`frameBuffer is ${this.frameBuffer}`);
     }
 
     // 透過設定
@@ -333,7 +334,7 @@ export class Live2dViewer {
 
       const projection = new CubismMatrix44();
 
-      const model = this._models[this.targetCurrentModelKey];
+      const model: Live2dModel = this._models[this.targetCurrentModelKey];
       const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
