@@ -113,7 +113,12 @@ export class Live2dViewer {
     this._programId = tmp;
   }
 
-  public initialize(memorySize?: number): void {
+  /**
+  * Viewerの初期化
+  *
+  * @param allocationMemorySize オプショナルで単位はバイト。指定する場合は16MB以上で、それよりも下回る場合は16MBが確保される。複数体モデルを扱う場合は16MBより上を確保するようにした方が良い（ref: https://docs.live2d.com/cubism-sdk-manual/faq/ のql4参照)
+  */
+  public initialize(allocationMemorySize?: number): void {
     this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
     if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
@@ -160,7 +165,7 @@ export class Live2dViewer {
 
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
-    CubismFramework.initialize(memorySize);
+    CubismFramework.initialize(allocationMemorySize);
     this.updateTime();
     this.initializeSprite();
   }
