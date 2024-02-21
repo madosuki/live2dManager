@@ -232,9 +232,8 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    const keys = Object.keys(this._models);
-    for (const i of keys) {
-      console.log(i);
+    const keys = this._models._keyValues;
+    for (const i in keys) {
       const model: Live2dModel = this._models[i];
       model.releaseTextures();
       model.releaseExpressions();
@@ -276,8 +275,8 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
-      const modelKeys = Object.keys(this._models);
-      for (const i of modelKeys) {
+      const modelKeys = this._models._keyValues;
+      for (const i in modelKeys) {
         const projection = new CubismMatrix44();
         const model = this._models[i];
         if (!model.isCompleteSetup) {
