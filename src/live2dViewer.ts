@@ -234,10 +234,11 @@ export class Live2dViewer {
   public releaseAllModel(): void {
     const keys = Object.keys(this._models);
     for (const i of keys) {
-      this._models[i].releaseTextures();
-      this._models[i].releaseExpressions();
-      this._models[i].releaseMotions();
-      this._models[i].release();
+      const model: Live2dModel = this._models[i];
+      model.releaseTextures();
+      model.releaseExpressions();
+      model.releaseMotions();
+      model.release();
     }
   }
 
