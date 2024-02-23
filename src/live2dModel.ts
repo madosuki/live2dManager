@@ -480,6 +480,7 @@ export class Live2dModel extends CubismUserModel {
     this.getRenderer().setMvpMatrix(matrix);
 
     const viewPort = [x, y, canvasWidth, canvasHeight];
+    this.getRenderer().setClippingMaskBufferSize(1024 * 1024);
     this.getRenderer().setRenderState(
       frameBuffer as WebGLFramebuffer,
       viewPort
