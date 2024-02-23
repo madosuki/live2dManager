@@ -340,6 +340,9 @@ export class Live2dModel extends CubismUserModel {
       throw new Error("failed create model");
     }
     
+    this.getRenderer().setClippingMaskBufferSize(1024 * 1024);
+
+    
     // Load Expression
     const expressionCount = this._modelSetting.getExpressionCount();
     for (let i = 0; i < expressionCount; i++) {
@@ -480,7 +483,6 @@ export class Live2dModel extends CubismUserModel {
     this.getRenderer().setMvpMatrix(matrix);
 
     const viewPort = [x, y, canvasWidth, canvasHeight];
-    this.getRenderer().setClippingMaskBufferSize(1024 * 1024);
     this.getRenderer().setRenderState(
       frameBuffer as WebGLFramebuffer,
       viewPort
