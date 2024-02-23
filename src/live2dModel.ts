@@ -340,9 +340,6 @@ export class Live2dModel extends CubismUserModel {
       throw new Error("failed create model");
     }
     
-    this.getRenderer().setClippingMaskBufferSize(1024 * 1024);
-
-    
     // Load Expression
     const expressionCount = this._modelSetting.getExpressionCount();
     for (let i = 0; i < expressionCount; i++) {
