@@ -106,8 +106,8 @@ export class Live2dViewer {
   }
 
   public updateCoordinate(x: number, y: number): void {
-    const model = this._models[this.targetCurrentModelKey];
-    if (model) {
+    const model: Live2dModel | undefined = this.getModelFromKey(this.targetCurrentModelKey);
+    if (model != undefined) {
       model.setDragging(x, y);
     }
   }
