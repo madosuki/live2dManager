@@ -275,6 +275,7 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
+      console.log(this._models._size);
       const modelKeys = this._models._keyValues;
       console.log(modelKeys);
       for (const i in modelKeys) {
