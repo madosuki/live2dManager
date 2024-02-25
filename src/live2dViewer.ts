@@ -252,60 +252,6 @@ export class Live2dViewer {
     CubismFramework.dispose();
   }
 
-  public runAllModel(): void {
-    const loop = () => {
-      if (!this.gl) {
-        return;
-      }
-
-      LAppPal.updateTime();
-
-      this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-      this.gl.enable(this.gl.DEPTH_TEST);
-      this.gl.depthFunc(this.gl.LEQUAL);
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-      this.gl.clearDepth(1.0);
-
-      this.gl.enable(this.gl.BLEND);
-      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-
-      if (this._programId) {
-        this.gl.useProgram(this._programId);
-      }
-      this.gl.flush();
-
-      const { width, height } = this.canvas;
-      console.log(this._models.getSize());
-      const modelKeys = this._models._keyValues;
-      console.log(modelKeys);
-      for (const i in modelKeys) {
-        console.log(i);
-        const projection = new CubismMatrix44();
-        const model: Live2dModel = this._models[i];
-        if (!model.isCompleteSetup) {
-          continue;
-        }
-
-        if (model.getModel()) {
-          if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
-            model.getModelMatrix().setWidth(2.0);
-            projection.scale(1.0, width / height);
-          } else {
-            projection.scale(height / width, 1.0);
-          }
-
-          projection.multiplyByMatrix(this._viewMatrix);
-
-          model.update();
-          model.draw(projection, 0, 0, width, height, this.frameBuffer);
-        }
-      }
-      requestAnimationFrame(loop);
-    };
-
-    loop();
-  }
-  
   public getNewMatrix44(): CubismMatrix44 {
     return new CubismMatrix44();
   }
