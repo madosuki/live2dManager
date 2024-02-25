@@ -276,8 +276,8 @@ export class Live2dViewer {
 
       const { width, height } = this.canvas;
       const modelKeys = this._models._keyValues;
+      console.log(modelKeys);
       for (const i in modelKeys) {
-        console.log(i);
         const projection = new CubismMatrix44();
         const model: Live2dModel = this._models[i];
         if (!model.isCompleteSetup) {
