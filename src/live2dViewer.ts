@@ -90,10 +90,9 @@ export class Live2dViewer {
   }
 
   public setCurrentModel(key: string): boolean {
-    for (let i = 0; i < this._models.getSize(); ++i) {
-      console.log(this._models._keyValues[i]);
-      if (this._models._keyValues[i].first !== key) return false;
-    }
+    if (this._models._keyValues.find((v) => v.first !== key)) return;
+    
+    console.log("this key is exists!");
 
     this.targetCurrentModelKey = key;
     return true;
