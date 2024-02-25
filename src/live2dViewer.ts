@@ -92,10 +92,17 @@ export class Live2dViewer {
   public setCurrentModel(key: string): boolean {
     if (!this._models._keyValues.find((v) => v.first === key)) return;
     
-    console.log("this key is exists!");
-
     this.targetCurrentModelKey = key;
     return true;
+  }
+  
+  public getModelFromKey(key: string): Live2dModel | undefined {
+    const result = this._models._keyValues.find((v) => v.first === key);
+    if (result != undefined) {
+      return result.second; 
+    }
+    
+    return undefined;
   }
 
   public updateCoordinate(x: number, y: number): void {
