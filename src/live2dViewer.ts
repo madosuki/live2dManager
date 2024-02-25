@@ -91,7 +91,7 @@ export class Live2dViewer {
 
   public setCurrentModel(key: string): boolean {
     for (let i = 0; i < this._models.getSize(); ++i) {
-      console.log(i);
+      console.log(this._models._keyValues[i]);
       if (this._models._keyValues[i].first !== key) return false;
     }
 
