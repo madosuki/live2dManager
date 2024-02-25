@@ -85,7 +85,7 @@ export class Live2dViewer {
   }
 
   public addModel(key: string, model: Live2dModel): void {
-    this._models[key] = model;
+    this._models.setValue(key, model);
   }
 
   public setCurrentModel(key: string): boolean {
