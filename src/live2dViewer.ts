@@ -15,7 +15,7 @@ import { TouchManager } from "./touchmanager";
 import { LAppPal } from "./lapppal";
 
 import { Live2dModel } from "./live2dModel";
-import { csmMap } from "@CubismWebFramework/type/csmmap";
+import { csmMap, csmPair } from "@CubismWebFramework/type/csmmap";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);
@@ -85,12 +85,13 @@ export class Live2dViewer {
   }
 
   public addModel(key: string, model: Live2dModel): void {
+    this._models.appendKey(key);
     this._models.setValue(key, model);
   }
 
   public setCurrentModel(key: string): boolean {
-    if (this._models[key] == undefined) {
-      return false;
+    for (let i = 0; i < this._models.getSize(); ++i) {
+      if (this._models._keyValues[i].first === key) return false;
     }
 
     this.targetCurrentModelKey = key;
@@ -232,14 +233,16 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    const keys = this._models._keyValues;
-    for (const i in keys) {
-      const model: Live2dModel = this._models[i];
+    const keys: csmPair<string, Live2dModel>[] = this._models._keyValues;
+    for (const i of keys) {
+      const model: Live2dModel = i.second;
       model.releaseTextures();
       model.releaseExpressions();
       model.releaseMotions();
       model.release();
     }
+    
+    this._models.clear();
   }
 
   public release(): void {
@@ -248,7 +251,7 @@ export class Live2dViewer {
     this.gl.deleteProgram(this._programId);
     this._viewMatrix = null;
     this._deviceToScreen = null;
-
+    
     CubismFramework.dispose();
   }
 
@@ -261,6 +264,15 @@ export class Live2dViewer {
   }
   
   public runSingleModel(): void {
+    let isValidTargetCurrentModelKey = false;
+    for (let i = 0; i < this._models.getSize(); ++i) {
+      if (this._models._keyValues[i].first === this.targetCurrentModelKey) {
+       isValidTargetCurrentModelKey = true; 
+      }
+    }
+    
+    if (!isValidTargetCurrentModelKey) return;
+
     const loop = () => {
       if (!this.gl) {
         return;
@@ -283,13 +295,10 @@ export class Live2dViewer {
       this.gl.flush();
 
       const { width, height } = this.canvas;
-      if (this._models[this.targetCurrentModelKey] == undefined) {
-        return;
-      }
 
       const projection = new CubismMatrix44();
 
-      const model: Live2dModel = this._models[this.targetCurrentModelKey];
+      const model: Live2dModel = this._models.getValue(this.targetCurrentModelKey);
       const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
