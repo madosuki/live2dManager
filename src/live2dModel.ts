@@ -276,7 +276,7 @@ export class Live2dModel extends CubismUserModel {
       this._textureCount++;
 
       if (this._textureCount >= textureCount) {
-        console.log(`textureCount: ${this._textureCount}, argument textureCount: ${textureCount}, fileName: ${fileName}`);
+        // console.log(`textureCount: ${this._textureCount}, argument textureCount: ${textureCount}, fileName: ${fileName}`);
         this.isCompleteSetup = true;
       }
     };
@@ -364,7 +364,6 @@ export class Live2dModel extends CubismUserModel {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${physicsFileName}`
       );
-      console.log(physicsFileName);
       this.loadPhysics(readResult, readResult.byteLength);
     }
     
@@ -374,7 +373,6 @@ export class Live2dModel extends CubismUserModel {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${poseFileName}`
       );
-      console.log(poseFileName);
       this.loadPose(readResult, readResult.byteLength);
     }
 
