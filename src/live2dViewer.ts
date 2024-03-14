@@ -33,7 +33,11 @@ export class Live2dViewer {
   isDown: boolean;
   _deviceToScreen: CubismMatrix44;
   _touchManager: TouchManager;
-  targetCurrentModelKey: string;
+  private targetCurrentModelKey: string;
+  
+  getCurrentModelKey(): string {
+    return this.targetCurrentModelKey;
+  }
 
   constructor(canvas: HTMLCanvasElement, width?: number, height?: number) {
     this.canvas = canvas;
