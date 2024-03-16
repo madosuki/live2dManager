@@ -128,6 +128,12 @@ export class Live2dModel extends CubismUserModel {
       this._expressions.clear();
     }
   }
+  
+  public closeEyelids(seconds: number): void {
+    if (this._eyeBlink == undefined) return;
+    
+    this._eyeBlink._closedSeconds = seconds;
+  }
 
   public update(): void {
     const deltaTimeSeconds = LAppPal.getDeltaTime();
