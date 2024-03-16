@@ -135,14 +135,10 @@ export class Live2dModel extends CubismUserModel {
   
   public closeEyelids(): void {
     this.manualClosedEye = true;
-    this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
-    this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
   }
   
   public openEyelids(): void {
     this.manualClosedEye = false;
-    this._model.setParameterValueById(this._idParamEyeLOpen, 1);
-    this._model.setParameterValueById(this._idParamEyeROpen, 1);
   }
 
   public update(): void {
@@ -167,6 +163,11 @@ export class Live2dModel extends CubismUserModel {
 
     // まばたき
     if (!isMotionUpdated && this._eyeBlink != undefined) {
+      if (this.manualClosedEye) {
+        this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
+        this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
+      }
+
       if (!this.manualClosedEye) {
         this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
       }
