@@ -74,6 +74,8 @@ export class Live2dModel extends CubismUserModel {
   _idParamEyeBallX: CubismIdHandle;
   _idParamEyeBallY: CubismIdHandle;
   _idParamBodyAngleX: CubismIdHandle;
+  _idParamEyeLOpen: CubismIdHandle;
+  _idParamEyeROpen: CubismIdHandle;
 
   _state: number;
   _expressionCount: number;
@@ -130,9 +132,13 @@ export class Live2dModel extends CubismUserModel {
   }
   
   public closeEyelids(): void {
-    if (this._eyeBlink == undefined) return;
-    
-    this._model.addParameterValueById(this._idParamEyeBallY, -0.5);
+    this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
+    this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
+  }
+  
+  public openEyelids(): void {
+    this._model.setParameterValueById(this._idParamEyeLOpen, 1);
+    this._model.setParameterValueById(this._idParamEyeROpen, 1);
   }
 
   public update(): void {
@@ -676,6 +682,8 @@ export class Live2dModel extends CubismUserModel {
         CubismFramework.getIdManager().getId("PARAM_EYE_BALL_Y");
       this._idParamBodyAngleX =
         CubismFramework.getIdManager().getId("PARAM_BODY_ANGLE_X");
+      this._idParamEyeLOpen = CubismFramework.getIdManager().getId("PARAM_EYE_L_OPEN");
+      this._idParamEyeROpen = CubismFramework.getIdManager().getId("PARAM_EYE_R_OPEN");
     } else {
       this._idParamAngleX = CubismFramework.getIdManager().getId(
         CubismDefaultParameterId.ParamAngleX
@@ -697,6 +705,9 @@ export class Live2dModel extends CubismUserModel {
       this._idParamBodyAngleX = CubismFramework.getIdManager().getId(
         CubismDefaultParameterId.ParamBodyAngleX
       );
+      
+      this._idParamEyeLOpen = CubismFramework.getIdManager().getId("ParamEyeLOpen");
+      this._idParamEyeROpen = CubismFramework.getIdManager().getId("ParamEyeROpen");
     }
 
     if (LAppDefine.MOCConsistencyValidationEnable) {
