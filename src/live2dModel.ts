@@ -129,10 +129,10 @@ export class Live2dModel extends CubismUserModel {
     }
   }
   
-  public closeEyelids(seconds: number): void {
+  public closeEyelids(): void {
     if (this._eyeBlink == undefined) return;
     
-    this._eyeBlink._closedSeconds = seconds;
+    this._model.addParameterValueById(this._idParamEyeBallY, -0.5);
   }
 
   public update(): void {
