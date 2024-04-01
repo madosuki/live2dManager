@@ -657,8 +657,8 @@ export class Live2dModel extends CubismUserModel {
     modelHomeDir: string,
     modelJsonFileName: string,
     live2dViewer: Live2dViewer,
-    is_old_param_name: boolean,
-    readFileFunction: (arg: string) => Promise<ArrayBuffer>
+    readFileFunction: (arg: string) => Promise<ArrayBuffer>,
+    is_old_param_name?: boolean,
   ) {
     super();
     this._modelSetting = null;
