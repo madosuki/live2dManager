@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "es6",
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "strictNullChecks": false,
     "skipLibCheck": true,
