@@ -672,6 +672,10 @@ export class Live2dModel extends CubismUserModel {
     }
   }
   
+  public resetExpression(): void {
+    this._expressionManager.stopAllMotions();
+  }
+  
   public getExpressionIdList(): string[] {
     const result: string[] = [];
     const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
