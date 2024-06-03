@@ -18,7 +18,7 @@ import {
 import { CubismIdHandle } from "../CubismWebFramework/src/id/cubismid";
 import { CubismDefaultParameterId } from "../CubismWebFramework/src/cubismdefaultparameterid";
 import { CubismModelSettingJson } from "../CubismWebFramework/src/cubismmodelsettingjson";
-import { csmMap } from "../CubismWebFramework/src/type/csmmap";
+import { csmMap, csmPair } from "../CubismWebFramework/src/type/csmmap";
 import { ACubismMotion, FinishedMotionCallback } from "../CubismWebFramework/src/motion/acubismmotion";
 import { csmRect } from "../CubismWebFramework/src/type/csmrectf";
 import { CubismEyeBlink } from "../CubismWebFramework/src/effect/cubismeyeblink";
@@ -674,7 +674,8 @@ export class Live2dModel extends CubismUserModel {
   
   public getExpressionIdList(): string[] {
     const result: string[] = [];
-    for (const key of this._expressions._keyValues) {
+    const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
+    for (const key of keys) {
       const expressionId = key.first;
       result.push(expressionId);
     }
