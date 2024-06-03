@@ -362,7 +362,7 @@ export class Live2dModel extends CubismUserModel {
     // Load Expression
     const expressionCount = this._modelSetting.getExpressionCount();
     for (let i = 0; i < expressionCount; i++) {
-      const expressionName = this._modelSetting.getExpressionFileName(i);
+      const expressionName = this._modelSetting.getExpressionName(i);
       const expressionFileName = this._modelSetting.getExpressionFileName(i);
       
       const readResult = await this.readFileFunction(`${this._modelHomeDir}${expressionFileName}`);
