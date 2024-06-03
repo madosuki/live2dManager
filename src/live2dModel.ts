@@ -647,6 +647,41 @@ export class Live2dModel extends CubismUserModel {
     }
   }
   
+  /**
+   * 引数で指定した表情モーションをセットする
+   *
+   * @param expressionId 表情モーションのID
+   */
+  public setExpression(expressionId: string): void {
+    const motion: ACubismMotion = this._expressions.getValue(expressionId);
+  
+    if (this._debugMode) {
+      LAppPal.printMessage(`expression: [${expressionId}]`);
+    }
+  
+    if (motion != undefined) {
+      this._expressionManager.startMotionPriority(
+        motion,
+        false,
+        LAppDefine.PriorityForce
+      );
+    } else {
+      if (this._debugMode) {
+        LAppPal.printMessage(`expression[${expressionId}] is null`);
+      }
+    }
+  }
+  
+  public getExpressionIdList(): string[] {
+    const result: string[] = [];
+    for (let i = 0; this._expressions.getSize(); ++i) {
+      const expressionId = this._expressions._keyValues[i].first;
+      result.push(expressionId);
+    }
+    
+    return result;
+  }
+  
   public reloadRenderer(): void {
     this.deleteRenderer();
     this.createRenderer();
