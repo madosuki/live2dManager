@@ -11,6 +11,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": true,
+    "sourceMap": true,
     "paths": {
         "@/*": ["src/*"],
         "@CubismWebFramework/*": ["CubismWebFramework/src/*"]
