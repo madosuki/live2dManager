@@ -246,11 +246,13 @@ export class Live2dViewer {
   public releaseAllModel(): void {
     const keys: csmPair<string, Live2dModel>[] = this._models._keyValues;
     for (const i of keys) {
-      const model: Live2dModel = i.second;
-      model.releaseTextures();
-      model.releaseExpressions();
-      model.releaseMotions();
-      model.release();
+      if (i != undefined && i.second != undefined) {
+        const model: Live2dModel = i.second;
+        model.releaseTextures();
+        model.releaseExpressions();
+        model.releaseMotions();
+        model.release();
+      }
     }
     
     this._models.clear();

@@ -676,7 +676,7 @@ export class Live2dModel extends CubismUserModel {
     const result: string[] = [];
     const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
     for (const i of keys) {
-      console.log(i);
+      // It's a workaround. prepend missing property when after build.
       if (i != undefined && i.first != undefined) {
         const expressionId = i.first;
         result.push(expressionId);
