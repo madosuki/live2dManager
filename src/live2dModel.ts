@@ -676,6 +676,7 @@ export class Live2dModel extends CubismUserModel {
     const result: string[] = [];
     const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
     for (const key of keys) {
+      console.log(key);
       const expressionId = key.first;
       result.push(expressionId);
     }
