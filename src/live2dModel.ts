@@ -675,11 +675,8 @@ export class Live2dModel extends CubismUserModel {
   public getExpressionIdList(): string[] {
     const result: string[] = [];
     for (const key of this._expressions._keyValues) {
-      console.log(key);
-      /*
       const expressionId = key.first;
       result.push(expressionId);
-      */
     }
     
     return result;
