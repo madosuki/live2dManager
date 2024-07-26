@@ -9,6 +9,7 @@ import {
   CubismFramework,
 } from "../CubismWebFramework/src/live2dcubismframework";
 import { csmVector } from "../CubismWebFramework/src/type/csmvector";
+import { csmString } from "@CubismWebFramework/type/csmstring";
 import { CubismUserModel } from "../CubismWebFramework/src/model/cubismusermodel";
 import { ICubismModelSetting } from "../CubismWebFramework/src/icubismmodelsetting";
 import {
@@ -137,20 +138,6 @@ export class Live2dModel extends CubismUserModel {
     }
   }
 
-  public releaseSoundFileList(): void {
-    if (this._soundFileList) {
-      this._soundFileList?.clear();
-      this._soundFileList = null;
-    }
-  }
-
-  public releaseSoundData(): void {
-    if (this._soundData) {
-      this._soundData?.release();
-      this._soundData = null;
-    }
-  }
-  
   public closeEyelids(): void {
     this.manualClosedEye = true;
   }
@@ -471,15 +458,6 @@ export class Live2dModel extends CubismUserModel {
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
 
-    // MotionSync
-    const motionSyncFileName = this.getMotionSyncFileName();
-    if (motionSyncFileName !== "" && motionSyncFileName !== "NullValue") {
-      const data = readFileFunction(motionSyncFileName);
-      this.loadMotionSync(data, data.byteLength);
-      this._soundFileList = this._modelSetting.getMotionSyncSoundFileList();
-      this._soundIndex = 0;
-    }
-    
     this._model.saveParameters();
     this._allMotionCount = 0;
     this._motionCount = 0;
@@ -496,8 +474,6 @@ export class Live2dModel extends CubismUserModel {
     if (motionGroupCount === 0 || !isPreloadMotion) {
       this._motionManager.stopAllMotions();
 
-      this.loadFromSoundList();
-      
       this.createRenderer();
       this.getRenderer().setIsPremultipliedAlpha(true);
       await this.loadTextures();
@@ -608,165 +584,6 @@ export class Live2dModel extends CubismUserModel {
     this.lipSyncWeight = weight;
   }
 
-  /**
-   * モーションシンクデータの読み込み
-   * @param buffer  physics3.jsonが読み込まれているバッファ
-   * @param size    バッファのサイズ
-   */
-  private loadMotionSync(buffer: ArrayBuffer, size: number) {
-    if (buffer == null || size == 0) {
-      CubismLogError('Failed to loadMotionSync().');
-      return;
-    }
-
-    this._motionSync = CubismMotionSync.create(
-      this._model,
-      buffer,
-      size,
-      LAppMotionSyncDefine.SamplesPerSec
-    );
-  }
-
-  /**
-   * 音声ファイルリストから読み込みを行う。
-   */
-  public loadFromSoundList(): void {
-    if (!this._soundFileList || !this._soundData) {
-      return;
-    }
-
-    this._soundData
-      .getSoundBufferContext()
-      .getAudioManager()
-      ._audios.resize(this._soundFileList.getSize());
-    this._soundData
-      .getSoundBufferContext()
-      .getBuffers()
-      .resize(this._soundFileList.getSize());
-
-    for (let index = 0; index < this._soundFileList.getSize(); index++) {
-      const filePath = this._modelHomeDir + this._soundFileList.at(index).s;
-      this._soundData.loadFile(filePath, index, this, this._motionSync);
-    }
-  }
-
-  /**
-   * 現在の音声のコンテキストが待機状態かどうかを判定する
-   *
-   * @returns 現在の音声のコンテキストが待機状態か？
-   */
-  public isSuspendedCurrentSoundContext(): boolean {
-    return this._soundData.isSuspendedContextByIndex(this._soundIndex);
-  }
-
-  /**
-   * 現在の音声を再生する
-   */
-  public playCurrentSound(): void {
-    if (
-      !this._soundData ||
-      !this._soundFileList ||
-      !(this._soundIndex < this._soundFileList.getSize()) ||
-      !this._motionSync
-    ) {
-      return;
-    }
-
-    this._motionSync.setSoundBuffer(
-      0,
-      this._soundData.getSoundBufferContext().getBuffers().at(this._soundIndex),
-      0
-    );
-
-    this._soundData.playByIndex(this._soundIndex);
-  }
-
-  /**
-   * 現在の音声を再生停止する
-   */
-  public stopCurrentSound(): void {
-    if (
-      !this._soundData ||
-      !this._soundFileList ||
-      !(this._soundIndex < this._soundFileList.getSize())
-    ) {
-      return;
-    }
-
-    this._soundData.stopByIndex(this._soundIndex);
-  }
-
-  /**
-   * モーションシンクの更新
-   */
-  public updateMotionSync() {
-    const soundBuffer = this._soundData
-      .getSoundBufferContext()
-      .getBuffers()
-      .at(this._soundIndex);
-    const audioInfo = this._soundData
-      .getSoundBufferContext()
-      .getAudioManager()
-      ._audios.at(this._soundIndex);
-
-    // 現在フレームの時間を秒単位で取得
-    // NOTE: ブラウザやブラウザ側の設定により、performance.now() の精度が異なる可能性に注意
-    const currentAudioTime = performance.now() / 1000.0; // convert to seconds.
-
-    // 再生時間の更新
-    // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う。
-    if (currentAudioTime < audioInfo.audioContextPreviousTime) {
-      audioInfo.audioContextPreviousTime = currentAudioTime;
-    }
-
-    // 前回フレームの時間から経過時間を計算
-    const audioDeltaTime =
-      currentAudioTime - audioInfo.audioContextPreviousTime;
-
-    // 経過時間を更新
-    audioInfo.audioElapsedTime += audioDeltaTime;
-
-    // 再生時間をサンプル数に変換する。
-    // サンプル数 = 再生時間 * サンプリングレート
-    // NOTE: サンプリングレートは、音声ファイルに設定された値を使用する。音声コンテキストのサンプリングレートを使用すると、正しくモーションシンクが再生されない場合がある。
-    const currentSamplePosition = Math.floor(
-      audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate()
-    );
-
-    // 処理済みの再生位置が音声のサンプル数を超えていたら、処理を行わない。
-    if (audioInfo.previousSamplePosition <= audioInfo.audioSamples.length) {
-      // 前回の再生位置を起点に、音声サンプルを再生済みの数だけ取得する。
-      const currentAudioSamples = audioInfo.audioSamples.slice(
-        audioInfo.previousSamplePosition,
-        currentSamplePosition
-      );
-
-      // サウンドバッファに再生済みのサンプルを追加する。
-      for (let index = 0; index < currentAudioSamples.length; index++) {
-        soundBuffer.pushBack(currentAudioSamples[index]);
-      }
-
-      // サウンドバッファの設定
-      this._motionSync.setSoundBuffer(0, soundBuffer, 0);
-
-      // モーションシンクの更新
-      this._motionSync.updateParameters(this._model, audioDeltaTime);
-
-      // 解析しただけデータを削除する。
-      const lastTotalProcessedCount =
-        this._motionSync.getLastTotalProcessedCount(0);
-      this._soundData.removeDataArrayByIndex(
-        this._soundIndex,
-        lastTotalProcessedCount
-      );
-
-      // 再生済みのサンプル数と再生時間を現在のものへ更新する。
-      audioInfo.audioContextPreviousTime = currentAudioTime;
-      audioInfo.previousSamplePosition = currentSamplePosition;
-    }
-  }
-
-  
   /**
    * モーションデータをグループ名から一括でロードする。
    * モーションデータの名前は内部でModelSettingから取得する。

@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "paths": {
         "@/*": ["src/*"],
-        "@CubismWebFramework/*": ["CubismWebFramework/src/*"]
+        "@CubismWebFramework/*": ["CubismWebFramework/src/*"],
+        "@MotionSyncFramework/*": ["CubismWebMotionSyncComponents/Framework/src/*"],
     }
   },
   "include": [
