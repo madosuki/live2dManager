@@ -1,5 +1,5 @@
 [submodule "CubismWebFramework"]
-	path = CubismSdkForWeb
+	path = CubismWebFramework
 	url = https://github.com/madosuki/CubismWebFramework.git
 [submodule "CubismWebMotionSyncComponents"]
 	path = CubismWebMotionSyncComponents
