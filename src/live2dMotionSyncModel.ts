@@ -18,18 +18,16 @@ import {
 import { CubismIdHandle } from "@framework/id/cubismid";
 import { CubismDefaultParameterId } from "@framework/cubismdefaultparameterid";
 import { csmMap, csmPair } from "@framework/type/csmmap";
-import { ACubismMotion, FinishedMotionCallback } from "@framework/motion/acubismmotion";
+import { ACubismMotion } from "@framework/motion/acubismmotion";
 import { csmRect } from "@framework/type/csmrectf";
 import { CubismEyeBlink } from "@framework/effect/cubismeyeblink";
 import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
-import { CubismMotion } from "@framework/motion/cubismmotion";
-import { CubismModelMotionSyncSettingJson } from "@MotionSyncFramework/cubismmodelmotionsyncsettingjson";
-import {
-  CubismMotionQueueEntryHandle,
-  InvalidMotionQueueEntryHandleValue
-} from "@framework/motion/cubismmotionqueuemanager";
+import { CubismMotionSync } from "@motionsyncframework/live2dcubismmotionsync";
+import { CubismModelMotionSyncSettingJson } from "@motionsyncframework/cubismmodelmotionsyncsettingjson";
 import { LAppPal } from "./lapppal";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
+import { LAppAudioManager } from "./lappaudiomanager";
+import * as LAppMotionSyncDefine from "./lappmotionsyncdefine";
 import * as LAppDefine from "./lappdefine";
 import { Live2dViewer } from "./live2dViewer";
 
@@ -52,7 +50,7 @@ class TextureInfo {
   }
 }
 
-export class Live2dModel extends CubismUserModel {
+export class Live2dMotionSyncModel extends CubismUserModel {
   _live2dViewer: Live2dViewer;
   _modelSetting: CubismModelMotionSyncSettingJson | null;
   _modelHomeDir: string;
@@ -89,11 +87,13 @@ export class Live2dModel extends CubismUserModel {
   _wavFileHandler: LAppWavFileHandler;
   lipSyncWeight: number;
 
-  _soundFileList:csmVector<csmString>;
-  _soundIndex: number;
-  _lastSampleCount: number;
-  
   private manualClosedEye: boolean;
+  
+  _soundFileList: csmVector<csmString>;
+  _soundIndex: number;
+  _soundData: LAppAudioManager;
+  _motionSync: CubismMotionSync;
+  _lastSampleCount: number;
 
   public startLipSync(bytes: ArrayBuffer): void {
     this._wavFileHandler.startWithBytes(bytes);
@@ -338,7 +338,7 @@ export class Live2dModel extends CubismUserModel {
   *
   * @param setting ICubismModelSettingのインスタンス
   */
-  private async setupModel(setting: CubismModelMotionSyncSettingJson, isPreloadMotion: boolean): Promise<void> {
+  private async setupModel(setting: CubismModelMotionSyncSettingJson): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 
@@ -456,8 +456,24 @@ export class Live2dModel extends CubismUserModel {
     const layout = new csmMap<string, number>();
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
+    
+    const motionSyncFileName = this._modelSetting.getMotionSyncFileName();
+    if (motionSyncFileName != undefined || motionSyncFileName !== "NullValue") {
+      const data = await this.readFileFunction(`${this._modelHomeDir}${motionSyncFileName}`);
+      this.loadMotionSync(data, data.byteLength);
+      this._soundFileList = this._modelSetting.getMotionSyncSoundFileList();
+      this._soundIndex = 0;
+    }
+    
+    this.createRenderer();
+    this.getRenderer().setIsPremultipliedAlpha(true);
+    await this.loadTextures();
+    if (this._live2dViewer.gl) {
+      this.getRenderer().startUp(this._live2dViewer.gl);
+    }
 
-    this._model.saveParameters();
+    // this._model.saveParameters();
+    /*
     this._allMotionCount = 0;
     this._motionCount = 0;
     const motionGroupCount: number = this._modelSetting.getMotionGroupCount();
@@ -480,16 +496,17 @@ export class Live2dModel extends CubismUserModel {
         this.getRenderer().startUp(this._live2dViewer.gl);
       }
     }
+    */
   }
 
-  public async loadAssets(isPreloadMotion?: boolean): Promise<void> {
+  public async loadAssets(): Promise<void> {
     const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
     const readResult = await this.readFileFunction(filePath);
     const setting = new CubismModelMotionSyncSettingJson(
       readResult,
       readResult.byteLength
     );
-    await this.setupModel(setting, isPreloadMotion);
+    await this.setupModel(setting);
   }
 
   public draw(
@@ -519,6 +536,7 @@ export class Live2dModel extends CubismUserModel {
    * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
    * @return 開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するisFinished()の引数で使用する。開始できない時は[-1]
    */
+  /*
   public async startMotion(
     group: string,
     no: number,
@@ -578,6 +596,7 @@ export class Live2dModel extends CubismUserModel {
       priority
     );
   }
+  */
 
   public setLipSyncWeight(weight: number): void {
     this.lipSyncWeight = weight;
@@ -589,6 +608,7 @@ export class Live2dModel extends CubismUserModel {
    *
    * @param group モーションデータのグループ名
    */
+  /*
   public async preLoadMotionGroup(group: string): Promise<void> {
     for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
       const motionFileName = this._modelSetting.getMotionFileName(group, i);
@@ -653,6 +673,7 @@ export class Live2dModel extends CubismUserModel {
       }
     }
   }
+  */
   
   /**
    * 引数で指定した表情モーションをセットする
@@ -696,6 +717,165 @@ export class Live2dModel extends CubismUserModel {
     
     return result;
   }
+  
+/**
+ * モーションシンクデータの読み込み
+ * @param buffer  physics3.jsonが読み込まれているバッファ
+ * @param size    バッファのサイズ
+ */
+  private loadMotionSync(buffer: ArrayBuffer, size: number) {
+    if (buffer == null || size == 0) {
+      // CubismLogError('Failed to loadMotionSync().');
+      return;
+    }
+
+    this._motionSync = CubismMotionSync.create(
+      this._model,
+      buffer,
+      size,
+      LAppMotionSyncDefine.SamplesPerSec
+    );
+  }  
+  
+  /**
+   * 音声ファイルリストから読み込みを行う。
+   */
+  public loadFromSoundList(): void {
+    if (!this._soundFileList || !this._soundData) {
+      return;
+    }
+
+    this._soundData
+      .getSoundBufferContext()
+      .getAudioManager()
+      ._audios.resize(this._soundFileList.getSize());
+    this._soundData
+      .getSoundBufferContext()
+      .getBuffers()
+      .resize(this._soundFileList.getSize());
+
+    for (let index = 0; index < this._soundFileList.getSize(); index++) {
+      const filePath = this._modelHomeDir + this._soundFileList.at(index).s;
+      this._soundData.loadFile(filePath, index, this, this._motionSync);
+    }
+  }
+
+  /**
+   * 現在の音声のコンテキストが待機状態かどうかを判定する
+   *
+   * @returns 現在の音声のコンテキストが待機状態か？
+   */
+  public isSuspendedCurrentSoundContext(): boolean {
+    return this._soundData.isSuspendedContextByIndex(this._soundIndex);
+  }
+
+  /**
+   * 現在の音声を再生する
+   */
+  public playCurrentSound(): void {
+    if (
+      !this._soundData ||
+      !this._soundFileList ||
+      !(this._soundIndex < this._soundFileList.getSize()) ||
+      !this._motionSync
+    ) {
+      return;
+    }
+
+    this._motionSync.setSoundBuffer(
+      0,
+      this._soundData.getSoundBufferContext().getBuffers().at(this._soundIndex),
+      0
+    );
+
+    this._soundData.playByIndex(this._soundIndex);
+  }
+
+  /**
+   * 現在の音声を再生停止する
+   */
+  public stopCurrentSound(): void {
+    if (
+      !this._soundData ||
+      !this._soundFileList ||
+      !(this._soundIndex < this._soundFileList.getSize())
+    ) {
+      return;
+    }
+
+    this._soundData.stopByIndex(this._soundIndex);
+  }
+  
+/**
+   * モーションシンクの更新
+   */
+public updateMotionSync() {
+  const soundBuffer = this._soundData
+    .getSoundBufferContext()
+    .getBuffers()
+    .at(this._soundIndex);
+  const audioInfo = this._soundData
+    .getSoundBufferContext()
+    .getAudioManager()
+    ._audios.at(this._soundIndex);
+
+  // 現在フレームの時間を秒単位で取得
+  // NOTE: ブラウザやブラウザ側の設定により、performance.now() の精度が異なる可能性に注意
+  const currentAudioTime = performance.now() / 1000.0; // convert to seconds.
+
+  // 再生時間の更新
+  // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う。
+  if (currentAudioTime < audioInfo.audioContextPreviousTime) {
+    audioInfo.audioContextPreviousTime = currentAudioTime;
+  }
+
+  // 前回フレームの時間から経過時間を計算
+  const audioDeltaTime =
+    currentAudioTime - audioInfo.audioContextPreviousTime;
+
+  // 経過時間を更新
+  audioInfo.audioElapsedTime += audioDeltaTime;
+
+  // 再生時間をサンプル数に変換する。
+  // サンプル数 = 再生時間 * サンプリングレート
+  // NOTE: サンプリングレートは、音声ファイルに設定された値を使用する。音声コンテキストのサンプリングレートを使用すると、正しくモーションシンクが再生されない場合がある。
+  const currentSamplePosition = Math.floor(
+    audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate()
+  );
+
+  // 処理済みの再生位置が音声のサンプル数を超えていたら、処理を行わない。
+  if (audioInfo.previousSamplePosition <= audioInfo.audioSamples.length) {
+    // 前回の再生位置を起点に、音声サンプルを再生済みの数だけ取得する。
+    const currentAudioSamples = audioInfo.audioSamples.slice(
+      audioInfo.previousSamplePosition,
+      currentSamplePosition
+    );
+
+    // サウンドバッファに再生済みのサンプルを追加する。
+    for (let index = 0; index < currentAudioSamples.length; index++) {
+      soundBuffer.pushBack(currentAudioSamples[index]);
+    }
+
+    // サウンドバッファの設定
+    this._motionSync.setSoundBuffer(0, soundBuffer, 0);
+
+    // モーションシンクの更新
+    this._motionSync.updateParameters(this._model, audioDeltaTime);
+
+    // 解析しただけデータを削除する。
+    const lastTotalProcessedCount =
+      this._motionSync.getLastTotalProcessedCount(0);
+    this._soundData.removeDataArrayByIndex(
+      this._soundIndex,
+      lastTotalProcessedCount
+    );
+
+    // 再生済みのサンプル数と再生時間を現在のものへ更新する。
+    audioInfo.audioContextPreviousTime = currentAudioTime;
+    audioInfo.previousSamplePosition = currentSamplePosition;
+  }
+}
+
   
   public reloadRenderer(): void {
     this.deleteRenderer();
