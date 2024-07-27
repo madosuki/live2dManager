@@ -11,20 +11,19 @@ import {
 import { csmVector } from "@framework/type/csmvector";
 import { csmString } from "@framework/type/csmstring";
 import { CubismUserModel } from "@framework/model/cubismusermodel";
-import { ICubismModelSetting } from "@framework/icubismmodelsetting";
 import {
   BreathParameterData,
   CubismBreath,
 } from "@framework/effect/cubismbreath";
 import { CubismIdHandle } from "@framework/id/cubismid";
 import { CubismDefaultParameterId } from "@framework/cubismdefaultparameterid";
-import { CubismModelSettingJson } from "@framework/cubismmodelsettingjson";
 import { csmMap, csmPair } from "@framework/type/csmmap";
 import { ACubismMotion, FinishedMotionCallback } from "@framework/motion/acubismmotion";
 import { csmRect } from "@framework/type/csmrectf";
 import { CubismEyeBlink } from "@framework/effect/cubismeyeblink";
 import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
 import { CubismMotion } from "@framework/motion/cubismmotion";
+import { CubismModelMotionSyncSettingJson } from "@MotionSyncFramework/cubismmodelmotionsyncsettingjson";
 import {
   CubismMotionQueueEntryHandle,
   InvalidMotionQueueEntryHandleValue
@@ -55,7 +54,7 @@ class TextureInfo {
 
 export class Live2dModel extends CubismUserModel {
   _live2dViewer: Live2dViewer;
-  _modelSetting: ICubismModelSetting | null;
+  _modelSetting: CubismModelMotionSyncSettingJson | null;
   _modelHomeDir: string;
   _modelJsonFileName: string;
   _userTimeSeconds: number;
@@ -339,7 +338,7 @@ export class Live2dModel extends CubismUserModel {
   *
   * @param setting ICubismModelSettingのインスタンス
   */
-  private async setupModel(setting: ICubismModelSetting, isPreloadMotion: boolean): Promise<void> {
+  private async setupModel(setting: CubismModelMotionSyncSettingJson, isPreloadMotion: boolean): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 
@@ -486,7 +485,7 @@ export class Live2dModel extends CubismUserModel {
   public async loadAssets(isPreloadMotion?: boolean): Promise<void> {
     const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
     const readResult = await this.readFileFunction(filePath);
-    const setting = new CubismModelSettingJson(
+    const setting = new CubismModelMotionSyncSettingJson(
       readResult,
       readResult.byteLength
     );

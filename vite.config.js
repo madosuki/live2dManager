@@ -9,7 +9,7 @@ export default defineConfig (() => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),
-        "@CubismWebFramework": path.resolve(__dirname, "CubismWebFramework/src"),
+        "@framework": path.resolve(__dirname, "CubismSdkForWeb/src"),
         "@MotionSyncFramework": path.resolve(__dirname, "CubismWebMotionSyncComponents/Framework/src")
       }
     },

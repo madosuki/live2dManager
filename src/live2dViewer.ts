@@ -8,14 +8,14 @@
 import {
   CubismFramework,
   Option,
-} from "../CubismWebFramework/src/live2dcubismframework";
-import { CubismMatrix44 } from "../CubismWebFramework/src/math/cubismmatrix44";
-import { CubismViewMatrix } from "../CubismWebFramework/src/math/cubismviewmatrix";
+} from "@framework/live2dcubismframework";
+import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
+import { CubismViewMatrix } from "@framework/math/cubismviewmatrix";
 import { TouchManager } from "./touchmanager";
 import { LAppPal } from "./lapppal";
 
 import { Live2dModel } from "./live2dModel";
-import { csmMap, csmPair } from "@CubismWebFramework/type/csmmap";
+import { csmMap, csmPair } from "@framework/type/csmmap";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);

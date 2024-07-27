@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { LogLevel } from '../CubismWebFramework/src/live2dcubismframework';
+import { LogLevel } from '@framework/live2dcubismframework';
 
 /**
  * Sample Appで使用する定数
