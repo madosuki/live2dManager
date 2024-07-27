@@ -972,6 +972,7 @@ public updateMotionSync() {
 
     this._soundFileList = new csmVector<csmString>;
     this._soundIndex = 0;
+    this._soundData = new LAppAudioManager();
     this._lastSampleCount = 0;
 
   }
