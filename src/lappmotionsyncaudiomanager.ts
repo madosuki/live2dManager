@@ -8,8 +8,8 @@
 import { csmVector, iterator } from '@framework/type/csmvector';
 import * as LAppMotionSyncDefine from './lappmotionsyncdefine';
 import { CubismMotionSync } from '@motionsyncframework/live2dcubismmotionsync';
-import { LAppMotionSyncModel } from './lappmotionsyncmodel';
-import { LAppWavFileHandler } from '@cubismsdksamples/lappwavfilehandler';
+import { Live2dMotionSyncModel } from './live2dMotionSyncModel';
+import { LAppWavFileHandler } from './lappwavfilehandler';
 import { CubismLogError } from '@framework/utils/cubismdebug';
 
 /**
@@ -65,13 +65,13 @@ export class LAppMotionSyncAudioManager {
   public createAudioFromFile(
     fileName: string,
     index: number,
-    model: LAppMotionSyncModel,
+    model: Live2dMotionSyncModel,
     motionSync: CubismMotionSync,
     audioContext: AudioContext,
     callback: (
       audioInfo: AudioInfo,
       callbackIndex: number,
-      model: LAppMotionSyncModel,
+      model: Live2dMotionSyncModel,
       motionSync: CubismMotionSync
     ) => void
   ): void {

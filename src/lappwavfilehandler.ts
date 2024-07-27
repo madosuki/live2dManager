@@ -256,6 +256,22 @@ export class LAppWavFileHandler {
     return pcm32 / 2147483647; //Number.MAX_VALUE;
   }
 
+  /**
+   * 指定したチャンネルから音声サンプルの配列を取得する
+   *
+   * @param usechannel 利用するチャンネル
+   * @returns 指定したチャンネルの音声サンプルの配列
+   */
+  public getPcmDataChannel(usechannel: number): Float32Array {
+    // 指定したチャンネル数がデータ用配列の長さより多いならnullを返す。
+    if (!this._pcmData || !(usechannel < this._pcmData.length)) {
+      return null;
+    }
+
+    // _pcmDataから新規に指定したチャンネルのFloat32Arrayを作成する。
+    return Float32Array.from(this._pcmData[usechannel]);
+  }
+
   public releasePcmData(): void {
     if (this._pcmData == null) {
       return;
