@@ -226,6 +226,10 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     if (this._pose != undefined) {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
+    
+    if (this._soundData.isPlayByIndex(this._soundIndex)) {
+      this.updateMotionSync();
+    }
 
     this._model.update();
   }
