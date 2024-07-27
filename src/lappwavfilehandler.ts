@@ -271,6 +271,19 @@ export class LAppWavFileHandler {
     // _pcmDataから新規に指定したチャンネルのFloat32Arrayを作成する。
     return Float32Array.from(this._pcmData[usechannel]);
   }
+  
+  /**
+   * 音声のサンプリング周波数を取得する。
+   *
+   * @returns 音声のサンプリング周波数
+   */
+  public getWavSamplingRate(): number {
+    if (!this._wavFileInfo || this._wavFileInfo._samplingRate < 1) {
+      return null;
+    }
+
+    return this._wavFileInfo._samplingRate;
+  }
 
   public releasePcmData(): void {
     if (this._pcmData == null) {
