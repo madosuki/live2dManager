@@ -16,6 +16,7 @@ import { LAppPal } from "./lapppal";
 
 import { Live2dModel } from "./live2dModel";
 import { csmMap, csmPair } from "@framework/type/csmmap";
+import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);
@@ -25,7 +26,7 @@ export class Live2dViewer {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
-  _models: csmMap<string, Live2dModel>;
+  _models: csmMap<string, Live2dModel | Live2dMotionSyncModel>;
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
@@ -100,7 +101,7 @@ export class Live2dViewer {
     return true;
   }
   
-  public getModelFromKey(key: string): Live2dModel | undefined {
+  public getModelFromKey(key: string): Live2dModel | Live2dMotionSyncModel | undefined {
     const result = this._models._keyValues.find((v) => v.first === key);
     if (result != undefined) {
       return result.second; 
@@ -110,7 +111,7 @@ export class Live2dViewer {
   }
 
   public updateCoordinate(x: number, y: number): void {
-    const model: Live2dModel | undefined = this.getModelFromKey(this.targetCurrentModelKey);
+    const model: Live2dModel | Live2dMotionSyncModel | undefined = this.getModelFromKey(this.targetCurrentModelKey);
     if (model != undefined) {
       model.setDragging(x, y);
     }
@@ -244,11 +245,11 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    const keys: csmPair<string, Live2dModel>[] = this._models._keyValues;
+    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
       if (i != undefined && i.second != undefined) {
-        const model: Live2dModel = i.second;
+        const model: Live2dModel | Live2dMotionSyncModel = i.second;
         model.releaseTextures();
         model.releaseExpressions();
         model.releaseMotions();
@@ -312,7 +313,7 @@ export class Live2dViewer {
 
       const projection = new CubismMatrix44();
 
-      const model: Live2dModel = this._models.getValue(this.targetCurrentModelKey);
+      const model: Live2dModel | Live2dMotionSyncModel = this._models.getValue(this.targetCurrentModelKey);
       const draw = () => {
       if (model.getModel()) {
         if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
