@@ -3,4 +3,4 @@
 	url = https://github.com/madosuki/CubismWebFramework.git
 [submodule "CubismWebMotionSyncComponents"]
 	path = CubismWebMotionSyncComponents
-	url = https://github.com/Live2D/CubismWebMotionSyncComponents.git
+	url = https://github.com/madosuki/CubismWebMotionSyncComponents.git
