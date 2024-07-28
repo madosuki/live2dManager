@@ -7,28 +7,28 @@
 
 import {
   CubismFramework,
-} from "CubismSdkForWeb/src/live2dcubismframework";
-import { csmVector } from "CubismSdkForWeb/src/type/csmvector";
-import { csmString } from "CubismSdkForWeb/src/type/csmstring";
-import { CubismUserModel } from "CubismSdkForWeb/src/model/cubismusermodel";
-import { ICubismModelSetting } from "CubismSdkForWeb/src/icubismmodelsetting";
+} from "../CubismSdkForWeb/src/live2dcubismframework";
+import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
+import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
+import { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel";
+import { ICubismModelSetting } from "../CubismSdkForWeb/src/icubismmodelsetting";
 import {
   BreathParameterData,
   CubismBreath,
-} from "CubismSdkForWeb/src/effect/cubismbreath";
-import { CubismIdHandle } from "CubismSdkForWeb/src/id/cubismid";
-import { CubismDefaultParameterId } from "CubismSdkForWeb/src/cubismdefaultparameterid";
-import { CubismModelSettingJson } from "CubismSdkForWeb/src/cubismmodelsettingjson";
-import { csmMap, csmPair } from "CubismSdkForWeb/src/type/csmmap";
-import { ACubismMotion, FinishedMotionCallback } from "CubismSdkForWeb/src/motion/acubismmotion";
-import { csmRect } from "CubismSdkForWeb/src/type/csmrectf";
-import { CubismEyeBlink } from "CubismSdkForWeb/src/effect/cubismeyeblink";
-import { CubismMatrix44 } from "CubismSdkForWeb/src/math/cubismmatrix44";
-import { CubismMotion } from "CubismSdkForWeb/src/motion/cubismmotion";
+} from "../CubismSdkForWeb/src/effect/cubismbreath";
+import { CubismIdHandle } from "../CubismSdkForWeb/src/id/cubismid";
+import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
+import { CubismModelSettingJson } from "../CubismSdkForWeb/src/cubismmodelsettingjson";
+import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+import { ACubismMotion, FinishedMotionCallback } from "../CubismSdkForWeb/src/motion/acubismmotion";
+import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";
+import { CubismEyeBlink } from "../CubismSdkForWeb/src/effect/cubismeyeblink";
+import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
+import { CubismMotion } from "../CubismSdkForWeb/src/motion/cubismmotion";
 import {
   CubismMotionQueueEntryHandle,
   InvalidMotionQueueEntryHandleValue
-} from "CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
+} from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
 import { LAppPal } from "./lapppal";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
 import * as LAppDefine from "./lappdefine";

@@ -5,12 +5,12 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { csmVector, iterator } from "CubismSdkForWeb/src/type/csmvector";
+import { csmVector, iterator } from "../CubismSdkForWeb/src/type/csmvector";
 import * as LAppMotionSyncDefine from './lappmotionsyncdefine';
-import { CubismMotionSync } from "CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
+import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import { Live2dMotionSyncModel } from './live2dMotionSyncModel';
 import { LAppWavFileHandler } from './lappwavfilehandler';
-import { CubismLogError } from "CubismSdkForWeb/src/utils/cubismdebug";
+import { CubismLogError } from "../CubismSdkForWeb/src/utils/cubismdebug";
 
 /**
  * WorkletProcessorモジュール用の型定義
