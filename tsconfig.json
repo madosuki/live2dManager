@@ -16,7 +16,6 @@
     "paths": {
         "@/*": ["src/*"],
         "@framework/*": ["CubismSdkForWeb/src/*"],
-        "@MotionSyncFramework/*": ["CubismWebMotionSyncComponents/Framework/src/*"],
     }
   },
   "include": [

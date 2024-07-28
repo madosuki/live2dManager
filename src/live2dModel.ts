@@ -7,28 +7,28 @@
 
 import {
   CubismFramework,
-} from "@framework/live2dcubismframework";
-import { csmVector } from "@framework/type/csmvector";
-import { csmString } from "@framework/type/csmstring";
-import { CubismUserModel } from "@framework/model/cubismusermodel";
-import { ICubismModelSetting } from "@framework/icubismmodelsetting";
+} from "../CubismSdkForWeb/src/live2dcubismframework";
+import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
+import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
+import { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel";
+import { ICubismModelSetting } from "../CubismSdkForWeb/src/icubismmodelsetting";
 import {
   BreathParameterData,
   CubismBreath,
-} from "@framework/effect/cubismbreath";
-import { CubismIdHandle } from "@framework/id/cubismid";
-import { CubismDefaultParameterId } from "@framework/cubismdefaultparameterid";
-import { CubismModelSettingJson } from "@framework/cubismmodelsettingjson";
-import { csmMap, csmPair } from "@framework/type/csmmap";
-import { ACubismMotion, FinishedMotionCallback } from "@framework/motion/acubismmotion";
-import { csmRect } from "@framework/type/csmrectf";
-import { CubismEyeBlink } from "@framework/effect/cubismeyeblink";
-import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
-import { CubismMotion } from "@framework/motion/cubismmotion";
+} from "../CubismSdkForWeb/src/effect/cubismbreath";
+import { CubismIdHandle } from "../CubismSdkForWeb/src/id/cubismid";
+import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
+import { CubismModelSettingJson } from "../CubismSdkForWeb/src/cubismmodelsettingjson";
+import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+import { ACubismMotion, FinishedMotionCallback } from "../CubismSdkForWeb/src/motion/acubismmotion";
+import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";
+import { CubismEyeBlink } from "../CubismSdkForWeb/src/effect/cubismeyeblink";
+import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
+import { CubismMotion } from "../CubismSdkForWeb/src/motion/cubismmotion";
 import {
   CubismMotionQueueEntryHandle,
   InvalidMotionQueueEntryHandleValue
-} from "@framework/motion/cubismmotionqueuemanager";
+} from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
 import { LAppPal } from "./lapppal";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
 import * as LAppDefine from "./lappdefine";

@@ -1,7 +1,10 @@
 import path from "path";
 import { defineConfig } from "vite";
 import typescript from "@rollup/plugin-typescript";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 export default defineConfig (() => {
   return {
     root: path.resolve(__dirname, "src"),
