@@ -10,7 +10,7 @@ import * as LAppMotionSyncDefine from './lappmotionsyncdefine';
 import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import { Live2dMotionSyncModel } from './live2dMotionSyncModel';
 import { LAppWavFileHandler } from './lappwavfilehandler';
-import { CubismLogError } from "../CubismSdkForWeb/src/utils/cubismdebug";
+// import { CubismLogError } from "../CubismSdkForWeb/src/utils/cubismdebug";
 
 /**
  * WorkletProcessorモジュール用の型定義
@@ -143,7 +143,7 @@ export class LAppMotionSyncAudioManager {
       // Wavファイルの読み込み
       wavhandler.loadWavFile(fileName).then(result => {
         if (!result) {
-          CubismLogError("wav file can't load. File name: " + fileName + '.');
+          // CubismLogError("wav file can't load. File name: " + fileName + '.');
           return;
         }
         audioInfo.wavhandler = wavhandler;
