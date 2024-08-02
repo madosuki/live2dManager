@@ -9,6 +9,7 @@ import {
   CubismFramework,
   Option,
 } from "../CubismSdkForWeb/src/live2dcubismframework";
+import { CubismMotionSync, MotionSyncOption } from "@motionsyncframework/live2dcubismmotionsync";
 import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
 import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
 import { TouchManager } from "./touchmanager";
@@ -30,6 +31,7 @@ export class Live2dViewer {
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
+  _cubismMotionSyncOptions: MotionSyncOption;
   isSetupComplete: boolean;
   isDown: boolean;
   _deviceToScreen: CubismMatrix44;
@@ -49,6 +51,7 @@ export class Live2dViewer {
 
     this._viewMatrix = new CubismViewMatrix();
     this._cubismOptions = new Option();
+    this._cubismMotionSyncOptions = new MotionSyncOption();
     this._deviceToScreen = new CubismMatrix44();
     this.isSetupComplete = false;
     this.isDown = false;
@@ -179,6 +182,10 @@ export class Live2dViewer {
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
     CubismFramework.initialize(allocationMemorySize);
+    
+    this._cubismMotionSyncOptions.logFunction = outLog;
+    CubismMotionSync.startUp(this._cubismMotionSyncOptions);
+    CubismMotionSync.initialize();
     this.updateTime();
     this.initializeSprite();
   }
