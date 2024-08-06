@@ -54,6 +54,124 @@ export class LAppMotionSyncAudioManager {
     }
     this._audios = null;
   }
+  
+  public async createAudioFromBytes(
+    bytes: Uint8Array,
+    index: number,
+    /*
+    model: Live2dMotionSyncModel,
+    motionSync: CubismMotionSync,
+    audioContext: AudioContext,
+    callback: (
+      audioInfo: AudioInfo,
+      callbackIndex: number,
+      model: Live2dMotionSyncModel,
+      motionSync: CubismMotionSync
+    ) => void
+    */
+  ): Promise<void> {
+    /*
+    if (this._audios && this._audios.at(index) != null) {
+      // search loaded audio already
+      for (
+        let ite: iterator<AudioInfo> = this._audios.begin();
+        ite.notEqual(this._audios.end());
+        ite.preIncrement()
+      ) {
+        if (
+          ite.ptr().filePath == fileName &&
+          ite.ptr().audioContext == audioContext &&
+          audioContext != null
+        ) {
+          // 2回目以降はキャッシュが使用される(待ち時間なし)
+          // WebKitでは同じImageのonloadを再度呼ぶには再インスタンスが必要
+          // 詳細：https://stackoverflow.com/a/5024181
+          ite.ptr().audio = new Audio();
+          ite
+            .ptr()
+            .audio.addEventListener(
+              'load',
+              (): void => callback(ite.ptr(), index, model, motionSync),
+              {
+                passive: true
+              }
+            );
+          ite.ptr().audio.src = fileName;
+          ite.ptr().audioContext = audioContext;
+          return;
+        }
+      }
+    }
+    */
+
+    // 音声コンテキストの作成
+    const newAudioContext = new AudioContext({
+      sampleRate: LAppMotionSyncDefine.SamplesPerSec
+    });
+
+    newAudioContext.suspend();
+
+    // 埋め込み音声要素を作成
+    const blob = new Blob([bytes]);
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+
+    // 埋め込み音声要素の初期設定
+    audio.preload = 'auto';
+
+    // 音源ノードの作成
+    const source = newAudioContext.createMediaElementSource(audio);
+
+    // AudioWorklet用のモジュールを追加
+    // 各ノードを接続する
+    source.connect(newAudioContext.destination);
+
+    const audioInfo: AudioInfo = new AudioInfo();
+    if (audioInfo != null && this._audios != null) {
+      audioInfo.filePath = "from bytes";
+      audioInfo.audioContext = newAudioContext;
+      audioInfo.audio = audio;
+      audioInfo.source = source;
+      audioInfo.isPlay = false;
+      audioInfo.previousSamplePosition = 0;
+      audioInfo.audioElapsedTime = 0;
+
+      // WavFileHandlerの作成
+      const wavhandler = new LAppWavFileHandler();
+      const isSuccess = await wavhandler.loadWav(bytes);
+      if (!isSuccess) return;
+
+      audioInfo.wavhandler = wavhandler;
+      audioInfo.audioSamples = audioInfo.wavhandler.getPcmDataChannel(0);
+      this._audios.set(index, audioInfo);
+      // callback(audioInfo, index, model, motionSync);
+
+      // Wavファイルの読み込み
+      /*
+      wavhandler.loadWavFile(fileName).then(result => {
+        if (!result) {
+          // CubismLogError("wav file can't load. File name: " + fileName + '.');
+          return;
+        }
+        audioInfo.wavhandler = wavhandler;
+        audioInfo.audioSamples = audioInfo.wavhandler.getPcmDataChannel(0);
+        this._audios.set(index, audioInfo);
+
+        callback(audioInfo, index, model, motionSync);
+      });
+      */
+    }
+    // audio.src = fileName;
+
+    // 再生終了時に再生されていないとマークする。
+    audio.onended = function () {
+      audioInfo.isPlay = false;
+
+      // 再生終了時に再生時間をリセットする。
+      audioInfo.previousSamplePosition = 0;
+      audioInfo.audioElapsedTime = 0;
+    };
+  }
 
   /**
    * 音声読み込み
