@@ -94,6 +94,7 @@ export class Live2dMotionSyncModel extends CubismUserModel {
   _soundData: LAppAudioManager;
   _motionSync: CubismMotionSync;
   _lastSampleCount: number;
+  _isStartMotinoSync: boolean;
 
   public startLipSync(bytes: ArrayBuffer): void {
     this._wavFileHandler.startWithBytes(bytes);
@@ -211,7 +212,7 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     }
 
     // リップシンクの設定
-    if (this._lipsync) {
+    if (this._lipsync && !this._isStartMotinoSync) {
       let value = 0.0;
       this._wavFileHandler.update(deltaTimeSeconds);
       value = this._wavFileHandler.getRms();
@@ -227,7 +228,7 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
     
-    if (this._soundData.isPlayByIndex(this._soundIndex)) {
+    if (this._isStartMotinoSync) {
       this.updateMotionSync();
     }
 
@@ -794,6 +795,14 @@ export class Live2dMotionSyncModel extends CubismUserModel {
 
     this._soundData.playByIndex(this._soundIndex);
   }
+  
+  public startMotionSync(): void {
+    if(!this._motionSync) return;
+    
+    const buffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
+    this._motionSync.setSoundBuffer(0, buffer, 0);
+    this._isStartMotinoSync = true;
+  }
 
   /**
    * 現在の音声を再生停止する
@@ -808,6 +817,12 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     }
 
     this._soundData.stopByIndex(this._soundIndex);
+  }
+  
+  public stopMotionSync(): void {
+    if (this._soundData != null) return;
+    this._isStartMotinoSync = false;
+    this._soundData.stopForSinglePlay();
   }
   
 /**
@@ -974,6 +989,7 @@ public updateMotionSync() {
     this._soundIndex = 0;
     this._soundData = new LAppAudioManager();
     this._lastSampleCount = 0;
+    this._isStartMotinoSync = false;
 
   }
 }

@@ -142,6 +142,12 @@ export class LAppAudioManager {
     const buffer = this._soundBufferContext.getBuffers().at(index);
     buffer.clear();
   }
+  
+  public stopForSinglePlay(): void {
+    const buffer = this._soundBufferContext.getBufferForSinglePlay();
+    if (buffer != null) return;
+    buffer.clear();
+  }
 
   /**
    * インデックスを使って音声が再生中か判定する。
@@ -175,6 +181,10 @@ export class SoundBufferContext {
   public getBuffers(): csmVector<csmVector<number>> {
     return this._buffers;
   }
+  
+  public getBufferForSinglePlay(): csmVector<number> {
+    return this._bufferForSinglePlay;
+  }
 
   public getAudioManager(): LAppMotionSyncAudioManager {
     return this._audioManager;
@@ -185,6 +195,7 @@ export class SoundBufferContext {
     audioManager?: LAppMotionSyncAudioManager
   ) {
     this._buffers = buffers ? buffers : new csmVector<csmVector<number>>();
+    this._bufferForSinglePlay = new csmVector<number>();
     this._audioManager = audioManager
       ? audioManager
       : new LAppMotionSyncAudioManager();
@@ -195,6 +206,11 @@ export class SoundBufferContext {
       this._buffers.clear();
       this._buffers = void 0;
     }
+    
+    if (this._bufferForSinglePlay != null) {
+      this._bufferForSinglePlay.clear();
+      this._bufferForSinglePlay = void 0;
+    }
 
     if (this._audioManager != null) {
       this._audioManager.release();
@@ -202,6 +218,7 @@ export class SoundBufferContext {
     }
   }
 
+  private _bufferForSinglePlay: csmVector<number>;
   private _buffers: csmVector<csmVector<number>>;
   private _audioManager: LAppMotionSyncAudioManager;
 }
