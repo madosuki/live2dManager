@@ -67,10 +67,10 @@ export class LAppWavFileHandler {
     this._lastRms = 0.0;
   }
 
-  public startWithBytes(bytes: ArrayBuffer): void {
+  public async startWithBytes(bytes: ArrayBuffer): Promise<void> {
     this.initValues();
     
-    if (!this.loadWav(bytes)) {
+    if (! await this.loadWav(bytes)) {
         console.log("failed startWithBytes");
         return;
     }
