@@ -96,8 +96,8 @@ export class Live2dModel extends CubismUserModel {
   
   private manualClosedEye: boolean;
 
-  public startLipSync(bytes: ArrayBuffer): void {
-    this._wavFileHandler.startWithBytes(bytes);
+  public async startLipSync(bytes: ArrayBuffer): Promise<void> {
+    await this._wavFileHandler.startWithBytes(bytes);
   }
 
   public stopLipSync(): void {
