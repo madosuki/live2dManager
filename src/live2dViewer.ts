@@ -92,7 +92,7 @@ export class Live2dViewer {
     return this._viewMatrix.invertTransformY(screenY);
   }
 
-  public addModel(key: string, model: Live2dModel): void {
+  public addModel(key: string, model: Live2dModel | Live2dMotionSyncModel): void {
     this._models.appendKey(key);
     this._models.setValue(key, model);
   }
