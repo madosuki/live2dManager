@@ -228,9 +228,11 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
     
+    /*
     if (this._isStartMotinoSync) {
       this.updateMotionSync();
     }
+    */
 
     this._model.update();
   }
