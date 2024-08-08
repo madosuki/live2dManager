@@ -796,11 +796,12 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     this._soundData.playByIndex(this._soundIndex);
   }
   
-  public async startMotionSync(bytes: Uint8Array): Promise<void> {
+  public async startMotionSync(bytes: ArrayBuffer): Promise<void> {
     if(!this._motionSync) return;
     
     const audioMnager = this._soundData.getSoundBufferContext().getAudioManager();
-    await audioMnager.createAudioFromBytes(bytes, 0);
+    const arr = new Uint8Array(bytes);
+    await audioMnager.createAudioFromBytes(arr, 0);
     
     const buffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
     this._motionSync.setSoundBuffer(0, buffer, 0);
