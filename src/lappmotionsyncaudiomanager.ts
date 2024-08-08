@@ -56,7 +56,7 @@ export class LAppMotionSyncAudioManager {
   }
   
   public async createAudioFromBytes(
-    bytes: Uint8Array,
+    bytes: ArrayBuffer,
     index: number,
     /*
     model: Live2dMotionSyncModel,
