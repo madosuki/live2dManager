@@ -832,10 +832,13 @@ export class Live2dMotionSyncModel extends CubismUserModel {
    * モーションシンクの更新
    */
 public updateMotionSync() {
+  /*
   const soundBuffer = this._soundData
     .getSoundBufferContext()
     .getBuffers()
     .at(this._soundIndex);
+  */
+  const soundBuffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
   const audioInfo = this._soundData
     .getSoundBufferContext()
     .getAudioManager()
