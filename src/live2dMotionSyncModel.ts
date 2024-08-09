@@ -873,12 +873,11 @@ public updateMotionSync() {
       currentSamplePosition
     );
 
+    console.log(`soundBufferくん: ${soundBuffer}`);
     // サウンドバッファに再生済みのサンプルを追加する。
-    console.log("begin");
     for (let index = 0; index < currentAudioSamples.length; index++) {
       soundBuffer.pushBack(currentAudioSamples[index]);
     }
-    console.log("end print debug");
 
     // サウンドバッファの設定
     this._motionSync.setSoundBuffer(0, soundBuffer, 0);
