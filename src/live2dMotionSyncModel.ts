@@ -228,11 +228,9 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
     
-    /*
     if (this._isStartMotinoSync) {
       this.updateMotionSync();
     }
-    */
 
     this._model.update();
   }
@@ -876,9 +874,11 @@ public updateMotionSync() {
     );
 
     // サウンドバッファに再生済みのサンプルを追加する。
+    console.log("begin");
     for (let index = 0; index < currentAudioSamples.length; index++) {
       soundBuffer.pushBack(currentAudioSamples[index]);
     }
+    console.log("end print debug");
 
     // サウンドバッファの設定
     this._motionSync.setSoundBuffer(0, soundBuffer, 0);
