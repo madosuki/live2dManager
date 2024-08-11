@@ -80,7 +80,8 @@ export class LAppAudioManager {
    * @param size 削除するデータの要素数
    */
   public removeDataArrayByIndex(index: number, size: number) {
-    let buffer = this._soundBufferContext.getBuffers().at(index);
+    // let buffer = this._soundBufferContext.getBuffers().at(index);
+    let buffer = this._soundBufferContext.getBufferForSinglePlay();
 
     if (size < buffer.getSize()) {
       // 途中からのバッファにする
