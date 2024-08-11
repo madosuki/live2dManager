@@ -805,6 +805,18 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     const buffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
     this._motionSync.setSoundBuffer(0, buffer, 0);
     this._isStartMotinoSync = true;
+    
+    const audioInfo = this._soundData
+    .getSoundBufferContext()
+    .getAudioManager()
+    ._audios.at(this._soundIndex);
+    const currentAudioTime = performance.now() / 1000; // convert to seconds.
+
+    // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う
+    if (currentAudioTime < audioInfo.audioContextPreviousTime) {
+      audioInfo.audioContextPreviousTime = currentAudioTime;
+    }
+    audioInfo.audioContextPreviousTime = currentAudioTime;
   }
 
   /**
@@ -876,7 +888,6 @@ public updateMotionSync() {
       currentSamplePosition
     );
 
-    console.log(`soundBufferくん: ${soundBuffer}`);
     // サウンドバッファに再生済みのサンプルを追加する。
     for (let index = 0; index < currentAudioSamples.length; index++) {
       soundBuffer.pushBack(currentAudioSamples[index]);
