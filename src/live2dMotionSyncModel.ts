@@ -884,6 +884,7 @@ public updateMotionSync() {
 
     // サウンドバッファの設定
     this._motionSync.setSoundBuffer(0, soundBuffer, 0);
+    console.log("end soundBuffer settings");
 
     // モーションシンクの更新
     this._motionSync.updateParameters(this._model, audioDeltaTime);
