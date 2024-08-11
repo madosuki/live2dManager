@@ -804,7 +804,6 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     
     const buffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
     this._motionSync.setSoundBuffer(0, buffer, 0);
-    this._isStartMotinoSync = true;
     
     const audioInfo = this._soundData
     .getSoundBufferContext()
@@ -817,6 +816,8 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       audioInfo.audioContextPreviousTime = currentAudioTime;
     }
     audioInfo.audioContextPreviousTime = currentAudioTime;
+
+    this._isStartMotinoSync = true;
   }
 
   /**
