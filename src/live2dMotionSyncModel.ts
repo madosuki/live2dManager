@@ -5,90 +5,27 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import {
-  CubismFramework,
-} from "../CubismSdkForWeb/src/live2dcubismframework";
+import { CubismFramework } from "../CubismSdkForWeb/src/live2dcubismframework";
 import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
 import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
-import { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel";
 import {
   BreathParameterData,
   CubismBreath,
 } from "../CubismSdkForWeb/src/effect/cubismbreath";
-import { CubismIdHandle } from "../CubismSdkForWeb/src/id/cubismid";
 import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
-import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+import { csmMap } from "../CubismSdkForWeb/src/type/csmmap";
 import { ACubismMotion } from "../CubismSdkForWeb/src/motion/acubismmotion";
-import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";
 import { CubismEyeBlink } from "../CubismSdkForWeb/src/effect/cubismeyeblink";
-import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
 import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import { CubismModelMotionSyncSettingJson } from "../CubismWebMotionSyncComponents/Framework/src/cubismmodelmotionsyncsettingjson";
 import { LAppPal } from "./lapppal";
-import { LAppWavFileHandler } from "./lappwavfilehandler";
 import { LAppAudioManager } from "./lappaudiomanager";
 import * as LAppMotionSyncDefine from "./lappmotionsyncdefine";
-import * as LAppDefine from "./lappdefine";
 import { Live2dViewer } from "./live2dViewer";
+import { Live2dModel } from "./live2dModel";
 
-class TextureInfo {
-  public imageUrl: string;
-  public img: HTMLImageElement;
-  public id: WebGLTexture | undefined;
-  public width: number;
-  public height: number;
-  public usePremulitply: boolean;
-  public fileName: string;
-
-  constructor() {
-    this.imageUrl = "";
-    this.id = undefined;
-    this.width = 0;
-    this.height = 0;
-    this.usePremulitply = false;
-    this.fileName = "";
-  }
-}
-
-export class Live2dMotionSyncModel extends CubismUserModel {
-  _live2dViewer: Live2dViewer;
-  _modelSetting: CubismModelMotionSyncSettingJson | null;
-  _modelHomeDir: string;
-  _modelJsonFileName: string;
-  _userTimeSeconds: number;
-
-  _eyeBlinkIds: csmVector<CubismIdHandle>;
-  _lipSyncIds: csmVector<CubismIdHandle>;
-
-  _motions: csmMap<string, ACubismMotion>;
-  _expressions: csmMap<string, ACubismMotion>;
-
-  _hitArea: csmVector<csmRect>;
-  _userArea: csmVector<csmRect>;
-
-  _idParamAngleX: CubismIdHandle;
-  _idParamAngleY: CubismIdHandle;
-  _idParamAngleZ: CubismIdHandle;
-  _idParamEyeBallX: CubismIdHandle;
-  _idParamEyeBallY: CubismIdHandle;
-  _idParamBodyAngleX: CubismIdHandle;
-  _idParamEyeLOpen: CubismIdHandle;
-  _idParamEyeROpen: CubismIdHandle;
-
-  _state: number;
-  _expressionCount: number;
-  _textureCount: number;
-  _motionCount: number;
-  _allMotionCount: number;
-
-  _textures: csmVector<TextureInfo>;
-  isCompleteSetup: boolean;
-  readFileFunction: (arg: string) => Promise<ArrayBuffer>;
-  _wavFileHandler: LAppWavFileHandler;
-  lipSyncWeight: number;
-
-  private manualClosedEye: boolean;
-  
+export class Live2dMotionSyncModel extends Live2dModel {
+  override _modelSetting: CubismModelMotionSyncSettingJson | null;
   _soundFileList: csmVector<csmString>;
   _soundIndex: number;
   _soundData: LAppAudioManager;
@@ -96,254 +33,31 @@ export class Live2dMotionSyncModel extends CubismUserModel {
   _lastSampleCount: number;
   _isStartMotinoSync: boolean;
 
-  public async startLipSync(bytes: ArrayBuffer): Promise<void> {
-    await this._wavFileHandler.startWithBytes(bytes);
-  }
-
-  public stopLipSync(): void {
-    this._wavFileHandler.releasePcmData();
-  }
-
-  public releaseTextures(): void {
-    if (this._textures == undefined || this._textures.getSize() === 0) {
-      return;
-    }
-
-    for (let i = 0; i < this._textures.getSize(); i++) {
-      this._textures.set(i, null);
-    }
-    this._textures.clear();
-  }
-  
-  public releaseTextureByTexture(texture: WebGLTexture): void {
-    for (let i =  0; i < this._textures.getSize(); i++) {
-      if (this._textures.at(i).id != texture) {
-        continue;
-      }
-      
-      this._textures.set(i, null);
-      this._textures.remove(i);
-    }
-  }
-
-  public releaseMotions(): void {
-    if (this._motions != undefined && this._motions.getSize() > 0) {
-      this._motions.clear();
-    }
-  }
-
-  public releaseExpressions(): void {
-    if (this._expressions != undefined && this._motions.getSize() > 0) {
-      this._expressions.clear();
-    }
-  }
-
-  public closeEyelids(): void {
-    this.manualClosedEye = true;
-  }
-  
-  public openEyelids(): void {
-    this.manualClosedEye = false;
-  }
-
-  public update(): void {
-    const deltaTimeSeconds = LAppPal.getDeltaTime();
-    this._userTimeSeconds += deltaTimeSeconds;
-
-    this._dragManager.update(deltaTimeSeconds);
-    this._dragX = this._dragManager.getX();
-    this._dragY = this._dragManager.getY();
-
-    // モーションによるパラメーター更新の有無
-    let isMotionUpdated = false;
-    
-    // 前回セーブされたをロード
-    this._model.loadParameters();
-    // モーションを更新
-    if (!this._motionManager.isFinished()) {
-      isMotionUpdated = this._motionManager.updateMotion(this._model, deltaTimeSeconds);
-    }
-    // 状態を保存
-    this._model.saveParameters();
-
-    // まばたき
-    if (!isMotionUpdated && this._eyeBlink != undefined) {
-      if (this.manualClosedEye) {
-        this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
-        this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
-      }
-
-      if (!this.manualClosedEye) {
-        this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
-      }
-    }
-    
-    // 表情
-    if (this._expressionManager != undefined) {
-      this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
-    }
-
-    // ドラッグによる顔の向きの調整
-    this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30);
-    this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
-    this._model.addParameterValueById(
-      this._idParamAngleZ,
-      this._dragX * this._dragY * -30
-    ); // -30から30の値を加える
-
-    // ドラッグによる体の向きの調整
-    this._model.addParameterValueById(
-      this._idParamBodyAngleX,
-      this._dragX * 10
-    ); // -10から10の値を加える
-
-    // ドラッグによる目の向きの調整
-    this._model.addParameterValueById(this._idParamEyeBallX, this._dragX);
-    this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
-
-    // 呼吸など
-    if (this._breath != undefined) {
-      this._breath.updateParameters(this._model, deltaTimeSeconds);
-    }
-
-    // 物理演算の設定
-    if (this._physics != undefined) {
-      this._physics.evaluate(this._model, deltaTimeSeconds);
-    }
-
-    // リップシンクの設定
-    if (this._lipsync && !this._isStartMotinoSync) {
-      let value = 0.0;
-      this._wavFileHandler.update(deltaTimeSeconds);
-      value = this._wavFileHandler.getRms();
-
-      for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
-        if (value <= 0.0) break;
-        this._model.addParameterValueById(this._lipSyncIds.at(i), value, this.lipSyncWeight);
-      }
-    }
-    
-    // ポーズの設定
-    if (this._pose != undefined) {
-      this._pose.updateParameters(this._model, deltaTimeSeconds);
-    }
-    
-    if (this._isStartMotinoSync) {
-      this.updateMotionSync();
-    }
-
-    this._model.update();
-  }
-  
-  private async createTextureFromFile(
-    fileName: string,
-    usePremultiply: boolean,
-    index: number,
-    textureCount: number
-  ): Promise<void> {
-    const readResult = await this.readFileFunction(fileName);
-
-    const img = new Image();
-    const byteArray = new Uint8ClampedArray(readResult);
-    const url = URL.createObjectURL(
-      new Blob([byteArray.buffer], { type: "image/png" })
+  constructor(
+    modelHomeDir: string,
+    modelJsonFileName: string,
+    live2dViewer: Live2dViewer,
+    readFileFunction: (arg: string) => Promise<ArrayBuffer>
+  ) {
+    super(
+      modelHomeDir,
+      modelJsonFileName,
+      live2dViewer,
+      readFileFunction,
+      false
     );
-    img.onload = (): void => {
-      if (!this._live2dViewer.gl) {
-        return;
-      }
-      const _texture = this._live2dViewer.gl.createTexture();
-      if (!_texture) {
-        return;
-      }
-      this._live2dViewer.gl.bindTexture(
-        this._live2dViewer.gl.TEXTURE_2D,
-        _texture
-      );
 
-      this._live2dViewer.gl.texParameteri(
-        this._live2dViewer.gl.TEXTURE_2D,
-        this._live2dViewer.gl.TEXTURE_MIN_FILTER,
-        this._live2dViewer.gl.LINEAR_MIPMAP_LINEAR
-      );
-
-      if (usePremultiply) {
-        this._live2dViewer.gl.pixelStorei(
-          this._live2dViewer.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,
-          1
-        );
-      }
-
-      this._live2dViewer.gl.texImage2D(
-        this._live2dViewer.gl.TEXTURE_2D,
-        0,
-        this._live2dViewer.gl.RGBA,
-        this._live2dViewer.gl.RGBA,
-        this._live2dViewer.gl.UNSIGNED_BYTE,
-        img
-      );
-
-      this._live2dViewer.gl.generateMipmap(this._live2dViewer.gl.TEXTURE_2D);
-      this._live2dViewer.gl.bindTexture(this._live2dViewer.gl.TEXTURE_2D, null);
-
-      const textureInfo = new TextureInfo();
-      textureInfo.fileName = fileName;
-      textureInfo.imageUrl = url;
-      textureInfo.img = img;
-      textureInfo.width = img.width;
-      textureInfo.height = img.height;
-      textureInfo.id = _texture;
-      textureInfo.usePremulitply = usePremultiply;
-      this._textures.pushBack(textureInfo);
-
-      const id = textureInfo.id;
-      if (!id) {
-        return;
-      }
-      this.getRenderer().bindTexture(index, id);
-      this._textureCount++;
-
-      if (this._textureCount >= textureCount) {
-        // console.log(`textureCount: ${this._textureCount}, argument textureCount: ${textureCount}, fileName: ${fileName}`);
-        this.isCompleteSetup = true;
-      }
-    };
-    img.src = url;
+    this._modelSetting = null;
+    this._soundFileList = new csmVector<csmString>();
+    this._soundIndex = 0;
+    this._soundData = new LAppAudioManager();
+    this._lastSampleCount = 0;
+    this._isStartMotinoSync = false;
   }
 
-  private async loadTextures(): Promise<void> {
-    if (!this._modelSetting || this.isCompleteSetup) {
-      return;
-    }
-
-    const usePremultiply = true;
-
-    const textureCount = this._modelSetting.getTextureCount();
-
-    for (let i = 0; i < textureCount; ++i) {
-      const textureFileName = this._modelSetting.getTextureFileName(i);
-      if (textureFileName == "") {
-        continue;
-      }
-      const texturePath = `${this._modelHomeDir}${textureFileName}`;
-      
-      await this.createTextureFromFile(
-        texturePath,
-        usePremultiply,
-        i,
-        textureCount
-      );
-      this.getRenderer().setIsPremultipliedAlpha(usePremultiply);
-    }
-  }
-
- /**
-  * model3.jsonからモデルを生成する。
-  * model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う。
-  *
-  * @param setting ICubismModelSettingのインスタンス
-  */
-  private async setupModel(setting: CubismModelMotionSyncSettingJson): Promise<void> {
+  protected override async setupModel(
+    setting: CubismModelMotionSyncSettingJson
+  ): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 
@@ -355,8 +69,8 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     try {
       const bytesResult = await this.readFileFunction(filePath);
       this.loadModel(bytesResult, this._mocConsistency);
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return;
     }
 
@@ -367,21 +81,27 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     if (!this._model) {
       throw new Error("failed create model");
     }
-    
+
     // Load Expression
     const expressionCount = this._modelSetting.getExpressionCount();
     for (let i = 0; i < expressionCount; i++) {
       const expressionName = this._modelSetting.getExpressionName(i);
       const expressionFileName = this._modelSetting.getExpressionFileName(i);
-      
-      const readResult = await this.readFileFunction(`${this._modelHomeDir}${expressionFileName}`);
-      const motion = this.loadExpression(readResult, readResult.byteLength, expressionName);
-      
+
+      const readResult = await this.readFileFunction(
+        `${this._modelHomeDir}${expressionFileName}`
+      );
+      const motion = this.loadExpression(
+        readResult,
+        readResult.byteLength,
+        expressionName
+      );
+
       if (this._expressions.getValue(expressionName) != null) {
         ACubismMotion.delete(this._expressions.getValue(expressionName));
         this._expressions.setValue(expressionName, null);
       }
-      
+
       this._expressions.setValue(expressionName, motion);
       this._expressionCount++;
     }
@@ -394,7 +114,7 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       );
       this.loadPhysics(readResult, readResult.byteLength);
     }
-    
+
     // Load Pose
     const poseFileName = this._modelSetting.getPoseFileName();
     if (poseFileName !== "") {
@@ -440,10 +160,12 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       )
     );
     this._breath.setParameters(breathParameters);
-    
+
     const userDataFileName = this._modelSetting.getUserDataFile();
     if (userDataFileName !== "") {
-      const readResult = await this.readFileFunction(`${this._modelHomeDir}${userDataFileName}`);
+      const readResult = await this.readFileFunction(
+        `${this._modelHomeDir}${userDataFileName}`
+      );
       this.loadUserData(readResult, readResult.byteLength);
     }
 
@@ -461,15 +183,17 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     const layout = new csmMap<string, number>();
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
-    
+
     const motionSyncFileName = this._modelSetting.getMotionSyncFileName();
     if (motionSyncFileName != undefined || motionSyncFileName !== "NullValue") {
-      const data = await this.readFileFunction(`${this._modelHomeDir}${motionSyncFileName}`);
+      const data = await this.readFileFunction(
+        `${this._modelHomeDir}${motionSyncFileName}`
+      );
       this.loadMotionSync(data, data.byteLength);
       this._soundFileList = this._modelSetting.getMotionSyncSoundFileList();
       this._soundIndex = 0;
     }
-    
+
     this.createRenderer();
     this.getRenderer().setIsPremultipliedAlpha(true);
     await this.loadTextures();
@@ -504,230 +228,11 @@ export class Live2dMotionSyncModel extends CubismUserModel {
     */
   }
 
-  public async loadAssets(): Promise<void> {
-    const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
-    const readResult = await this.readFileFunction(filePath);
-    const setting = new CubismModelMotionSyncSettingJson(
-      readResult,
-      readResult.byteLength
-    );
-    await this.setupModel(setting);
-  }
-
-  public draw(
-    matrix: CubismMatrix44,
-    x: number,
-    y: number,
-    canvasWidth: number,
-    canvasHeight: number,
-    frameBuffer: WebGLFramebuffer | null
-  ): void {
-    matrix.multiplyByMatrix(this._modelMatrix);
-    this.getRenderer().setMvpMatrix(matrix);
-
-    const viewPort = [x, y, canvasWidth, canvasHeight];
-    this.getRenderer().setRenderState(
-      frameBuffer as WebGLFramebuffer,
-      viewPort
-    );
-    this.getRenderer().drawModel();
-  }
-  
   /**
-   * 引数で指定したモーションの再生を開始する
-   * @param group モーショングループ名
-   * @param no グループ内の番号
-   * @param priority 優先度
-   * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
-   * @return 開始したモーションの識別番号を返す。個別のモーションが終了したか否かを判定するisFinished()の引数で使用する。開始できない時は[-1]
+   * モーションシンクデータの読み込み
+   * @param buffer  physics3.jsonが読み込まれているバッファ
+   * @param size    バッファのサイズ
    */
-  /*
-  public async startMotion(
-    group: string,
-    no: number,
-    priority: number,
-    onFinishedMotionHandler?: FinishedMotionCallback
-  ): Promise<CubismMotionQueueEntryHandle> {
-    if (priority == LAppDefine.PriorityForce) {
-      this._motionManager.setReservePriority(priority);
-    } else if (!this._motionManager.reserveMotion(priority)) {
-      if (this._debugMode) {
-        LAppPal.printMessage("[APP]can't start motion.");
-      }
-      return InvalidMotionQueueEntryHandleValue;
-    }
-
-    const motionFileName = this._modelSetting.getMotionFileName(group, no);
-
-    // ex) idle_0
-    const name = `${group}_${no}`;
-    let motion: CubismMotion = this._motions.getValue(name) as CubismMotion;
-    let autoDelete = false;
-
-    if (motion == null) {
-      const path = `${this._modelHomeDir}${motionFileName}`;
-      const bytes = await this.readFileFunction(path);
-      motion = this.loadMotion(bytes, bytes.byteLength, null, onFinishedMotionHandler);
-      let fadeTime: number = this._modelSetting.getMotionFadeInTimeValue(group, no);
-      if (fadeTime >= 0.0) {
-        motion.setFadeInTime(fadeTime);
-      }
-
-      fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, no);
-      if (fadeTime >= 0.0) {
-        motion.setFadeOutTime(fadeTime);
-      }
-
-      motion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
-      autoDelete = true; // 終了
-    } else {
-      motion.setFinishedMotionHandler(onFinishedMotionHandler);
-    }
-
-    //voice
-    const voice = this._modelSetting.getMotionSoundFileName(group, no);
-    if (voice.localeCompare('') != 0) {
-      let path = voice;
-      path = this._modelHomeDir + path;
-      this._wavFileHandler.start(path);
-    }
-
-    if (this._debugMode) {
-      LAppPal.printMessage(`[APP]start motion: [${group}_${no}`);
-    }
-    return this._motionManager.startMotionPriority(
-      motion,
-      autoDelete,
-      priority
-    );
-  }
-  */
-
-  public setLipSyncWeight(weight: number): void {
-    this.lipSyncWeight = weight;
-  }
-
-  /**
-   * モーションデータをグループ名から一括でロードする。
-   * モーションデータの名前は内部でModelSettingから取得する。
-   *
-   * @param group モーションデータのグループ名
-   */
-  /*
-  public async preLoadMotionGroup(group: string): Promise<void> {
-    for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
-      const motionFileName = this._modelSetting.getMotionFileName(group, i);
-  
-        // ex) idle_0
-      const name = `${group}_${i}`;
-      if (this._debugMode) {
-        LAppPal.printMessage(
-          `[APP]load motion: ${motionFileName} => [${name}]`
-        );
-      }
-  
-      const motionFilePath = `${this._modelHomeDir}${motionFileName}`;
-      const arrayBuffer = await this.readFileFunction(motionFilePath);
-
-      const tmpMotion: CubismMotion = this.loadMotion(
-        arrayBuffer,
-        arrayBuffer.byteLength,
-        name
-      );
-  
-      if (tmpMotion != undefined) {
-        let fadeTime = this._modelSetting.getMotionFadeInTimeValue(
-          group,
-          i
-        );
-        if (fadeTime >= 0.0) {
-          tmpMotion.setFadeInTime(fadeTime);
-        }
-  
-        fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, i);
-        if (fadeTime >= 0.0) {
-          tmpMotion.setFadeOutTime(fadeTime);
-        }
-        tmpMotion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
-  
-        if (this._motions.getValue(name) != null) {
-          ACubismMotion.delete(this._motions.getValue(name));
-        }
-  
-        this._motions.setValue(name, tmpMotion);
-  
-        this._motionCount++;
-        if (this._motionCount >= this._allMotionCount) {
-  
-          // 全てのモーションを停止する
-          this._motionManager.stopAllMotions();
-  
-          this._updating = false;
-          this._initialized = true;
-  
-          this.createRenderer();
-          await this.loadTextures();
-          if (this._live2dViewer.gl) {
-            this.getRenderer().setIsPremultipliedAlpha(true);
-            this.getRenderer().startUp(this._live2dViewer.gl);
-          }
-        }
-      } else {
-        // loadMotionできなかった場合はモーションの総数がずれるので1つ減らす
-        this._allMotionCount--;
-      }
-    }
-  }
-  */
-  
-  /**
-   * 引数で指定した表情モーションをセットする
-   *
-   * @param expressionId 表情モーションのID
-   */
-  public setExpression(expressionId: string): void {
-    const motion: ACubismMotion = this._expressions.getValue(expressionId);
-  
-    if (this._debugMode) {
-      LAppPal.printMessage(`expression: [${expressionId}]`);
-    }
-  
-    if (motion != undefined) {
-      this._expressionManager.startMotionPriority(
-        motion,
-        false,
-        LAppDefine.PriorityForce
-      );
-    } else {
-      if (this._debugMode) {
-        LAppPal.printMessage(`expression[${expressionId}] is null`);
-      }
-    }
-  }
-  
-  public resetExpression(): void {
-    this._expressionManager.stopAllMotions();
-  }
-  
-  public getExpressionIdList(): string[] {
-    const result: string[] = [];
-    const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
-    for (const i of keys) {
-      // It's a workaround. prepend missing property when after build.
-      if (i != undefined && i.first != undefined) {
-        const expressionId = i.first;
-        result.push(expressionId);
-      }
-    }
-    
-    return result;
-  }
-  
-/**
- * モーションシンクデータの読み込み
- * @param buffer  physics3.jsonが読み込まれているバッファ
- * @param size    バッファのサイズ
- */
   private loadMotionSync(buffer: ArrayBuffer, size: number) {
     if (buffer == null || size == 0) {
       // CubismLogError('Failed to loadMotionSync().');
@@ -740,8 +245,8 @@ export class Live2dMotionSyncModel extends CubismUserModel {
       size,
       LAppMotionSyncDefine.SamplesPerSec
     );
-  }  
-  
+  }
+
   /**
    * 音声ファイルリストから読み込みを行う。
    */
@@ -795,20 +300,24 @@ export class Live2dMotionSyncModel extends CubismUserModel {
 
     this._soundData.playByIndex(this._soundIndex);
   }
-  
+
   public async startMotionSync(bytes: ArrayBuffer): Promise<void> {
-    if(!this._motionSync) return;
-    
-    const audioMnager = this._soundData.getSoundBufferContext().getAudioManager();
+    if (!this._motionSync) return;
+
+    const audioMnager = this._soundData
+      .getSoundBufferContext()
+      .getAudioManager();
     await audioMnager.createAudioFromBytes(bytes, 0);
-    
-    const buffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
+
+    const buffer = this._soundData
+      .getSoundBufferContext()
+      .getBufferForSinglePlay();
     this._motionSync.setSoundBuffer(0, buffer, 0);
-    
+
     const audioInfo = this._soundData
-    .getSoundBufferContext()
-    .getAudioManager()
-    ._audios.at(this._soundIndex);
+      .getSoundBufferContext()
+      .getAudioManager()
+      ._audios.at(this._soundIndex);
     const currentAudioTime = performance.now() / 1000; // convert to seconds.
 
     // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う
@@ -834,181 +343,181 @@ export class Live2dMotionSyncModel extends CubismUserModel {
 
     this._soundData.stopByIndex(this._soundIndex);
   }
-  
+
   public stopMotionSync(): void {
     if (this._soundData != null) return;
     this._isStartMotinoSync = false;
     this._soundData.stopForSinglePlay();
   }
-  
-/**
+
+  /**
    * モーションシンクの更新
    */
-public updateMotionSync() {
-  /*
+  public updateMotionSync() {
+    /*
   const soundBuffer = this._soundData
     .getSoundBufferContext()
     .getBuffers()
     .at(this._soundIndex);
   */
-  const soundBuffer = this._soundData.getSoundBufferContext().getBufferForSinglePlay();
-  const audioInfo = this._soundData
-    .getSoundBufferContext()
-    .getAudioManager()
-    ._audios.at(this._soundIndex);
+    const soundBuffer = this._soundData
+      .getSoundBufferContext()
+      .getBufferForSinglePlay();
+    const audioInfo = this._soundData
+      .getSoundBufferContext()
+      .getAudioManager()
+      ._audios.at(this._soundIndex);
 
-  // 現在フレームの時間を秒単位で取得
-  // NOTE: ブラウザやブラウザ側の設定により、performance.now() の精度が異なる可能性に注意
-  const currentAudioTime = performance.now() / 1000.0; // convert to seconds.
+    // 現在フレームの時間を秒単位で取得
+    // NOTE: ブラウザやブラウザ側の設定により、performance.now() の精度が異なる可能性に注意
+    const currentAudioTime = performance.now() / 1000.0; // convert to seconds.
 
-  // 再生時間の更新
-  // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う。
-  if (currentAudioTime < audioInfo.audioContextPreviousTime) {
-    audioInfo.audioContextPreviousTime = currentAudioTime;
-  }
+    // 再生時間の更新
+    // 前回フレームの時間が現在時刻よりも前だった場合は同時刻として扱う。
+    if (currentAudioTime < audioInfo.audioContextPreviousTime) {
+      audioInfo.audioContextPreviousTime = currentAudioTime;
+    }
 
-  // 前回フレームの時間から経過時間を計算
-  const audioDeltaTime =
-    currentAudioTime - audioInfo.audioContextPreviousTime;
+    // 前回フレームの時間から経過時間を計算
+    const audioDeltaTime =
+      currentAudioTime - audioInfo.audioContextPreviousTime;
 
-  // 経過時間を更新
-  audioInfo.audioElapsedTime += audioDeltaTime;
+    // 経過時間を更新
+    audioInfo.audioElapsedTime += audioDeltaTime;
 
-  // 再生時間をサンプル数に変換する。
-  // サンプル数 = 再生時間 * サンプリングレート
-  // NOTE: サンプリングレートは、音声ファイルに設定された値を使用する。音声コンテキストのサンプリングレートを使用すると、正しくモーションシンクが再生されない場合がある。
-  const currentSamplePosition = Math.floor(
-    audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate()
-  );
-
-  // 処理済みの再生位置が音声のサンプル数を超えていたら、処理を行わない。
-  if (audioInfo.previousSamplePosition <= audioInfo.audioSamples.length) {
-    // 前回の再生位置を起点に、音声サンプルを再生済みの数だけ取得する。
-    const currentAudioSamples = audioInfo.audioSamples.slice(
-      audioInfo.previousSamplePosition,
-      currentSamplePosition
+    // 再生時間をサンプル数に変換する。
+    // サンプル数 = 再生時間 * サンプリングレート
+    // NOTE: サンプリングレートは、音声ファイルに設定された値を使用する。音声コンテキストのサンプリングレートを使用すると、正しくモーションシンクが再生されない場合がある。
+    const currentSamplePosition = Math.floor(
+      audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate()
     );
 
-    // サウンドバッファに再生済みのサンプルを追加する。
-    for (let index = 0; index < currentAudioSamples.length; index++) {
-      soundBuffer.pushBack(currentAudioSamples[index]);
+    // 処理済みの再生位置が音声のサンプル数を超えていたら、処理を行わない。
+    if (audioInfo.previousSamplePosition <= audioInfo.audioSamples.length) {
+      // 前回の再生位置を起点に、音声サンプルを再生済みの数だけ取得する。
+      const currentAudioSamples = audioInfo.audioSamples.slice(
+        audioInfo.previousSamplePosition,
+        currentSamplePosition
+      );
+
+      // サウンドバッファに再生済みのサンプルを追加する。
+      for (let index = 0; index < currentAudioSamples.length; index++) {
+        soundBuffer.pushBack(currentAudioSamples[index]);
+      }
+
+      // サウンドバッファの設定
+      this._motionSync.setSoundBuffer(0, soundBuffer, 0);
+
+      // モーションシンクの更新
+      this._motionSync.updateParameters(this._model, audioDeltaTime);
+
+      // 解析しただけデータを削除する。
+      const lastTotalProcessedCount =
+        this._motionSync.getLastTotalProcessedCount(0);
+      this._soundData.removeDataArrayByIndex(
+        this._soundIndex,
+        lastTotalProcessedCount
+      );
+
+      // 再生済みのサンプル数と再生時間を現在のものへ更新する。
+      audioInfo.audioContextPreviousTime = currentAudioTime;
+      audioInfo.previousSamplePosition = currentSamplePosition;
     }
-
-    // サウンドバッファの設定
-    this._motionSync.setSoundBuffer(0, soundBuffer, 0);
-
-    // モーションシンクの更新
-    this._motionSync.updateParameters(this._model, audioDeltaTime);
-
-    // 解析しただけデータを削除する。
-    const lastTotalProcessedCount =
-      this._motionSync.getLastTotalProcessedCount(0);
-    this._soundData.removeDataArrayByIndex(
-      this._soundIndex,
-      lastTotalProcessedCount
-    );
-
-    // 再生済みのサンプル数と再生時間を現在のものへ更新する。
-    audioInfo.audioContextPreviousTime = currentAudioTime;
-    audioInfo.previousSamplePosition = currentSamplePosition;
   }
-}
 
-  
-  public reloadRenderer(): void {
-    this.deleteRenderer();
-    this.createRenderer();
-    this.loadTextures();
-  }
+  public override update(): void {
+    const deltaTimeSeconds = LAppPal.getDeltaTime();
+    this._userTimeSeconds += deltaTimeSeconds;
 
-  public constructor(
-    modelHomeDir: string,
-    modelJsonFileName: string,
-    live2dViewer: Live2dViewer,
-    readFileFunction: (arg: string) => Promise<ArrayBuffer>,
-    is_old_param_name?: boolean,
-  ) {
-    super();
-    this._modelSetting = null;
-    this._modelHomeDir = modelHomeDir;
-    this._modelJsonFileName = modelJsonFileName;
-    this._userTimeSeconds = 0.0;
+    this._dragManager.update(deltaTimeSeconds);
+    this._dragX = this._dragManager.getX();
+    this._dragY = this._dragManager.getY();
 
-    this._eyeBlinkIds = new csmVector<CubismIdHandle>();
-    this._lipSyncIds = new csmVector<CubismIdHandle>();
+    // モーションによるパラメーター更新の有無
+    let isMotionUpdated = false;
 
-    this._motions = new csmMap<string, ACubismMotion>();
-    this._expressions = new csmMap<string, ACubismMotion>();
-
-    this._hitArea = new csmVector<csmRect>();
-    this._userArea = new csmVector<csmRect>();
-
-    if (is_old_param_name) {
-      this._idParamAngleX =
-        CubismFramework.getIdManager().getId("PARAM_ANGLE_X");
-      this._idParamAngleY =
-        CubismFramework.getIdManager().getId("PARAM_ANGLE_Y");
-      this._idParamAngleZ =
-        CubismFramework.getIdManager().getId("PARAM_ANGLE_Z");
-
-      this._idParamEyeBallX =
-        CubismFramework.getIdManager().getId("PARAM_EYE_BALL_X");
-      this._idParamEyeBallY =
-        CubismFramework.getIdManager().getId("PARAM_EYE_BALL_Y");
-      this._idParamBodyAngleX =
-        CubismFramework.getIdManager().getId("PARAM_BODY_ANGLE_X");
-      this._idParamEyeLOpen = CubismFramework.getIdManager().getId("PARAM_EYE_L_OPEN");
-      this._idParamEyeROpen = CubismFramework.getIdManager().getId("PARAM_EYE_R_OPEN");
-    } else {
-      this._idParamAngleX = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamAngleX
+    // 前回セーブされたをロード
+    this._model.loadParameters();
+    // モーションを更新
+    if (!this._motionManager.isFinished()) {
+      isMotionUpdated = this._motionManager.updateMotion(
+        this._model,
+        deltaTimeSeconds
       );
-      this._idParamAngleY = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamAngleY
-      );
-      this._idParamAngleZ = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamAngleZ
-      );
+    }
+    // 状態を保存
+    this._model.saveParameters();
 
-      this._idParamEyeBallX = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamEyeBallX
-      );
-      this._idParamEyeBallY = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamEyeBallY
-      );
+    // まばたき
+    if (!isMotionUpdated && this._eyeBlink != undefined) {
+      if (this.manualClosedEye) {
+        this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
+        this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
+      }
 
-      this._idParamBodyAngleX = CubismFramework.getIdManager().getId(
-        CubismDefaultParameterId.ParamBodyAngleX
-      );
-      
-      this._idParamEyeLOpen = CubismFramework.getIdManager().getId("ParamEyeLOpen");
-      this._idParamEyeROpen = CubismFramework.getIdManager().getId("ParamEyeROpen");
+      if (!this.manualClosedEye) {
+        this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
+      }
     }
 
-    if (LAppDefine.MOCConsistencyValidationEnable) {
-      this._mocConsistency = true;
+    // 表情
+    if (this._expressionManager != undefined) {
+      this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
     }
 
-    this._allMotionCount = 0;
-    this._motionCount = 0;
-    this._textureCount = 0;
-    this._expressionCount = 0;
-    this._state = 0;
+    // ドラッグによる顔の向きの調整
+    this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30);
+    this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
+    this._model.addParameterValueById(
+      this._idParamAngleZ,
+      this._dragX * this._dragY * -30
+    ); // -30から30の値を加える
 
-    this._textures = new csmVector<TextureInfo>();
-    this._live2dViewer = live2dViewer;
+    // ドラッグによる体の向きの調整
+    this._model.addParameterValueById(
+      this._idParamBodyAngleX,
+      this._dragX * 10
+    ); // -10から10の値を加える
 
-    this.isCompleteSetup = false;
-    this.readFileFunction = readFileFunction;
-    this._wavFileHandler = new LAppWavFileHandler();
-    this.lipSyncWeight = 0.8;
-    this.manualClosedEye = false;
+    // ドラッグによる目の向きの調整
+    this._model.addParameterValueById(this._idParamEyeBallX, this._dragX);
+    this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
 
-    this._soundFileList = new csmVector<csmString>;
-    this._soundIndex = 0;
-    this._soundData = new LAppAudioManager();
-    this._lastSampleCount = 0;
-    this._isStartMotinoSync = false;
+    // 呼吸など
+    if (this._breath != undefined) {
+      this._breath.updateParameters(this._model, deltaTimeSeconds);
+    }
 
+    // 物理演算の設定
+    if (this._physics != undefined) {
+      this._physics.evaluate(this._model, deltaTimeSeconds);
+    }
+
+    // リップシンクの設定
+    if (this._lipsync && !this._isStartMotinoSync) {
+      let value = 0.0;
+      this._wavFileHandler.update(deltaTimeSeconds);
+      value = this._wavFileHandler.getRms();
+
+      for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
+        if (value <= 0.0) break;
+        this._model.addParameterValueById(
+          this._lipSyncIds.at(i),
+          value,
+          this.lipSyncWeight
+        );
+      }
+    }
+
+    // ポーズの設定
+    if (this._pose != undefined) {
+      this._pose.updateParameters(this._model, deltaTimeSeconds);
+    }
+
+    if (this._isStartMotinoSync) {
+      this.updateMotionSync();
+    }
+
+    this._model.update();
   }
 }

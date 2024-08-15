@@ -94,7 +94,7 @@ export class Live2dModel extends CubismUserModel {
   _soundIndex: number;
   _lastSampleCount: number;
   
-  private manualClosedEye: boolean;
+  protected manualClosedEye: boolean;
 
   public async startLipSync(bytes: ArrayBuffer): Promise<void> {
     await this._wavFileHandler.startWithBytes(bytes);
@@ -231,7 +231,7 @@ export class Live2dModel extends CubismUserModel {
     this._model.update();
   }
   
-  private async createTextureFromFile(
+  protected async createTextureFromFile(
     fileName: string,
     usePremultiply: boolean,
     index: number,
@@ -307,7 +307,7 @@ export class Live2dModel extends CubismUserModel {
     img.src = url;
   }
 
-  private async loadTextures(): Promise<void> {
+  protected async loadTextures(): Promise<void> {
     if (!this._modelSetting || this.isCompleteSetup) {
       return;
     }
@@ -339,7 +339,7 @@ export class Live2dModel extends CubismUserModel {
   *
   * @param setting ICubismModelSettingのインスタンス
   */
-  private async setupModel(setting: ICubismModelSetting, isPreloadMotion: boolean): Promise<void> {
+  protected async setupModel(setting: ICubismModelSetting, isPreloadMotion: boolean): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 
