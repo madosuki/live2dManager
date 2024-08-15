@@ -201,6 +201,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     if (this._live2dViewer.gl) {
       this.getRenderer().startUp(this._live2dViewer.gl);
     }
+    console.log("done it!");
 
     // this._model.saveParameters();
     /*
