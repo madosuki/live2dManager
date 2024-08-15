@@ -698,7 +698,7 @@ export class Live2dModel extends CubismUserModel {
     this.createRenderer();
     this.loadTextures();
   }
-
+  
   public constructor(
     modelHomeDir: string,
     modelJsonFileName: string,

@@ -530,4 +530,24 @@ export class Live2dMotionSyncModel extends Live2dModel {
 
     this._model.update();
   }
+  
+  public override release(): void {
+    
+    super.release();
+    
+    if (this._motionSync) {
+      this._motionSync.release();
+      this._motionSync = null;
+    }
+    
+    if (this._soundFileList) {
+      this._soundFileList?.clear();
+      this._soundFileList = null;
+    }
+    
+    if (this._soundData) {
+      this._soundData?.release();
+      this._soundData = null;
+    }
+  }
 }
