@@ -58,6 +58,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
   protected override async setupModel(
     setting: CubismModelMotionSyncSettingJson
   ): Promise<void> {
+    console.log("setupModel in motionsync");
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 

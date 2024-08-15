@@ -9,7 +9,6 @@ import {
   CubismFramework,
 } from "../CubismSdkForWeb/src/live2dcubismframework";
 import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
-import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
 import { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel";
 import { ICubismModelSetting } from "../CubismSdkForWeb/src/icubismmodelsetting";
 import {
@@ -90,10 +89,6 @@ export class Live2dModel extends CubismUserModel {
   _wavFileHandler: LAppWavFileHandler;
   lipSyncWeight: number;
 
-  _soundFileList:csmVector<csmString>;
-  _soundIndex: number;
-  _lastSampleCount: number;
-  
   protected manualClosedEye: boolean;
 
   public async startLipSync(bytes: ArrayBuffer): Promise<void> {
@@ -786,10 +781,5 @@ export class Live2dModel extends CubismUserModel {
     this._wavFileHandler = new LAppWavFileHandler();
     this.lipSyncWeight = 0.8;
     this.manualClosedEye = false;
-
-    this._soundFileList = new csmVector<csmString>;
-    this._soundIndex = 0;
-    this._lastSampleCount = 0;
-
   }
 }
