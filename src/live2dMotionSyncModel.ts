@@ -58,7 +58,6 @@ export class Live2dMotionSyncModel extends Live2dModel {
   protected override async setupModel(
     setting: CubismModelMotionSyncSettingJson
   ): Promise<void> {
-    console.log("setupModel in motionsync");
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
 
@@ -201,7 +200,6 @@ export class Live2dMotionSyncModel extends Live2dModel {
     if (this._live2dViewer.gl) {
       this.getRenderer().startUp(this._live2dViewer.gl);
     }
-    console.log("done it!");
 
     // this._model.saveParameters();
     /*
@@ -228,6 +226,16 @@ export class Live2dMotionSyncModel extends Live2dModel {
       }
     }
     */
+  }
+  
+  public override async loadAssets(): Promise<void> {
+    const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
+    const readResult = await this.readFileFunction(filePath);
+    const setting = new CubismModelMotionSyncSettingJson(
+      readResult,
+      readResult.byteLength
+    );
+    await this.setupModel(setting);
   }
 
   /**
