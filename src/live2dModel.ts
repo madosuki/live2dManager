@@ -440,6 +440,9 @@ export class Live2dModel extends CubismUserModel {
 
     // set lipsync id
     const lipSyncIdCount = this._modelSetting.getLipSyncParameterCount();
+    if (lipSyncIdCount > 0) {
+      this._lipSyncIds.clear();
+    }
     for (let i = 0; i < lipSyncIdCount; ++i) {
       this._lipSyncIds.pushBack(this._modelSetting.getLipSyncParameterId(i));
     }
@@ -737,6 +740,9 @@ export class Live2dModel extends CubismUserModel {
         CubismFramework.getIdManager().getId("PARAM_BODY_ANGLE_X");
       this._idParamEyeLOpen = CubismFramework.getIdManager().getId("PARAM_EYE_L_OPEN");
       this._idParamEyeROpen = CubismFramework.getIdManager().getId("PARAM_EYE_R_OPEN");
+      
+      const idParamMouthOpenY = CubismFramework.getIdManager().getId("PARAM_MOUTH_OPEN_Y");
+      this._lipSyncIds.pushBack(idParamMouthOpenY);
     } else {
       this._idParamAngleX = CubismFramework.getIdManager().getId(
         CubismDefaultParameterId.ParamAngleX
@@ -761,6 +767,8 @@ export class Live2dModel extends CubismUserModel {
       
       this._idParamEyeLOpen = CubismFramework.getIdManager().getId("ParamEyeLOpen");
       this._idParamEyeROpen = CubismFramework.getIdManager().getId("ParamEyeROpen");
+      const idParamMouthOpenY = CubismFramework.getIdManager().getId("ParamMouthOpenY");
+      this._lipSyncIds.pushBack(idParamMouthOpenY);
     }
 
     if (LAppDefine.MOCConsistencyValidationEnable) {
