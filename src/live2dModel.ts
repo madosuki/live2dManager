@@ -162,7 +162,8 @@ export class Live2dModel extends CubismUserModel {
     this._model.saveParameters();
 
     // まばたき
-    if (!isMotionUpdated && this._eyeBlink != undefined) {
+    // 安全に倒すなら、this._eyeBlinkがundefinedかどうか検査した方が良いがここでは一部の設定ファイルにEyeBlinkパラメーターを記述していないモデルのために検査していない。
+    if (!isMotionUpdated) {
       if (this.manualClosedEye) {
         this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
         this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
