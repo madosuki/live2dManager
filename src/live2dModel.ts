@@ -162,8 +162,7 @@ export class Live2dModel extends CubismUserModel {
     this._model.saveParameters();
 
     // まばたき
-    // 安全に倒すなら、this._eyeBlinkがundefinedかどうか検査した方が良いがここでは一部の設定ファイルにEyeBlinkパラメーターを記述していないモデルのために検査していない。
-    if (!isMotionUpdated) {
+    if (!isMotionUpdated && this._eyeBlink != undefined) {
       if (this.manualClosedEye) {
         this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
         this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
@@ -397,11 +396,20 @@ export class Live2dModel extends CubismUserModel {
     }
 
     // Set Eye Blink params
-    if (this._modelSetting.getEyeBlinkParameterCount() > 0) {
+    const eyeBlinkParameterSize = this._modelSetting.getEyeBlinkParameterCount();
+    this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
+    /*
+    if (eyeBlinkParameterSize > 0) {
       this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
     }
-    for (let i = 0; i < this._modelSetting.getEyeBlinkParameterCount(); ++i) {
-      this._eyeBlinkIds.pushBack(this._modelSetting.getEyeBlinkParameterId(i));
+    */
+    if (eyeBlinkParameterSize > 0) {
+      for (let i = 0; i < this._modelSetting.getEyeBlinkParameterCount(); ++i) {
+        this._eyeBlinkIds.pushBack(this._modelSetting.getEyeBlinkParameterId(i));
+      }
+    } else {
+      this._eyeBlinkIds.pushBack(this._idParamEyeLOpen);
+      this._eyeBlinkIds.pushBack(this._idParamEyeROpen);
     }
 
     // Breath
