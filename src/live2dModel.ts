@@ -397,6 +397,7 @@ export class Live2dModel extends CubismUserModel {
 
     // Set Eye Blink params
     const eyeBlinkParameterSize = this._modelSetting.getEyeBlinkParameterCount();
+    // 本来はmoc3.jsonにEyeBlinkIdsが記述されている場合のみ実行すべきだが、記述されていない一部のモデルのために敢えてこうしている。
     this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
     /*
     if (eyeBlinkParameterSize > 0) {
