@@ -411,6 +411,7 @@ export class Live2dModel extends CubismUserModel {
     } else {
       this._eyeBlinkIds.pushBack(this._idParamEyeLOpen);
       this._eyeBlinkIds.pushBack(this._idParamEyeROpen);
+      this._eyeBlink.setParameterIds(this._eyeBlinkIds);
     }
 
     // Breath
