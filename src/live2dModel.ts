@@ -704,7 +704,7 @@ export class Live2dModel extends CubismUserModel {
     }
   }
   
-  public resetExpression(): void {
+  public stopExpression(): void {
     this._expressionManager.stopAllMotions();
   }
   
