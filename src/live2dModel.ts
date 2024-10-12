@@ -90,6 +90,9 @@ export class Live2dModel extends CubismUserModel {
   lipSyncWeight: number;
 
   protected manualClosedEye: boolean;
+  protected motionFileList: string[];
+  // key: [groupName, index]
+  protected motionRecord: Record<string, [string, number]>;
 
   public async startLipSync(bytes: ArrayBuffer): Promise<void> {
     await this._wavFileHandler.startWithBytes(bytes);
@@ -479,6 +482,18 @@ export class Live2dModel extends CubismUserModel {
         await this.preLoadMotionGroup(groupName);
       }
     }
+    
+    if (motionGroupCount > 0 && !isPreloadMotion) {
+      for(let motionGroupIndex = 0; motionGroupIndex < this._modelSetting.getMotionGroupCount(); ++motionGroupIndex) {
+        const groupName = this._modelSetting.getMotionGroupName(motionGroupIndex);
+
+        for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
+          const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
+          this.motionRecord[motionFileName] = [groupName, motionIndex];
+          this.motionFileList.push(motionFileName);
+        }
+      }
+    }
 
     if (motionGroupCount === 0 || !isPreloadMotion) {
       this._motionManager.stopAllMotions();
@@ -593,17 +608,24 @@ export class Live2dModel extends CubismUserModel {
     this.lipSyncWeight = weight;
   }
   
-  private async loadAMotion(group: string, index: number): Promise<boolean> {
-    const motionFileName = this._modelSetting.getMotionFileName(group, index);
+  /**
+   * モーションデータをグループ名から一括でロードする。
+   * モーションデータの名前は内部でModelSettingから取得する。
+   *
+   * @param group モーションデータのグループ名
+   */
+  public async preLoadMotionGroup(group: string): Promise<void> {
+    for (let index = 0; index < this._modelSetting.getMotionCount(group); index++) {
+      const motionFileName = this._modelSetting.getMotionFileName(group, index);
   
-        // ex) idle_0
+      // ex) idle_0
       const name = `${group}_${index}`;
       if (this._debugMode) {
         LAppPal.printMessage(
           `[APP]load motion: ${motionFileName} => [${name}]`
         );
       }
-  
+
       const motionFilePath = `${this._modelHomeDir}${motionFileName}`;
       const arrayBuffer = await this.readFileFunction(motionFilePath);
 
@@ -612,7 +634,7 @@ export class Live2dModel extends CubismUserModel {
         arrayBuffer.byteLength,
         name
       );
-  
+
       if (tmpMotion != undefined) {
         let fadeTime = this._modelSetting.getMotionFadeInTimeValue(
           group,
@@ -621,35 +643,22 @@ export class Live2dModel extends CubismUserModel {
         if (fadeTime >= 0.0) {
           tmpMotion.setFadeInTime(fadeTime);
         }
-  
+
         fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, index);
         if (fadeTime >= 0.0) {
           tmpMotion.setFadeOutTime(fadeTime);
         }
         tmpMotion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
-  
+
         if (this._motions.getValue(name) != null) {
           ACubismMotion.delete(this._motions.getValue(name));
         }
-  
+
         this._motions.setValue(name, tmpMotion);
-        return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * モーションデータをグループ名から一括でロードする。
-   * モーションデータの名前は内部でModelSettingから取得する。
-   *
-   * @param group モーションデータのグループ名
-   */
-  public async preLoadMotionGroup(group: string): Promise<void> {
-    for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
-      const result = await this.loadAMotion(group, i);
-      if (result) {
         this._allMotionCount++;
+        const motionFileName = this._modelSetting.getMotionFileName(group, index);
+        this.motionFileList.push(motionFileName);
+        this.motionRecord[motionFileName] = [group, index];
       } else {
         // loadMotionできなかった場合はモーションの総数がずれるので1つ減らす
         this._allMotionCount--;
@@ -716,20 +725,8 @@ export class Live2dModel extends CubismUserModel {
     return result;
   }
   
-  public getMotionInfos(): [string[], Record<string, [string, number]>] {
-    let motionInfoRecord: Record<string, [string, number]>;
-    const motionFileNameList: string[] = [];
-    
-    for(let motionGroupIndex = 0; motionGroupIndex < this._modelSetting.getMotionGroupCount(); ++motionGroupIndex) {
-      const groupName = this._modelSetting.getMotionGroupName(motionGroupIndex);
-      for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
-        const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
-        motionInfoRecord[motionFileName] = [groupName, motionIndex];
-        motionFileNameList.push(motionFileName);
-      }
-    }
-
-    return [motionFileNameList, motionInfoRecord];
+  public getMotionFileNameList(): string[] {
+    return this.motionFileList;
   }
   
   public reloadRenderer(): void {
@@ -825,5 +822,6 @@ export class Live2dModel extends CubismUserModel {
     this._wavFileHandler = new LAppWavFileHandler();
     this.lipSyncWeight = 0.8;
     this.manualClosedEye = false;
+    this.motionFileList = [];
   }
 }
