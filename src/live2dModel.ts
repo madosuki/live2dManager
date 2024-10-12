@@ -478,11 +478,13 @@ export class Live2dModel extends CubismUserModel {
       const groupName = this._modelSetting.getMotionGroupName(i);
       this._allMotionCount += this._modelSetting.getMotionCount(groupName);
 
+      /*
       for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
         const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
         this.motionRecord[motionFileName] = [groupName, motionIndex];
         this.motionFileList.push(motionFileName);
       }
+      */
 
       if (isPreloadMotion) {
         await this.preLoadMotionGroup(groupName);
