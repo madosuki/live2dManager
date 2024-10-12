@@ -739,6 +739,18 @@ export class Live2dModel extends CubismUserModel {
     this._motionManager.stopAllMotions();
   }
   
+  public setIdleMotion(): void {
+    const motionGroupCount: number = this._modelSetting.getMotionGroupCount();
+    for (let i = 0; i < motionGroupCount; i++) {
+      const groupName = this._modelSetting.getMotionGroupName(i);
+      this._allMotionCount += this._modelSetting.getMotionCount(groupName);
+      if (groupName === "Idle") {
+        this.startMotion(groupName, 0);
+      }
+
+    }
+  }
+  
   public reloadRenderer(): void {
     this.deleteRenderer();
     this.createRenderer();
