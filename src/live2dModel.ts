@@ -92,7 +92,7 @@ export class Live2dModel extends CubismUserModel {
   protected manualClosedEye: boolean;
   protected motionFileList: string[];
   // key: [groupName, index]
-  protected motionRecord: Record<string, [string, number]>;
+  protected motionMap: Map<string, [string, number]>;
 
   public async startLipSync(bytes: ArrayBuffer): Promise<void> {
     await this._wavFileHandler.startWithBytes(bytes);
@@ -480,7 +480,7 @@ export class Live2dModel extends CubismUserModel {
 
       for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
         const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
-        // this.motionRecord[motionFileName] = [groupName, motionIndex];
+        this.motionMap.set(motionFileName, [groupName, motionIndex]);
         this.motionFileList.push(motionFileName);
       }
 
@@ -814,6 +814,6 @@ export class Live2dModel extends CubismUserModel {
     this.lipSyncWeight = 0.8;
     this.manualClosedEye = false;
     this.motionFileList = [];
-    this.motionRecord = {};
+    this.motionRecord = new Map();
   }
 }
