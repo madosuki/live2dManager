@@ -814,5 +814,6 @@ export class Live2dModel extends CubismUserModel {
     this.lipSyncWeight = 0.8;
     this.manualClosedEye = false;
     this.motionFileList = [];
+    this.motionRecord = {};
   }
 }
