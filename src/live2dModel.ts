@@ -478,23 +478,17 @@ export class Live2dModel extends CubismUserModel {
       const groupName = this._modelSetting.getMotionGroupName(i);
       this._allMotionCount += this._modelSetting.getMotionCount(groupName);
 
+      for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
+        const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
+        this.motionRecord[motionFileName] = [groupName, motionIndex];
+        this.motionFileList.push(motionFileName);
+      }
+
       if (isPreloadMotion) {
         await this.preLoadMotionGroup(groupName);
       }
     }
     
-    if (motionGroupCount > 0 && !isPreloadMotion) {
-      for(let motionGroupIndex = 0; motionGroupIndex < this._modelSetting.getMotionGroupCount(); ++motionGroupIndex) {
-        const groupName = this._modelSetting.getMotionGroupName(motionGroupIndex);
-
-        for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
-          const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
-          this.motionRecord[motionFileName] = [groupName, motionIndex];
-          this.motionFileList.push(motionFileName);
-        }
-      }
-    }
-
     if (motionGroupCount === 0 || !isPreloadMotion) {
       this._motionManager.stopAllMotions();
 
@@ -656,9 +650,6 @@ export class Live2dModel extends CubismUserModel {
 
         this._motions.setValue(name, tmpMotion);
         this._allMotionCount++;
-        const motionFileName = this._modelSetting.getMotionFileName(group, index);
-        this.motionFileList.push(motionFileName);
-        this.motionRecord[motionFileName] = [group, index];
       } else {
         // loadMotionできなかった場合はモーションの総数がずれるので1つ減らす
         this._allMotionCount--;
