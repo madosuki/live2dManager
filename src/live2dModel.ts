@@ -541,12 +541,18 @@ export class Live2dModel extends CubismUserModel {
   public async startMotion(
     group: string,
     no: number,
-    priority: number,
+    priority?: number,
     onFinishedMotionHandler?: FinishedMotionCallback
   ): Promise<CubismMotionQueueEntryHandle> {
-    if (priority == LAppDefine.PriorityForce) {
-      this._motionManager.setReservePriority(priority);
-    } else if (!this._motionManager.reserveMotion(priority)) {
+    let realPriority = 0;
+    if (priority != undefined) {
+      realPriority = priority;
+    } else {
+      realPriority = LAppDefine.PriorityForce;
+    }
+    if (realPriority == LAppDefine.PriorityForce) {
+      this._motionManager.setReservePriority(realPriority);
+    } else if (!this._motionManager.reserveMotion(realPriority)) {
       if (this._debugMode) {
         LAppPal.printMessage("[APP]can't start motion.");
       }
@@ -594,7 +600,7 @@ export class Live2dModel extends CubismUserModel {
     return this._motionManager.startMotionPriority(
       motion,
       autoDelete,
-      priority
+      realPriority
     );
   }
 
