@@ -592,19 +592,13 @@ export class Live2dModel extends CubismUserModel {
   public setLipSyncWeight(weight: number): void {
     this.lipSyncWeight = weight;
   }
+  
+  public async loadAMotion(group: string, index: number): Promise<boolean> {
 
-  /**
-   * モーションデータをグループ名から一括でロードする。
-   * モーションデータの名前は内部でModelSettingから取得する。
-   *
-   * @param group モーションデータのグループ名
-   */
-  public async preLoadMotionGroup(group: string): Promise<void> {
-    for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
-      const motionFileName = this._modelSetting.getMotionFileName(group, i);
+    const motionFileName = this._modelSetting.getMotionFileName(group, index);
   
         // ex) idle_0
-      const name = `${group}_${i}`;
+      const name = `${group}_${index}`;
       if (this._debugMode) {
         LAppPal.printMessage(
           `[APP]load motion: ${motionFileName} => [${name}]`
@@ -623,7 +617,7 @@ export class Live2dModel extends CubismUserModel {
       if (tmpMotion != undefined) {
         let fadeTime = this._modelSetting.getMotionFadeInTimeValue(
           group,
-          i
+          index
         );
         if (fadeTime >= 0.0) {
           tmpMotion.setFadeInTime(fadeTime);
@@ -640,26 +634,41 @@ export class Live2dModel extends CubismUserModel {
         }
   
         this._motions.setValue(name, tmpMotion);
-  
-        this._motionCount++;
-        if (this._motionCount >= this._allMotionCount) {
-  
-          // 全てのモーションを停止する
-          this._motionManager.stopAllMotions();
-  
-          this._updating = false;
-          this._initialized = true;
-  
-          this.createRenderer();
-          await this.loadTextures();
-          if (this._live2dViewer.gl) {
-            this.getRenderer().setIsPremultipliedAlpha(true);
-            this.getRenderer().startUp(this._live2dViewer.gl);
-          }
-        }
+        return true;
+    }
+    return false;
+}
+
+  /**
+   * モーションデータをグループ名から一括でロードする。
+   * モーションデータの名前は内部でModelSettingから取得する。
+   *
+   * @param group モーションデータのグループ名
+   */
+  public async preLoadMotionGroup(group: string): Promise<void> {
+    for (let i = 0; i < this._modelSetting.getMotionCount(group); i++) {
+      const result = await this.loadAMotion(group, i);
+      if (result) {
+        this._allMotionCount++;
       } else {
         // loadMotionできなかった場合はモーションの総数がずれるので1つ減らす
         this._allMotionCount--;
+      }
+    }
+    
+    if (this._motionCount >= this._allMotionCount) {
+  
+      // 全てのモーションを停止する
+      this._motionManager.stopAllMotions();
+
+      this._updating = false;
+      this._initialized = true;
+
+      this.createRenderer();
+      await this.loadTextures();
+      if (this._live2dViewer.gl) {
+        this.getRenderer().setIsPremultipliedAlpha(true);
+        this.getRenderer().startUp(this._live2dViewer.gl);
       }
     }
   }
