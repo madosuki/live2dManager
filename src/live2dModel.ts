@@ -716,18 +716,20 @@ export class Live2dModel extends CubismUserModel {
     return result;
   }
   
-  public getMotionIdRecord(): Record<string, [string, number]> {
-    let result: Record<string, [string, number]>;
+  public getMotionInfos(): [string[], Record<string, [string, number]>] {
+    let motionInfoRecord: Record<string, [string, number]>;
+    const motionFileNameList: string[] = [];
     
     for(let motionGroupIndex = 0; motionGroupIndex < this._modelSetting.getMotionGroupCount(); ++motionGroupIndex) {
       const groupName = this._modelSetting.getMotionGroupName(motionGroupIndex);
       for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
         const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
-        result[motionFileName] = [groupName, motionIndex];
+        motionInfoRecord[motionFileName] = [groupName, motionIndex];
+        motionFileNameList.push(motionFileName);
       }
     }
 
-    return result;
+    return [motionFileNameList, motionInfoRecord];
   }
   
   public reloadRenderer(): void {
