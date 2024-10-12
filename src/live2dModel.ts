@@ -479,9 +479,9 @@ export class Live2dModel extends CubismUserModel {
       this._allMotionCount += this._modelSetting.getMotionCount(groupName);
 
       for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
-        const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
-        this.motionMap.set(motionFileName, [groupName, motionIndex]);
-        this.motionFileList.push(motionFileName);
+        // const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
+        this.motionMap.set(groupName, [groupName, motionIndex]);
+        this.motionFileList.push(groupName);
       }
 
       if (isPreloadMotion) {
