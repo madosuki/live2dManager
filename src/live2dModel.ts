@@ -593,7 +593,7 @@ export class Live2dModel extends CubismUserModel {
     this.lipSyncWeight = weight;
   }
   
-  public async loadAMotion(group: string, index: number): Promise<boolean> {
+  private async loadAMotion(group: string, index: number): Promise<boolean> {
     const motionFileName = this._modelSetting.getMotionFileName(group, index);
   
         // ex) idle_0
@@ -716,16 +716,17 @@ export class Live2dModel extends CubismUserModel {
     return result;
   }
   
-  public getMotionIdList(): string[] {
-    const result: string[] = [];
-    const keys: csmPair<string, ACubismMotion>[] = this._motions._keyValues;
-    for (const i of keys) {
-      if (i != undefined && i.first != undefined) {
-        const motionId = i.first;
-        result.push(motionId);
+  public getMotionIdRecord(): Record<string, [string, number]> {
+    let result: Record<string, [string, number]>;
+    
+    for(let motionGroupIndex = 0; motionGroupIndex < this._modelSetting.getMotionGroupCount(); ++motionGroupIndex) {
+      const groupName = this._modelSetting.getMotionGroupName(motionGroupIndex);
+      for (let motionIndex = 0; motionIndex < this._modelSetting.getMotionCount(groupName); ++motionIndex) {
+        const motionFileName = this._modelSetting.getMotionFileName(groupName, motionIndex);
+        result[motionFileName] = [groupName, motionIndex];
       }
     }
-    
+
     return result;
   }
   
