@@ -594,7 +594,6 @@ export class Live2dModel extends CubismUserModel {
   }
   
   public async loadAMotion(group: string, index: number): Promise<boolean> {
-
     const motionFileName = this._modelSetting.getMotionFileName(group, index);
   
         // ex) idle_0
@@ -623,7 +622,7 @@ export class Live2dModel extends CubismUserModel {
           tmpMotion.setFadeInTime(fadeTime);
         }
   
-        fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, i);
+        fadeTime = this._modelSetting.getMotionFadeOutTimeValue(group, index);
         if (fadeTime >= 0.0) {
           tmpMotion.setFadeOutTime(fadeTime);
         }
@@ -636,8 +635,9 @@ export class Live2dModel extends CubismUserModel {
         this._motions.setValue(name, tmpMotion);
         return true;
     }
+
     return false;
-}
+  }
 
   /**
    * モーションデータをグループ名から一括でロードする。
