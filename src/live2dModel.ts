@@ -707,6 +707,19 @@ export class Live2dModel extends CubismUserModel {
     return result;
   }
   
+  public getMotionIdList(): string[] {
+    const result: string[] = [];
+    const keys: csmPair<string, ACubismMotion>[] = this._motions._keyValues;
+    for (const i of keys) {
+      if (i != undefined && i.first != undefined) {
+        const motionId = i.first;
+        result.push(motionId);
+      }
+    }
+    
+    return result;
+  }
+  
   public reloadRenderer(): void {
     this.deleteRenderer();
     this.createRenderer();
