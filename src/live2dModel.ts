@@ -729,6 +729,10 @@ export class Live2dModel extends CubismUserModel {
     }
   }
   
+  public stopAllMotion(): void {
+    this._motionManager.stopAllMotions();
+  }
+  
   public reloadRenderer(): void {
     this.deleteRenderer();
     this.createRenderer();
