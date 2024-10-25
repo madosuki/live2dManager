@@ -208,6 +208,7 @@ export class Live2dModel extends CubismUserModel {
     } else {
       if (!isMotionUpdated && this._eyeBlink != undefined) {
         if (this.eyeOpenParams.lOpen != undefined) {
+          console.log(`update lopen!: ${this.eyeOpenParams.lOpen}`);
           this._model.setParameterValueById(this._idParamEyeLOpen, this.eyeOpenParams.lOpen);
         }
         
