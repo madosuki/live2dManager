@@ -93,7 +93,8 @@ export class Live2dModel extends CubismUserModel {
   readFileFunction: (arg: string) => Promise<ArrayBuffer>;
   _wavFileHandler: LAppWavFileHandler;
   lipSyncWeight: number;
-  isKeepEyeValue: boolean;
+  eyeOpenParams: EyeOpenParams;
+  isKeepOpenEyeValue: boolean;
 
   protected manualClosedEye: boolean;
   protected motionFileList: string[];
@@ -150,26 +151,26 @@ export class Live2dModel extends CubismUserModel {
     this.manualClosedEye = false;
   }
   
-  public keepEyeOpenValue(params: EyeOpenParams): void {
+  public keepEyeOpenParams(params: EyeOpenParams): void {
     let isChanged = false;
     
     if (params.lOpen != undefined) {
-      this._model.setParameterValueById(this._idParamEyeLOpen, params.lOpen);
       isChanged = true;
     }
     
     if (params.rOpen != undefined) {
-      this._model.setParameterValueById(this._idParamEyeROpen, params.rOpen);
       isChanged = true;
     }
     
     if (isChanged) {
-      this.isKeepEyeValue = true;
+      this.eyeOpenParams = params;
+      this.isKeepOpenEyeValue = true;
     }
   }
   
   public stopKeepEyeValue(): void {
-    this.isKeepEyeValue = false;
+    this.eyeOpenParams = {};
+    this.isKeepOpenEyeValue = false;
   }
 
   public update(): void {
@@ -192,7 +193,7 @@ export class Live2dModel extends CubismUserModel {
     // 状態を保存
     this._model.saveParameters();
 
-    if (!this.isKeepEyeValue) {
+    if (!this.isKeepOpenEyeValue) {
       // まばたき
       if (!isMotionUpdated && this._eyeBlink != undefined) {
         if (this.manualClosedEye) {
@@ -202,6 +203,16 @@ export class Live2dModel extends CubismUserModel {
 
         if (!this.manualClosedEye) {
           this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
+        }
+      }
+    } else {
+      if (!isMotionUpdated && this._eyeBlink != undefined) {
+        if (this.eyeOpenParams.lOpen != undefined) {
+          this._model.setParameterValueById(this._idParamEyeLOpen, this.eyeOpenParams.lOpen);
+        }
+        
+        if (this.eyeOpenParams.rOpen != undefined) {
+          this._model.setParameterValueById(this._idParamEyeROpen, this.eyeOpenParams.rOpen);
         }
       }
     }
@@ -876,6 +887,7 @@ export class Live2dModel extends CubismUserModel {
     this.manualClosedEye = false;
     this.motionFileList = [];
     this.motionMap = new Map();
-    this.isKeepEyeValue = false;
+    this.eyeOpenParams = {};
+    this.isKeepOpenEyeValue = false;
   }
 }
