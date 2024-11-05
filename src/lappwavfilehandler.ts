@@ -127,7 +127,7 @@ export class LAppWavFileHandler {
         // fmtチャンクサイズ
         const fmtChunkSize = this._byteReader.get32LittleEndian();
         // フォーマットIDは1（リニアPCM）以外受け付けない
-        if (this._byteReader.get16LittleEndian() != 1) {
+        if (this._byteReader.get16LittleEndian() !== 1) {
           ret = false;
           throw new Error('File is not linear PCM.');
         }
@@ -233,7 +233,7 @@ export class LAppWavFileHandler {
   }
 
   public getPcmSample(): number {
-    let pcm32;
+    let pcm32 = 0;
 
     // 32ビット幅に拡張してから-1～1の範囲に丸める
     switch (this._wavFileInfo._bitsPerSample) {
@@ -297,6 +297,7 @@ export class LAppWavFileHandler {
     ) {
       delete this._pcmData[channelCount];
     }
+    // biome-ignore lint/performance/noDelete: <explanation>
     delete this._pcmData;
     this._pcmData = null;
   }
@@ -405,17 +406,17 @@ export class ByteReader {
   public getCheckSignature(reference: string): boolean {
     const getSignature: Uint8Array = new Uint8Array(4);
     const referenceString: Uint8Array = new TextEncoder().encode(reference);
-    if (reference.length != 4) {
+    if (reference.length !== 4) {
       return false;
     }
     for (let signatureOffset = 0; signatureOffset < 4; signatureOffset++) {
       getSignature[signatureOffset] = this.get8();
     }
     return (
-      getSignature[0] == referenceString[0] &&
-      getSignature[1] == referenceString[1] &&
-      getSignature[2] == referenceString[2] &&
-      getSignature[3] == referenceString[3]
+      getSignature[0] === referenceString[0] &&
+      getSignature[1] === referenceString[1] &&
+      getSignature[2] === referenceString[2] &&
+      getSignature[3] === referenceString[3]
     );
   }
 

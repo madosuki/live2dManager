@@ -185,7 +185,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._modelMatrix.setupFromLayout(layout);
 
     const motionSyncFileName = this._modelSetting.getMotionSyncFileName();
-    if (motionSyncFileName != undefined || motionSyncFileName !== "NullValue") {
+    if (motionSyncFileName != null || motionSyncFileName !== "NullValue") {
       const data = await this.readFileFunction(
         `${this._modelHomeDir}${motionSyncFileName}`
       );
@@ -244,7 +244,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
    * @param size    バッファのサイズ
    */
   private loadMotionSync(buffer: ArrayBuffer, size: number) {
-    if (buffer == null || size == 0) {
+    if (buffer == null || size === 0) {
       // CubismLogError('Failed to loadMotionSync().');
       return;
     }
@@ -459,7 +459,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._model.saveParameters();
 
     // まばたき
-    if (!isMotionUpdated && this._eyeBlink != undefined) {
+    if (!isMotionUpdated && this._eyeBlink != null) {
       if (this.manualClosedEye) {
         this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
         this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
@@ -471,7 +471,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     }
 
     // 表情
-    if (this._expressionManager != undefined) {
+    if (this._expressionManager != null) {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
     }
 
@@ -494,12 +494,12 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
 
     // 呼吸など
-    if (this._breath != undefined) {
+    if (this._breath != null) {
       this._breath.updateParameters(this._model, deltaTimeSeconds);
     }
 
     // 物理演算の設定
-    if (this._physics != undefined) {
+    if (this._physics != null) {
       this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
@@ -520,7 +520,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     }
 
     // ポーズの設定
-    if (this._pose != undefined) {
+    if (this._pose != null) {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
 

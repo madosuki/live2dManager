@@ -201,8 +201,8 @@ export class LAppMotionSyncAudioManager {
         ite.preIncrement()
       ) {
         if (
-          ite.ptr().filePath == fileName &&
-          ite.ptr().audioContext == audioContext &&
+          ite.ptr().filePath === fileName &&
+          ite.ptr().audioContext === audioContext &&
           audioContext != null
         ) {
           // 2回目以降はキャッシュが使用される(待ち時間なし)
@@ -306,7 +306,7 @@ export class LAppMotionSyncAudioManager {
    */
   public releaseAudioByAudioContext(audioContext: AudioContext): void {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).audioContext != audioContext) {
+      if (this._audios.at(i).audioContext !== audioContext) {
         continue;
       }
       this._audios.at(i).source.disconnect();
@@ -325,7 +325,7 @@ export class LAppMotionSyncAudioManager {
    */
   public releaseAudioByFilePath(fileName: string): void {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).filePath != fileName) {
+      if (this._audios.at(i).filePath !== fileName) {
         continue;
       }
       this._audios.at(i).source.disconnect();
@@ -344,7 +344,7 @@ export class LAppMotionSyncAudioManager {
    */
   public isPlayByFilePath(filePath: string): boolean {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).filePath != filePath) {
+      if (this._audios.at(i).filePath !== filePath) {
         continue;
       }
 
@@ -361,7 +361,7 @@ export class LAppMotionSyncAudioManager {
    */
   public playByFilePath(filePath: string): void {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).filePath != filePath) {
+      if (this._audios.at(i).filePath !== filePath) {
         continue;
       }
 
@@ -377,7 +377,7 @@ export class LAppMotionSyncAudioManager {
    */
   public stopByFilePath(filePath: string): void {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).filePath != filePath) {
+      if (this._audios.at(i).filePath !== filePath) {
         continue;
       }
 
@@ -393,7 +393,7 @@ export class LAppMotionSyncAudioManager {
    */
   public pauseByFilePath(filePath: string): void {
     for (let i = 0; i < this._audios.getSize(); i++) {
-      if (this._audios.at(i).filePath != filePath) {
+      if (this._audios.at(i).filePath !== filePath) {
         continue;
       }
 

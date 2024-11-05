@@ -110,7 +110,7 @@ export class Live2dModel extends CubismUserModel {
   }
 
   public releaseTextures(): void {
-    if (this._textures == undefined || this._textures.getSize() === 0) {
+    if (this._textures == null || this._textures.getSize() === 0) {
       return;
     }
 
@@ -122,7 +122,7 @@ export class Live2dModel extends CubismUserModel {
   
   public releaseTextureByTexture(texture: WebGLTexture): void {
     for (let i =  0; i < this._textures.getSize(); i++) {
-      if (this._textures.at(i).id != texture) {
+      if (this._textures.at(i).id !== texture) {
         continue;
       }
       
@@ -132,13 +132,13 @@ export class Live2dModel extends CubismUserModel {
   }
 
   public releaseMotions(): void {
-    if (this._motions != undefined && this._motions.getSize() > 0) {
+    if (this._motions != null && this._motions.getSize() > 0) {
       this._motions.clear();
     }
   }
 
   public releaseExpressions(): void {
-    if (this._expressions != undefined && this._motions.getSize() > 0) {
+    if (this._expressions != null && this._motions.getSize() > 0) {
       this._expressions.clear();
     }
   }
@@ -154,11 +154,11 @@ export class Live2dModel extends CubismUserModel {
   public keepEyeOpenParams(params: EyeOpenParams): void {
     let isChanged = false;
     
-    if (params.lOpen != undefined) {
+    if (params.lOpen != null) {
       isChanged = true;
     }
     
-    if (params.rOpen != undefined) {
+    if (params.rOpen != null) {
       isChanged = true;
     }
     
@@ -195,7 +195,7 @@ export class Live2dModel extends CubismUserModel {
 
     if (!this.isKeepOpenEyeValue) {
       // まばたき
-      if (!isMotionUpdated && this._eyeBlink != undefined) {
+      if (!isMotionUpdated && this._eyeBlink != null) {
         if (this.manualClosedEye) {
           this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
           this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
@@ -206,19 +206,19 @@ export class Live2dModel extends CubismUserModel {
         }
       }
     } else {
-      if (!isMotionUpdated && this._eyeBlink != undefined) {
-        if (this.eyeOpenParams.lOpen != undefined) {
+      if (!isMotionUpdated && this._eyeBlink != null) {
+        if (this.eyeOpenParams.lOpen != null) {
           this._model.setParameterValueById(this._idParamEyeLOpen, this.eyeOpenParams.lOpen);
         }
         
-        if (this.eyeOpenParams.rOpen != undefined) {
+        if (this.eyeOpenParams.rOpen != null) {
           this._model.setParameterValueById(this._idParamEyeROpen, this.eyeOpenParams.rOpen);
         }
       }
     }
     
     // 表情
-    if (this._expressionManager != undefined) {
+    if (this._expressionManager != null) {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
     }
 
@@ -241,12 +241,12 @@ export class Live2dModel extends CubismUserModel {
     this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
 
     // 呼吸など
-    if (this._breath != undefined) {
+    if (this._breath != null) {
       this._breath.updateParameters(this._model, deltaTimeSeconds);
     }
 
     // 物理演算の設定
-    if (this._physics != undefined) {
+    if (this._physics != null) {
       this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
@@ -263,7 +263,7 @@ export class Live2dModel extends CubismUserModel {
     }
     
     // ポーズの設定
-    if (this._pose != undefined) {
+    if (this._pose != null) {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
 
@@ -357,7 +357,7 @@ export class Live2dModel extends CubismUserModel {
 
     for (let i = 0; i < textureCount; ++i) {
       const textureFileName = this._modelSetting.getTextureFileName(i);
-      if (textureFileName == "") {
+      if (textureFileName === "") {
         continue;
       }
       const texturePath = `${this._modelHomeDir}${textureFileName}`;
@@ -586,12 +586,12 @@ export class Live2dModel extends CubismUserModel {
     onFinishedMotionHandler?: FinishedMotionCallback
   ): Promise<CubismMotionQueueEntryHandle> {
     let realPriority = 0;
-    if (priority != undefined) {
+    if (priority != null) {
       realPriority = priority;
     } else {
       realPriority = LAppDefine.PriorityForce;
     }
-    if (realPriority == LAppDefine.PriorityForce) {
+    if (realPriority === LAppDefine.PriorityForce) {
       this._motionManager.setReservePriority(realPriority);
     } else if (!this._motionManager.reserveMotion(realPriority)) {
       if (this._debugMode) {
@@ -629,7 +629,7 @@ export class Live2dModel extends CubismUserModel {
 
     //voice
     const voice = this._modelSetting.getMotionSoundFileName(group, no);
-    if (voice.localeCompare('') != 0) {
+    if (voice.localeCompare('') !== 0) {
       let path = voice;
       path = this._modelHomeDir + path;
       this._wavFileHandler.start(path);
@@ -676,7 +676,7 @@ export class Live2dModel extends CubismUserModel {
         name
       );
 
-      if (tmpMotion != undefined) {
+      if (tmpMotion != null) {
         let fadeTime = this._modelSetting.getMotionFadeInTimeValue(
           group,
           index
@@ -732,7 +732,7 @@ export class Live2dModel extends CubismUserModel {
       LAppPal.printMessage(`expression: [${expressionId}]`);
     }
   
-    if (motion != undefined) {
+    if (motion != null) {
       this._expressionManager.startMotionPriority(
         motion,
         false,
@@ -754,7 +754,7 @@ export class Live2dModel extends CubismUserModel {
     const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
-      if (i != undefined && i.first != undefined) {
+      if (i != null && i.first != null) {
         const expressionId = i.first;
         result.push(expressionId);
       }

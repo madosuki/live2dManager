@@ -106,7 +106,7 @@ export class Live2dViewer {
   
   public getModelFromKey(key: string): Live2dModel | Live2dMotionSyncModel | undefined {
     const result = this._models._keyValues.find((v) => v.first === key);
-    if (result != undefined) {
+    if (result != null) {
       return result.second; 
     }
     
@@ -115,14 +115,14 @@ export class Live2dViewer {
 
   public updateCoordinate(x: number, y: number): void {
     const model: Live2dModel | Live2dMotionSyncModel | undefined = this.getModelFromKey(this.targetCurrentModelKey);
-    if (model != undefined) {
+    if (model != null) {
       model.setDragging(x, y);
     }
   }
 
   private initializeSprite(): void {
     const tmp = this.createShader();
-    if (tmp == undefined) {
+    if (tmp == null) {
         throw new Error("failed createShader");
     }
 
@@ -191,12 +191,12 @@ export class Live2dViewer {
   }
 
   private createShader(): WebGLProgram | undefined {
-    if (this.gl == undefined) {
+    if (this.gl == null) {
       return undefined;
     }
     
     const vertexShaderId = this.gl.createShader(this.gl.VERTEX_SHADER);
-    if (vertexShaderId == undefined) {
+    if (vertexShaderId == null) {
       console.log("vertexShaderId is null");
       return undefined;
     }
@@ -216,7 +216,7 @@ export class Live2dViewer {
     this.gl.compileShader(vertexShaderId);
 
     const fragmentShaderId = this.gl.createShader(this.gl.FRAGMENT_SHADER);
-    if (fragmentShaderId == undefined) {
+    if (fragmentShaderId == null) {
       console.log("fragment shader id is null");
       return undefined;
     }
@@ -255,7 +255,7 @@ export class Live2dViewer {
     const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
-      if (i != undefined && i.second != undefined) {
+      if (i != null && i.second != null) {
         const model: Live2dModel | Live2dMotionSyncModel = i.second;
         model.releaseTextures();
         model.releaseExpressions();
@@ -337,7 +337,7 @@ export class Live2dViewer {
       }
     };
     
-    if (model != undefined && model.isCompleteSetup) {
+    if (model.isCompleteSetup) {
       draw();
     }
     

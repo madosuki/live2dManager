@@ -100,7 +100,7 @@ export class LAppAudioManager {
       .getAudioManager()
       ._audios.at(index).audioContext;
 
-    return audioContext.state == 'suspended';
+    return audioContext.state === 'suspended';
   }
 
   /**
