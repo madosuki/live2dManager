@@ -6,17 +6,20 @@
  */
 
 import {
+  CubismMotionSync,
+  MotionSyncOption,
+} from "@motionsyncframework/live2dcubismmotionsync";
+import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
+import {
   CubismFramework,
   Option,
 } from "../CubismSdkForWeb/src/live2dcubismframework";
-import { CubismMotionSync, MotionSyncOption } from "@motionsyncframework/live2dcubismmotionsync";
 import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
-import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
-import { TouchManager } from "./touchmanager";
 import { LAppPal } from "./lapppal";
+import { TouchManager } from "./touchmanager";
 
-import { Live2dModel } from "./live2dModel";
 import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+import { Live2dModel } from "./live2dModel";
 import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 
 function outLog(message: string): void {
@@ -37,15 +40,15 @@ export class Live2dViewer {
   _deviceToScreen: CubismMatrix44;
   _touchManager: TouchManager;
   private targetCurrentModelKey: string;
-  
+
   getCurrentModelKey(): string {
     return this.targetCurrentModelKey;
   }
 
   constructor(canvas: HTMLCanvasElement, width?: number, height?: number) {
     this.canvas = canvas;
-    this.canvas.width = width?? 800;
-    this.canvas.height = height?? 800;
+    this.canvas.width = width ?? 800;
+    this.canvas.height = height ?? 800;
     this.gl = null;
     this.frameBuffer = null;
 
@@ -55,7 +58,7 @@ export class Live2dViewer {
     this._deviceToScreen = new CubismMatrix44();
     this.isSetupComplete = false;
     this.isDown = false;
-    
+
     this._models = new csmMap();
 
     this._touchManager = new TouchManager();
@@ -77,7 +80,7 @@ export class Live2dViewer {
   public onTouchesEnded(): void {
     this.updateCoordinate(0.0, 0.0);
   }
-  
+
   public onTouchesCancel(): void {
     this.updateCoordinate(0.0, 0.0);
   }
@@ -92,29 +95,35 @@ export class Live2dViewer {
     return this._viewMatrix.invertTransformY(screenY);
   }
 
-  public addModel(key: string, model: Live2dModel | Live2dMotionSyncModel): void {
+  public addModel(
+    key: string,
+    model: Live2dModel | Live2dMotionSyncModel,
+  ): void {
     this._models.appendKey(key);
     this._models.setValue(key, model);
   }
 
   public setCurrentModel(key: string): boolean {
     if (!this._models._keyValues.find((v) => v.first === key)) return false;
-    
+
     this.targetCurrentModelKey = key;
     return true;
   }
-  
-  public getModelFromKey(key: string): Live2dModel | Live2dMotionSyncModel | undefined {
+
+  public getModelFromKey(
+    key: string,
+  ): Live2dModel | Live2dMotionSyncModel | undefined {
     const result = this._models._keyValues.find((v) => v.first === key);
     if (result != null) {
-      return result.second; 
+      return result.second;
     }
-    
+
     return undefined;
   }
 
   public updateCoordinate(x: number, y: number): void {
-    const model: Live2dModel | Live2dMotionSyncModel | undefined = this.getModelFromKey(this.targetCurrentModelKey);
+    const model: Live2dModel | Live2dMotionSyncModel | undefined =
+      this.getModelFromKey(this.targetCurrentModelKey);
     if (model != null) {
       model.setDragging(x, y);
     }
@@ -123,17 +132,17 @@ export class Live2dViewer {
   private initializeSprite(): void {
     const tmp = this.createShader();
     if (tmp == null) {
-        throw new Error("failed createShader");
+      throw new Error("failed createShader");
     }
 
     this._programId = tmp;
   }
 
   /**
-  * Viewerの初期化
-  *
-  * @param allocationMemorySize オプショナルで単位はバイト。指定する場合は16MB以上で、それよりも下回る場合は16MBが確保される。複数体モデルを扱う場合は16MBより上を確保するようにした方が良い（ref: https://docs.live2d.com/cubism-sdk-manual/faq/ のql4参照)
-  */
+   * Viewerの初期化
+   *
+   * @param allocationMemorySize オプショナルで単位はバイト。指定する場合は16MB以上で、それよりも下回る場合は16MBが確保される。複数体モデルを扱う場合は16MBより上を確保するようにした方が良い（ref: https://docs.live2d.com/cubism-sdk-manual/faq/ のql4参照)
+   */
   public initialize(allocationMemorySize?: number): void {
     this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
     if (this.gl == null) {
@@ -165,24 +174,24 @@ export class Live2dViewer {
       const screenW = Math.abs(right - left);
       this._deviceToScreen.scaleRelative(
         screenW / this.canvas.width,
-        -screenW / this.canvas.width
+        -screenW / this.canvas.width,
       );
     } else {
       const screenH = Math.abs(top - bottom);
       this._deviceToScreen.scaleRelative(
         screenH / this.canvas.height,
-        -screenH / this.canvas.height
+        -screenH / this.canvas.height,
       );
     }
     this._deviceToScreen.translateRelative(
       -this.canvas.width * 0.5,
-      -this.canvas.height * 0.5
+      -this.canvas.height * 0.5,
     );
 
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
     CubismFramework.initialize(allocationMemorySize);
-    
+
     this._cubismMotionSyncOptions.logFunction = outLog;
     CubismMotionSync.startUp(this._cubismMotionSyncOptions);
     CubismMotionSync.initialize();
@@ -194,7 +203,7 @@ export class Live2dViewer {
     if (this.gl == null) {
       return undefined;
     }
-    
+
     const vertexShaderId = this.gl.createShader(this.gl.VERTEX_SHADER);
     if (vertexShaderId == null) {
       console.log("vertexShaderId is null");
@@ -252,7 +261,8 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
+    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] =
+      this._models._keyValues;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
       if (i != null && i.second != null) {
@@ -263,7 +273,7 @@ export class Live2dViewer {
         model.release();
       }
     }
-    
+
     this._models.clear();
   }
 
@@ -273,26 +283,26 @@ export class Live2dViewer {
     this.gl.deleteProgram(this._programId);
     this._viewMatrix = null;
     this._deviceToScreen = null;
-    
+
     CubismFramework.dispose();
   }
 
   public getNewMatrix44(): CubismMatrix44 {
     return new CubismMatrix44();
   }
-  
+
   public updateTime(): void {
     LAppPal.updateTime();
   }
-  
+
   public runSingleModel(): void {
     let isValidTargetCurrentModelKey = false;
     for (let i = 0; i < this._models.getSize(); ++i) {
       if (this._models._keyValues[i].first === this.targetCurrentModelKey) {
-       isValidTargetCurrentModelKey = true; 
+        isValidTargetCurrentModelKey = true;
       }
     }
-    
+
     if (!isValidTargetCurrentModelKey) return;
 
     const loop = () => {
@@ -320,27 +330,28 @@ export class Live2dViewer {
 
       const projection = new CubismMatrix44();
 
-      const model: Live2dModel | Live2dMotionSyncModel = this._models.getValue(this.targetCurrentModelKey);
+      const model: Live2dModel | Live2dMotionSyncModel = this._models.getValue(
+        this.targetCurrentModelKey,
+      );
       const draw = () => {
-      if (model.getModel()) {
-        if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
-          model.getModelMatrix().setWidth(2.0);
-          projection.scale(1.0, width / height);
-        } else {
-          projection.scale(height / width, 1.0);
+        if (model.getModel()) {
+          if (model.getModel().getCanvasWidth() > 1.0 && width < height) {
+            model.getModelMatrix().setWidth(2.0);
+            projection.scale(1.0, width / height);
+          } else {
+            projection.scale(height / width, 1.0);
+          }
+
+          projection.multiplyByMatrix(this._viewMatrix);
+
+          model.update();
+          model.draw(projection, 0, 0, width, height, this.frameBuffer);
         }
+      };
 
-        projection.multiplyByMatrix(this._viewMatrix);
-
-        model.update();
-        model.draw(projection, 0, 0, width, height, this.frameBuffer);
+      if (model.isCompleteSetup) {
+        draw();
       }
-    };
-    
-    if (model.isCompleteSetup) {
-      draw();
-    }
-    
 
       requestAnimationFrame(loop);
     };

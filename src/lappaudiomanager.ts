@@ -9,9 +9,9 @@ import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
 import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import {
   AudioInfo,
-  LAppMotionSyncAudioManager
+  LAppMotionSyncAudioManager,
 } from "./lappmotionsyncaudiomanager";
-import { Live2dMotionSyncModel } from './live2dMotionSyncModel';
+import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 
 export class LAppAudioManager {
   /**
@@ -23,7 +23,7 @@ export class LAppAudioManager {
     path: string,
     index: number,
     model: Live2dMotionSyncModel,
-    motionSync: CubismMotionSync
+    motionSync: CubismMotionSync,
   ): void {
     this._soundBufferContext
       .getAudioManager()
@@ -37,12 +37,12 @@ export class LAppAudioManager {
           audioInfo: AudioInfo,
           index: number,
           model: Live2dMotionSyncModel,
-          motionSync: CubismMotionSync
+          motionSync: CubismMotionSync,
         ): void => {
           this._soundBufferContext
             .getBuffers()
             .set(index, new csmVector<number>());
-        }
+        },
       );
   }
 
@@ -60,7 +60,7 @@ export class LAppAudioManager {
    */
   public spliceBegin(
     buffer: csmVector<number>,
-    size: number
+    size: number,
   ): csmVector<number> {
     if (!buffer?.begin() || buffer?._size <= size) {
       return buffer; // 削除範囲外
@@ -100,7 +100,7 @@ export class LAppAudioManager {
       .getAudioManager()
       ._audios.at(index).audioContext;
 
-    return audioContext.state === 'suspended';
+    return audioContext.state === "suspended";
   }
 
   /**
@@ -143,7 +143,7 @@ export class LAppAudioManager {
     const buffer = this._soundBufferContext.getBuffers().at(index);
     buffer.clear();
   }
-  
+
   public stopForSinglePlay(): void {
     const buffer = this._soundBufferContext.getBufferForSinglePlay();
     if (buffer != null) return;
@@ -182,7 +182,7 @@ export class SoundBufferContext {
   public getBuffers(): csmVector<csmVector<number>> {
     return this._buffers;
   }
-  
+
   public getBufferForSinglePlay(): csmVector<number> {
     return this._bufferForSinglePlay;
   }
@@ -193,7 +193,7 @@ export class SoundBufferContext {
 
   public constructor(
     buffers?: csmVector<csmVector<number>>,
-    audioManager?: LAppMotionSyncAudioManager
+    audioManager?: LAppMotionSyncAudioManager,
   ) {
     this._buffers = buffers ? buffers : new csmVector<csmVector<number>>();
     this._bufferForSinglePlay = new csmVector<number>();
@@ -207,7 +207,7 @@ export class SoundBufferContext {
       this._buffers.clear();
       this._buffers = void 0;
     }
-    
+
     if (this._bufferForSinglePlay != null) {
       this._bufferForSinglePlay.clear();
       this._bufferForSinglePlay = void 0;

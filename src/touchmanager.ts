@@ -126,7 +126,7 @@ export class TouchManager {
       this._startX,
       this._startY,
       this._lastX,
-      this._lastY
+      this._lastY,
     );
   }
 
@@ -142,7 +142,7 @@ export class TouchManager {
     x1: number,
     y1: number,
     x2: number,
-    y2: number
+    y2: number,
   ): number {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
   }
@@ -157,7 +157,7 @@ export class TouchManager {
    * @return 小さい方の移動量
    */
   public calculateMovingAmount(v1: number, v2: number): number {
-    if (v1 > 0.0 != v2 > 0.0) {
+    if (v1 > 0.0 !== v2 > 0.0) {
       return 0.0;
     }
 

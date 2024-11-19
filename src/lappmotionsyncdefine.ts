@@ -10,16 +10,16 @@
  */
 
 // 相対パス
-export const ResourcesPath = '../../Resources/';
-export const MotionSyncModelSoundsDirName = 'sounds/';
+export const ResourcesPath = "../../Resources/";
+export const MotionSyncModelSoundsDirName = "sounds/";
 
 // 早送りの画像ファイル
-export const FastForwardImageName = 'icon_fastForward.png';
+export const FastForwardImageName = "icon_fastForward.png";
 
 // モデル定義---------------------------------------------
 // モデルを配置したディレクトリ名の配列
 // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
-export const ModelDir: string[] = ['Kei_basic', 'Kei_vowels'];
+export const ModelDir: string[] = ["Kei_basic", "Kei_vowels"];
 
 export const ModelDirSize: number = ModelDir.length;
 

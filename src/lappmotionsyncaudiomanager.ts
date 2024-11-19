@@ -6,10 +6,10 @@
  */
 
 import { csmVector, iterator } from "../CubismSdkForWeb/src/type/csmvector";
-import * as LAppMotionSyncDefine from './lappmotionsyncdefine';
 import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
-import { Live2dMotionSyncModel } from './live2dMotionSyncModel';
-import { LAppWavFileHandler } from './lappwavfilehandler';
+import * as LAppMotionSyncDefine from "./lappmotionsyncdefine";
+import { LAppWavFileHandler } from "./lappwavfilehandler";
+import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 // import { CubismLogError } from "../CubismSdkForWeb/src/utils/cubismdebug";
 
 /**
@@ -54,7 +54,7 @@ export class LAppMotionSyncAudioManager {
     }
     this._audios = null;
   }
-  
+
   public async createAudioFromBytes(
     bytes: ArrayBuffer,
     index: number,
@@ -106,7 +106,7 @@ export class LAppMotionSyncAudioManager {
 
     // 音声コンテキストの作成
     const newAudioContext = new AudioContext({
-      sampleRate: LAppMotionSyncDefine.SamplesPerSec
+      sampleRate: LAppMotionSyncDefine.SamplesPerSec,
     });
 
     newAudioContext.suspend();
@@ -117,7 +117,7 @@ export class LAppMotionSyncAudioManager {
     const audio = new Audio(url);
 
     // 埋め込み音声要素の初期設定
-    audio.preload = 'auto';
+    audio.preload = "auto";
 
     // 音源ノードの作成
     const source = newAudioContext.createMediaElementSource(audio);
@@ -190,8 +190,8 @@ export class LAppMotionSyncAudioManager {
       audioInfo: AudioInfo,
       callbackIndex: number,
       model: Live2dMotionSyncModel,
-      motionSync: CubismMotionSync
-    ) => void
+      motionSync: CubismMotionSync,
+    ) => void,
   ): void {
     if (this._audios && this._audios.at(index) != null) {
       // search loaded audio already
@@ -212,11 +212,11 @@ export class LAppMotionSyncAudioManager {
           ite
             .ptr()
             .audio.addEventListener(
-              'load',
+              "load",
               (): void => callback(ite.ptr(), index, model, motionSync),
               {
-                passive: true
-              }
+                passive: true,
+              },
             );
           ite.ptr().audio.src = fileName;
           ite.ptr().audioContext = audioContext;
@@ -227,7 +227,7 @@ export class LAppMotionSyncAudioManager {
 
     // 音声コンテキストの作成
     const newAudioContext = new AudioContext({
-      sampleRate: LAppMotionSyncDefine.SamplesPerSec
+      sampleRate: LAppMotionSyncDefine.SamplesPerSec,
     });
 
     newAudioContext.suspend();
@@ -236,7 +236,7 @@ export class LAppMotionSyncAudioManager {
     const audio = new Audio(fileName);
 
     // 埋め込み音声要素の初期設定
-    audio.preload = 'auto';
+    audio.preload = "auto";
 
     // 音源ノードの作成
     const source = newAudioContext.createMediaElementSource(audio);
@@ -259,7 +259,7 @@ export class LAppMotionSyncAudioManager {
       const wavhandler = new LAppWavFileHandler();
 
       // Wavファイルの読み込み
-      wavhandler.loadWavFile(fileName).then(result => {
+      wavhandler.loadWavFile(fileName).then((result) => {
         if (!result) {
           // CubismLogError("wav file can't load. File name: " + fileName + '.');
           return;

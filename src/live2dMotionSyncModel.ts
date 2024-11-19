@@ -5,24 +5,24 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from "../CubismSdkForWeb/src/live2dcubismframework";
-import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
-import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
+import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
 import {
   BreathParameterData,
   CubismBreath,
 } from "../CubismSdkForWeb/src/effect/cubismbreath";
-import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
-import { csmMap } from "../CubismSdkForWeb/src/type/csmmap";
-import { ACubismMotion } from "../CubismSdkForWeb/src/motion/acubismmotion";
 import { CubismEyeBlink } from "../CubismSdkForWeb/src/effect/cubismeyeblink";
-import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
+import { CubismFramework } from "../CubismSdkForWeb/src/live2dcubismframework";
+import { ACubismMotion } from "../CubismSdkForWeb/src/motion/acubismmotion";
+import { csmMap } from "../CubismSdkForWeb/src/type/csmmap";
+import { csmString } from "../CubismSdkForWeb/src/type/csmstring";
+import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
 import { CubismModelMotionSyncSettingJson } from "../CubismWebMotionSyncComponents/Framework/src/cubismmodelmotionsyncsettingjson";
-import { LAppPal } from "./lapppal";
+import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import { LAppAudioManager } from "./lappaudiomanager";
 import * as LAppMotionSyncDefine from "./lappmotionsyncdefine";
-import { Live2dViewer } from "./live2dViewer";
+import { LAppPal } from "./lapppal";
 import { Live2dModel } from "./live2dModel";
+import { Live2dViewer } from "./live2dViewer";
 
 export class Live2dMotionSyncModel extends Live2dModel {
   override _modelSetting: CubismModelMotionSyncSettingJson | null;
@@ -37,14 +37,14 @@ export class Live2dMotionSyncModel extends Live2dModel {
     modelHomeDir: string,
     modelJsonFileName: string,
     live2dViewer: Live2dViewer,
-    readFileFunction: (arg: string) => Promise<ArrayBuffer>
+    readFileFunction: (arg: string) => Promise<ArrayBuffer>,
   ) {
     super(
       modelHomeDir,
       modelJsonFileName,
       live2dViewer,
       readFileFunction,
-      false
+      false,
     );
 
     this._modelSetting = null;
@@ -56,7 +56,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
   }
 
   protected override async setupModel(
-    setting: CubismModelMotionSyncSettingJson
+    setting: CubismModelMotionSyncSettingJson,
   ): Promise<void> {
     this._modelSetting = setting;
     const modelFileName = setting.getModelFileName();
@@ -89,12 +89,12 @@ export class Live2dMotionSyncModel extends Live2dModel {
       const expressionFileName = this._modelSetting.getExpressionFileName(i);
 
       const readResult = await this.readFileFunction(
-        `${this._modelHomeDir}${expressionFileName}`
+        `${this._modelHomeDir}${expressionFileName}`,
       );
       const motion = this.loadExpression(
         readResult,
         readResult.byteLength,
-        expressionName
+        expressionName,
       );
 
       if (this._expressions.getValue(expressionName) != null) {
@@ -110,7 +110,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     const physicsFileName = this._modelSetting.getPhysicsFileName();
     if (physicsFileName !== "") {
       const readResult = await this.readFileFunction(
-        `${this._modelHomeDir}${physicsFileName}`
+        `${this._modelHomeDir}${physicsFileName}`,
       );
       this.loadPhysics(readResult, readResult.byteLength);
     }
@@ -119,7 +119,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     const poseFileName = this._modelSetting.getPoseFileName();
     if (poseFileName !== "") {
       const readResult = await this.readFileFunction(
-        `${this._modelHomeDir}${poseFileName}`
+        `${this._modelHomeDir}${poseFileName}`,
       );
       this.loadPose(readResult, readResult.byteLength);
     }
@@ -136,35 +136,35 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._breath = CubismBreath.create();
     const breathParameters: csmVector<BreathParameterData> = new csmVector();
     breathParameters.pushBack(
-      new BreathParameterData(this._idParamAngleX, 0.0, 15.0, 6.5345, 0.5)
+      new BreathParameterData(this._idParamAngleX, 0.0, 15.0, 6.5345, 0.5),
     );
 
     breathParameters.pushBack(
-      new BreathParameterData(this._idParamAngleY, 0.0, 8.0, 3.5345, 0.5)
+      new BreathParameterData(this._idParamAngleY, 0.0, 8.0, 3.5345, 0.5),
     );
     breathParameters.pushBack(
-      new BreathParameterData(this._idParamAngleZ, 0.0, 10.0, 5.5345, 0.5)
+      new BreathParameterData(this._idParamAngleZ, 0.0, 10.0, 5.5345, 0.5),
     );
     breathParameters.pushBack(
-      new BreathParameterData(this._idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5)
+      new BreathParameterData(this._idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5),
     );
     breathParameters.pushBack(
       new BreathParameterData(
         CubismFramework.getIdManager().getId(
-          CubismDefaultParameterId.ParamBreath
+          CubismDefaultParameterId.ParamBreath,
         ),
         0.5,
         0.5,
         3.2345,
-        1
-      )
+        1,
+      ),
     );
     this._breath.setParameters(breathParameters);
 
     const userDataFileName = this._modelSetting.getUserDataFile();
     if (userDataFileName !== "") {
       const readResult = await this.readFileFunction(
-        `${this._modelHomeDir}${userDataFileName}`
+        `${this._modelHomeDir}${userDataFileName}`,
       );
       this.loadUserData(readResult, readResult.byteLength);
     }
@@ -187,7 +187,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     const motionSyncFileName = this._modelSetting.getMotionSyncFileName();
     if (motionSyncFileName != null || motionSyncFileName !== "NullValue") {
       const data = await this.readFileFunction(
-        `${this._modelHomeDir}${motionSyncFileName}`
+        `${this._modelHomeDir}${motionSyncFileName}`,
       );
       this.loadMotionSync(data, data.byteLength);
       this._soundFileList = this._modelSetting.getMotionSyncSoundFileList();
@@ -227,13 +227,13 @@ export class Live2dMotionSyncModel extends Live2dModel {
     }
     */
   }
-  
+
   public override async loadAssets(): Promise<void> {
     const filePath = `${this._modelHomeDir}${this._modelJsonFileName}`;
     const readResult = await this.readFileFunction(filePath);
     const setting = new CubismModelMotionSyncSettingJson(
       readResult,
-      readResult.byteLength
+      readResult.byteLength,
     );
     await this.setupModel(setting);
   }
@@ -253,7 +253,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
       this._model,
       buffer,
       size,
-      LAppMotionSyncDefine.SamplesPerSec
+      LAppMotionSyncDefine.SamplesPerSec,
     );
   }
 
@@ -305,7 +305,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._motionSync.setSoundBuffer(
       0,
       this._soundData.getSoundBufferContext().getBuffers().at(this._soundIndex),
-      0
+      0,
     );
 
     this._soundData.playByIndex(this._soundIndex);
@@ -399,7 +399,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     // サンプル数 = 再生時間 * サンプリングレート
     // NOTE: サンプリングレートは、音声ファイルに設定された値を使用する。音声コンテキストのサンプリングレートを使用すると、正しくモーションシンクが再生されない場合がある。
     const currentSamplePosition = Math.floor(
-      audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate()
+      audioInfo.audioElapsedTime * audioInfo.wavhandler.getWavSamplingRate(),
     );
 
     // 処理済みの再生位置が音声のサンプル数を超えていたら、処理を行わない。
@@ -407,7 +407,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
       // 前回の再生位置を起点に、音声サンプルを再生済みの数だけ取得する。
       const currentAudioSamples = audioInfo.audioSamples.slice(
         audioInfo.previousSamplePosition,
-        currentSamplePosition
+        currentSamplePosition,
       );
 
       // サウンドバッファに再生済みのサンプルを追加する。
@@ -426,7 +426,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
         this._motionSync.getLastTotalProcessedCount(0);
       this._soundData.removeDataArrayByIndex(
         this._soundIndex,
-        lastTotalProcessedCount
+        lastTotalProcessedCount,
       );
 
       // 再生済みのサンプル数と再生時間を現在のものへ更新する。
@@ -452,7 +452,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
     if (!this._motionManager.isFinished()) {
       isMotionUpdated = this._motionManager.updateMotion(
         this._model,
-        deltaTimeSeconds
+        deltaTimeSeconds,
       );
     }
     // 状態を保存
@@ -480,13 +480,13 @@ export class Live2dMotionSyncModel extends Live2dModel {
     this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
     this._model.addParameterValueById(
       this._idParamAngleZ,
-      this._dragX * this._dragY * -30
+      this._dragX * this._dragY * -30,
     ); // -30から30の値を加える
 
     // ドラッグによる体の向きの調整
     this._model.addParameterValueById(
       this._idParamBodyAngleX,
-      this._dragX * 10
+      this._dragX * 10,
     ); // -10から10の値を加える
 
     // ドラッグによる目の向きの調整
@@ -514,7 +514,7 @@ export class Live2dMotionSyncModel extends Live2dModel {
         this._model.addParameterValueById(
           this._lipSyncIds.at(i),
           value,
-          this.lipSyncWeight
+          this.lipSyncWeight,
         );
       }
     }
@@ -530,21 +530,20 @@ export class Live2dMotionSyncModel extends Live2dModel {
 
     this._model.update();
   }
-  
+
   public override release(): void {
-    
     super.release();
-    
+
     if (this._motionSync) {
       this._motionSync.release();
       this._motionSync = null;
     }
-    
+
     if (this._soundFileList) {
       this._soundFileList?.clear();
       this._soundFileList = null;
     }
-    
+
     if (this._soundData) {
       this._soundData?.release();
       this._soundData = null;
