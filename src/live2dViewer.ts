@@ -98,7 +98,7 @@ export class Live2dViewer {
   }
 
   public setCurrentModel(key: string): boolean {
-    if (!this._models._keyValues.find((v) => v.first === key)) return;
+    if (!this._models._keyValues.find((v) => v.first === key)) return false;
     
     this.targetCurrentModelKey = key;
     return true;
