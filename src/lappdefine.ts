@@ -5,14 +5,14 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { LogLevel } from '../CubismSdkForWeb/src/live2dcubismframework';
+import { LogLevel } from "../CubismSdkForWeb/src/live2dcubismframework";
 
 /**
  * Sample Appで使用する定数
  */
 
 // Canvas width and height pixel values, or dynamic screen size ('auto').
-export const CanvasSize: { width: number; height: number } | 'auto' = 'auto';
+export const CanvasSize: { width: number; height: number } | "auto" = "auto";
 
 // 画面
 export const ViewScale = 1.0;
@@ -30,38 +30,38 @@ export const ViewLogicalMaxBottom = -2.0;
 export const ViewLogicalMaxTop = 2.0;
 
 // 相対パス
-export const ResourcesPath = '../../Resources/';
+export const ResourcesPath = "../../Resources/";
 
 // モデルの後ろにある背景の画像ファイル
-export const BackImageName = 'back_class_normal.png';
+export const BackImageName = "back_class_normal.png";
 
 // 歯車
-export const GearImageName = 'icon_gear.png';
+export const GearImageName = "icon_gear.png";
 
 // 終了ボタン
-export const PowerImageName = 'CloseNormal.png';
+export const PowerImageName = "CloseNormal.png";
 
 // モデル定義---------------------------------------------
 // モデルを配置したディレクトリ名の配列
 // ディレクトリ名とmodel3.jsonの名前を一致させておくこと
 export const ModelDir: string[] = [
-  'Haru',
-  'Hiyori',
-  'Mark',
-  'Natori',
-  'Rice',
-  'Mao',
-  'Wanko'
+  "Haru",
+  "Hiyori",
+  "Mark",
+  "Natori",
+  "Rice",
+  "Mao",
+  "Wanko",
 ];
 export const ModelDirSize: number = ModelDir.length;
 
 // 外部定義ファイル（json）と合わせる
-export const MotionGroupIdle = 'Idle'; // アイドリング
-export const MotionGroupTapBody = 'TapBody'; // 体をタップしたとき
+export const MotionGroupIdle = "Idle"; // アイドリング
+export const MotionGroupTapBody = "TapBody"; // 体をタップしたとき
 
 // 外部定義ファイル（json）と合わせる
-export const HitAreaNameHead = 'Head';
-export const HitAreaNameBody = 'Body';
+export const HitAreaNameHead = "Head";
+export const HitAreaNameBody = "Body";
 
 // モーションの優先度定数
 export const PriorityNone = 0;

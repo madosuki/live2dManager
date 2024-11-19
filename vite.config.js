@@ -13,11 +13,13 @@ export default defineConfig (() => {
       alias: {
         "@": path.resolve(__dirname, "src"),
         "@framework": path.resolve(__dirname, "CubismSdkForWeb/src"),
+        "@motionsyncframework": path.resolve(__dirname, "CubismWebMotionSyncComponents/Framework/src")
       }
     },
     build: {
       target: "es6",
       outDir: path.resolve(__dirname, "dist"),
+      sourcemap: false,
       lib: {
         entry: "",
         name: "live2dmanager"
