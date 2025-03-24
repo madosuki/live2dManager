@@ -263,20 +263,23 @@ export class Live2dViewer {
   public releaseModel(key: string): void {
     const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
     let index = 0;
+    let isModelReleased = false;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
-      if (i != null && i.first == key  && i.second != null) {
+      if (i != null && i.first === key  && i.second != null) {
         const model: Live2dModel | Live2dMotionSyncModel = i.second;
         model.releaseTextures();
         model.releaseExpressions();
         model.releaseMotions();
         model.release();
-
-        this._models._keyValues.splice(index, 1);
-        --this._models._size;
-        return;
+        isModelReleased = true;
+        break;
       }
       ++index;
+    }
+    if (isModelReleased) {
+      this._models._keyValues.splice(index, 1);
+      --this._models._size;
     }
   }
 
