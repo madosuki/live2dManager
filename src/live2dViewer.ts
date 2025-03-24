@@ -18,7 +18,7 @@ import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
 import { LAppPal } from "./lapppal";
 import { TouchManager } from "./touchmanager";
 
-import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+import { csmMap, csmPair, iterator } from "../CubismSdkForWeb/src/type/csmmap";
 import { Live2dModel } from "./live2dModel";
 import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 
@@ -258,6 +258,26 @@ export class Live2dViewer {
 
   public deleteTexture(webGlTexture: WebGLTexture): void {
     this.gl.deleteTexture(webGlTexture);
+  }
+
+  public releaseModel(key: string): void {
+    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
+    let index = 0;
+    for (const i of keys) {
+      // It's a workaround. prepend missing property when after build.
+      if (i != null && i.first == key  && i.second != null) {
+        const model: Live2dModel | Live2dMotionSyncModel = i.second;
+        model.releaseTextures();
+        model.releaseExpressions();
+        model.releaseMotions();
+        model.release();
+
+        this._models._keyValues.splice(index, 1);
+        --this._models._size;
+        return;
+      }
+      ++index;
+    }
   }
 
   public releaseAllModel(): void {
