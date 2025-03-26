@@ -2,8 +2,8 @@
 This library is unofficial.  
 This library codes is based Live2D Official Sample. Therefore, this library license is same on based.  
   
-Using gitsubmodule for CubismWebFramework.  
-Should set lib2dcubismcore files to Core directory. Because lib2dcubismcore files is proprietray.  
+Using gitsubmodule for CubismWebFramework and CubismWebMotionSyncComponents.  
+Should set lib2dcubismcore files and CRI/live2dcubismmotionsynccore.min.js to your public dir and add load process into your html(like: index.html). Because lib2dcubismcore files is proprietray.  
 
 # LICENSE
 See in LICENSE.md
