@@ -104,18 +104,25 @@ export class Live2dViewer {
   }
 
   public setCurrentModel(key: string): boolean {
-    if (!this._models._keyValues.find((v) => v.first === key)) return false;
+    const keyValues = this._models._keyValues;
+    for (const k of keyValues) {
+      if (k != null && k.first != null && k.second != null && k.first === key) {
+        this.targetCurrentModelKey = key;
+        return;
+      }
+    }
 
-    this.targetCurrentModelKey = key;
     return true;
   }
 
   public getModelFromKey(
     key: string,
   ): Live2dModel | Live2dMotionSyncModel | undefined {
-    const result = this._models._keyValues.find((v) => v.first === key);
-    if (result != null) {
-      return result.second;
+    const keyValues = this._models._keyValues;
+    for (const k of keyValues) {
+      if (k != null && k.first != null && k.second != null && k.first === key) {
+        return k.second;
+      }
     }
 
     return undefined;
