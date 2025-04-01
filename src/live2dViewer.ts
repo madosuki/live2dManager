@@ -108,11 +108,11 @@ export class Live2dViewer {
     for (const k of keyValues) {
       if (k != null && k.first != null && k.second != null && k.first === key) {
         this.targetCurrentModelKey = key;
-        return;
+        return true;
       }
     }
 
-    return true;
+    return false;
   }
 
   public getModelFromKey(
