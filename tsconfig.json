@@ -8,7 +8,7 @@
     "strictNullChecks": false,
     "baseUrl": ".",
     "esModuleInterop": true,
-    "strict": false,
+    "strict": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "useUnknownInCatchVariables": true,
