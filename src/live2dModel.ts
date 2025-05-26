@@ -762,10 +762,9 @@ export class Live2dModel extends CubismUserModel {
     }
 
     if (motion != null) {
-      this._expressionManager.startMotionPriority(
+      this._expressionManager.startMotion(
         motion,
         false,
-        LAppDefine.PriorityForce,
       );
     } else {
       if (this._debugMode) {
