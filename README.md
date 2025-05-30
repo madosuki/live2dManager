@@ -1,6 +1,6 @@
 # Live2dManager
 This library is unofficial.  
-This library codes is based on [Live2D Web Official Typescript Sample](https://github.com/Live2D/CubismWebSamples). Therefore, this library license is same on based.  
+This library codes is based on [Live2D Web Official Typescript Sample](https://github.com/Live2D/CubismWebSamples). Therefore, this library license is same on based, and use Live2d SDK For Web.  
   
 Using gitsubmodule for CubismWebFramework and CubismWebMotionSyncComponents.  
 If use this library, should set [lib2dcubismcore](https://www.live2d.com/sdk/download/web/) files and [CRI/live2dcubismmotionsynccore.min.js](https://www.live2d.com/sdk/download/motionsync/) to public dir of your projects and add load process into your html(like: index.html).  
