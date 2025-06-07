@@ -10,6 +10,8 @@ Because lib2dcubismcore files and CRI/live2dcubismmotionsynccore.min.js is `prop
 See in LICENSE.md
 
 # Usage
+- Install
+  npm install https://github.com/madosuki/live2dManager.git
 - Run
 ```typescript
 const canvas = document.createElement("canvas");
