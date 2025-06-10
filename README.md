@@ -12,7 +12,7 @@ See in LICENSE.md
 # Usage
 - Install  
   npm install https://github.com/madosuki/live2dManager.git
-- Run
+- Example
 ```typescript
 const canvas = document.createElement("canvas");
 const live2dViewer = new Live2dViewer(canvas, width, height);
@@ -80,6 +80,7 @@ const loop = () => {
     };
 
 requestAnimationFrameHandler = requestAnimationFrame(loop);
+};
 
 ```
 - Delete viewer
