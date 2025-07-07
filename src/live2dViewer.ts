@@ -66,26 +66,19 @@ export class Live2dViewer {
   }
 
   public onTouchesBegin(pointX: number, pointY: number): void {
-    /*
     const insideCanvasX = pointX - this.canvas.offsetLeft;
     const insideCanvasY = pointY - this.canvas.offsetTop;
     this._touchManager.touchesBegan(insideCanvasX, insideCanvasY);
-    */
-    this._touchManager.touchesBegan(pointX, pointY);
   }
 
   public onTouchesMoved(pointX: number, pointY: number): void {
-    /*
-    const modifiedPointX = (pointX - this.canvas.offsetLeft);
-    const modifiedPointY = (pointY - this.canvas.offsetTop);
-    this._touchManager.touchesMoved(modifiedPointX, modifiedPointY);
-    */
-    
-
     const x = this.transformViewX(this._touchManager.getX());
     const y = this.transformViewY(this._touchManager.getY());
 
-    this._touchManager.touchesMoved(pointX, pointY);
+    const modifiedPointX = (pointX - this.canvas.offsetLeft);
+    const modifiedPointY = (pointY - this.canvas.offsetTop);
+    this._touchManager.touchesMoved(modifiedPointX, modifiedPointY);
+
     this.updateCoordinate(x, y);
   }
 
@@ -170,6 +163,25 @@ export class Live2dViewer {
     this._viewMatrix.scale(1.0, 1.0);
     this._viewMatrix.setMaxScale(2.0);
     this._viewMatrix.setMinScale(0.8);
+
+    this._deviceToScreen.loadIdentity();
+    if (this.canvas.width > this.canvas.height) {
+      const screenW = Math.abs(right - left);
+      this._deviceToScreen.scaleRelative(
+        screenW / this.canvas.width,
+        -screenW / this.canvas.width,
+      );
+    } else {
+      const screenH = Math.abs(top - bottom);
+      this._deviceToScreen.scaleRelative(
+        screenH / this.canvas.height,
+        -screenH / this.canvas.height,
+      );
+    }
+    this._deviceToScreen.translateRelative(
+      -this.canvas.width * 0.5,
+      -this.canvas.height * 0.5,
+    );
 
     
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
