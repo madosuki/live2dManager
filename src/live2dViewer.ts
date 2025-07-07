@@ -72,8 +72,8 @@ export class Live2dViewer {
   }
 
   public onTouchesMoved(pointX: number, pointY: number): void {
-    const modifiedPointX = (pointX - this.canvas.offsetLeft) * window.devicePixelRatio;
-    const modifiedPointY = (pointY - this.canvas.offsetTop) * window.devicePixelRatio;
+    const modifiedPointX = (pointX - this.canvas.offsetLeft);
+    const modifiedPointY = (pointY - this.canvas.offsetTop);
     this._touchManager.touchesMoved(modifiedPointX, modifiedPointY);
 
     const x = this.transformViewX(this._touchManager.getX());
