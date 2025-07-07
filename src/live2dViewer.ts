@@ -204,6 +204,19 @@ export class Live2dViewer {
     this.scaleSetting();
   }
 
+  private resizeCanvas(width: number, height: number) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);    
+  }
+
+  public resize(width: number, height: number) {
+    this.resizeCanvas(width, height);
+    this.initialize();
+    this.initializeSprite();
+  }
+
   private createShader(): WebGLProgram | undefined {
     if (this.gl == null) {
       return undefined;
