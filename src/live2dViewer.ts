@@ -158,7 +158,8 @@ export class Live2dViewer {
   }
 
   public scaleSetting(): void {
-    const { width, height } = this.canvas;
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
 
     const ratio = width / height;
     const left = -ratio;
