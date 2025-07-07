@@ -141,7 +141,7 @@ export class Live2dViewer {
     }
   }
 
-  private initializeSprite(): void {
+  public initializeSprite(): void {
     const tmp = this.createShader();
     if (tmp == null) {
       throw new Error("failed createShader");
@@ -187,12 +187,7 @@ export class Live2dViewer {
     this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
   }
 
-  /**
-   * Viewerの初期化
-   *
-   * @param allocationMemorySize オプショナルで単位はバイト。指定する場合は16MB以上で、それよりも下回る場合は16MBが確保される。複数体モデルを扱う場合は16MBより上を確保するようにした方が良い（ref: https://docs.live2d.com/cubism-sdk-manual/faq/ のql4参照)
-   */
-  public initialize(allocationMemorySize?: number): void {
+  public initialize(): void {
     this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
     if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
@@ -208,13 +203,6 @@ export class Live2dViewer {
 
     this.scaleSetting();
 
-    CubismFramework.startUp(this._cubismOptions);
-    CubismFramework.initialize(allocationMemorySize);
-
-    this._cubismMotionSyncOptions.logFunction = outLog;
-    CubismMotionSync.startUp(this._cubismMotionSyncOptions);
-    CubismMotionSync.initialize();
-    this.updateTime();
     this.initializeSprite();
   }
 
