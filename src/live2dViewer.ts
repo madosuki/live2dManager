@@ -145,6 +145,23 @@ export class Live2dViewer {
     this._programId = tmp;
   }
 
+  public scaleSetting(): void {
+    const { width, height } = this.canvas;
+
+    const ratio = width / height;
+    const left = -ratio;
+    const right = ratio;
+    const bottom = -1.0;
+    const top = 1.0;
+    this._viewMatrix.setScreenRect(left, right, bottom, top);
+    this._viewMatrix.scale(1.0, 1.0);
+    this._viewMatrix.setMaxScale(2.0);
+    this._viewMatrix.setMinScale(0.8);
+
+    
+    this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
+  }
+
   /**
    * Viewerの初期化
    *
@@ -164,38 +181,8 @@ export class Live2dViewer {
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
-    const ratio = 800 / 800;
-    const left = -ratio;
-    const right = ratio;
-    const bottom = -1.0;
-    const top = 1.0;
-    this._viewMatrix.setScreenRect(left, right, bottom, top);
-    this._viewMatrix.scale(1.0, 1.0);
-    this._viewMatrix.setMaxScale(2.0);
-    this._viewMatrix.setMinScale(0.8);
+    this.scaleSetting();
 
-    this._cubismOptions.logFunction = outLog;
-
-    this._deviceToScreen.loadIdentity();
-    if (this.canvas.width > this.canvas.height) {
-      const screenW = Math.abs(right - left);
-      this._deviceToScreen.scaleRelative(
-        screenW / this.canvas.width,
-        -screenW / this.canvas.width,
-      );
-    } else {
-      const screenH = Math.abs(top - bottom);
-      this._deviceToScreen.scaleRelative(
-        screenH / this.canvas.height,
-        -screenH / this.canvas.height,
-      );
-    }
-    this._deviceToScreen.translateRelative(
-      -this.canvas.width * 0.5,
-      -this.canvas.height * 0.5,
-    );
-
-    this._viewMatrix.setMaxScreenRect(-2.0, 2.0, -2.0, 2.0);
     CubismFramework.startUp(this._cubismOptions);
     CubismFramework.initialize(allocationMemorySize);
 
