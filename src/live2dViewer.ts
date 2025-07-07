@@ -202,8 +202,6 @@ export class Live2dViewer {
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
     this.scaleSetting();
-
-    this.initializeSprite();
   }
 
   private createShader(): WebGLProgram | undefined {
