@@ -39,4 +39,9 @@ export class Live2dManager {
     this.initializeView();
     this.initializeCubism();
   }
+
+  public release() {
+    this.live2dViewer.release();
+    CubismFramework.dispose();
+  }
 }

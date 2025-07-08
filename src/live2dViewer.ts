@@ -324,8 +324,6 @@ export class Live2dViewer {
     this.gl.deleteProgram(this._programId);
     this._viewMatrix = null;
     this._deviceToScreen = null;
-
-    CubismFramework.dispose();
   }
 
   public getNewMatrix44(): CubismMatrix44 {
