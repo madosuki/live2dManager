@@ -17,7 +17,8 @@ See in LICENSE.md
 ```typescript
 const canvas = document.createElement("canvas");
 const live2dViewer = new Live2dViewer(canvas, width, height);
-live2dViewer.initialize();
+const live2dManager = new Live2dManager(live2dViewer);
+live2dManager.initialize();
 
 const readFileFunction = async (filePath: string): Promise<ArrayBuffer> => {
     try {
@@ -83,8 +84,13 @@ const loop = () => {
 requestAnimationFrameHandler = requestAnimationFrame(loop);
 
 ```
-- Delete viewer
+- Release Viewer
 ```typescript
 live2dViewer.release();
+```
+
+- Release Viewer and Dispose Live2D
+```typescript
+live2dManager.release();
 ```
 
