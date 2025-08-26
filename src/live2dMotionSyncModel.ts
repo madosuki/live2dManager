@@ -194,7 +194,10 @@ export class Live2dMotionSyncModel extends Live2dModel {
       this._soundIndex = 0;
     }
 
-    this.createRenderer();
+    const width = this._live2dViewer.canvas.width;
+    const height = this._live2dViewer.canvas.height;
+    this.createRenderer(width, height);
+
     this.getRenderer().setIsPremultipliedAlpha(true);
     await this.loadTextures();
     if (this._live2dViewer.gl) {

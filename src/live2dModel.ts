@@ -568,7 +568,10 @@ export class Live2dModel extends CubismUserModel {
     if (motionGroupCount === 0 || !isPreloadMotion) {
       this._motionManager.stopAllMotions();
 
-      this.createRenderer();
+      const width = this._live2dViewer.canvas.width;
+      const height = this._live2dViewer.canvas.height;
+      this.createRenderer(width, height);
+
       this.getRenderer().setIsPremultipliedAlpha(true);
       await this.loadTextures();
       if (this._live2dViewer.gl) {
@@ -740,7 +743,9 @@ export class Live2dModel extends CubismUserModel {
       this._updating = false;
       this._initialized = true;
 
-      this.createRenderer();
+      const width = this._live2dViewer.canvas.width;
+      const height = this._live2dViewer.canvas.height;
+      this.createRenderer(width, height);
       await this.loadTextures();
       if (this._live2dViewer.gl) {
         this.getRenderer().setIsPremultipliedAlpha(true);
@@ -823,7 +828,10 @@ export class Live2dModel extends CubismUserModel {
 
   public reloadRenderer(): void {
     this.deleteRenderer();
-    this.createRenderer();
+
+    const width = this._live2dViewer.canvas.width;
+    const height = this._live2dViewer.canvas.height;
+    this.createRenderer(width, height);
     this.loadTextures();
   }
 
