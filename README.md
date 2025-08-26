@@ -10,6 +10,9 @@ Because lib2dcubismcore files and CRI/live2dcubismmotionsynccore.min.js is `prop
 # LICENSE
 See in LICENSE.md
 
+# For Dev
+Instead do npm install --ignore-script. Because avoid defined scripts in preinstall and postinstall section for app.
+
 # Usage
 - Install  
   npm install https://github.com/madosuki/live2dManager.git

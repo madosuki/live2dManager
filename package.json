@@ -23,9 +23,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@rollup/plugin-typescript": "12.1.2",
-    "typescript": "5.8.2",
-    "vite": "6.3.5"
+    "@biomejs/biome": "2.2.2",
+    "@rollup/plugin-typescript": "12.1.4",
+    "typescript": "5.9.2",
+    "vite": "7.1.3"
   }
 }
