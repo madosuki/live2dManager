@@ -34,6 +34,17 @@ export class Live2dManager {
         }
   }
 
+  public setOffScreenSize(width: number, height: number): void {
+    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this.live2dViewer._models._keyValues;
+    for (const i of keys) {
+        // It's a workaround. prepend missing property when after build.
+        if (i != null && i.second != null) {
+          const model: Live2dModel | Live2dMotionSyncModel = i.second;
+          model.setRenderTargetSize(width, height);
+        }
+    }
+  }
+
   private initializeView() {
     this.live2dViewer.initialize();
     this.live2dViewer.initializeSprite();
@@ -41,6 +52,7 @@ export class Live2dManager {
 
   public initialize() {
     this.initializeView();
+    this.setOffScreenSize(this.live2dViewer.canvas.width, this.live2dViewer.canvas.height);
     this.initializeCubism();
   }
 
