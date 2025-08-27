@@ -602,10 +602,12 @@ export class Live2dModel extends CubismUserModel {
     this.getRenderer().setMvpMatrix(matrix);
 
     const viewPort = [x, y, canvasWidth, canvasHeight];
+    console.log("setRenderState");
     this.getRenderer().setRenderState(
       frameBuffer as WebGLFramebuffer,
       viewPort,
     );
+    console.log("draw model");
     this.getRenderer().drawModel();
   }
 
