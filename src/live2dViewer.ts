@@ -150,6 +150,17 @@ export class Live2dViewer {
     this._programId = tmp;
   }
 
+  public setOffScreenSize(width: number, height: number): void {
+    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
+    for (const i of keys) {
+        // It's a workaround. prepend missing property when after build.
+        if (i != null && i.second != null) {
+          const model: Live2dModel | Live2dMotionSyncModel = i.second;
+          model.setRenderTargetSize(width, height);
+        }
+    }
+  }
+
   public scaleSetting(): void {
     const width = this.canvas.width;
     const height = this.canvas.height;
@@ -202,6 +213,7 @@ export class Live2dViewer {
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
     this.scaleSetting();
+    this.setOffScreenSize(this.canvas.width, this.canvas.height);
   }
 
   private resizeCanvas(width: number, height: number) {

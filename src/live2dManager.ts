@@ -44,17 +44,6 @@ export class Live2dManager {
     this.initializeCubism();
   }
 
-  public setOffScreenSize(width: number, height: number): void {
-      const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this.live2dViewer._models._keyValues;
-      for (const i of keys) {
-          // It's a workaround. prepend missing property when after build.
-          if (i != null && i.second != null) {
-            const model: Live2dModel | Live2dMotionSyncModel = i.second;
-            model.setRenderTargetSize(width, height);
-          }
-      }
-  }
-
   public release() {
     this.live2dViewer.release();
     CubismFramework.dispose();
