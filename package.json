@@ -17,7 +17,7 @@
   },
   "scripts": {
     "preinstall": "git init",
-    "postinstall": "git submodule add https://github.com/madosuki/CubismWebFramework.git CubismSdkForWeb && git submodule add https://github.com/madosuki/CubismWebMotionSyncComponents.git || exit 0",
+    "postinstall": "git submodule add -b 'change/embed_shader_files' https://github.com/madosuki/CubismWebFramework.git CubismSdkForWeb && git submodule add https://github.com/madosuki/CubismWebMotionSyncComponents.git || exit 0",
     "prepare": "npm run build",
     "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
