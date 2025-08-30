@@ -1,6 +1,7 @@
 [submodule "CubismWebFramework"]
 	path = CubismSdkForWeb
 	url = https://github.com/madosuki/CubismWebFramework.git
+    branch = change/embed_shader_files
 [submodule "CubismWebMotionSyncComponents"]
 	path = CubismWebMotionSyncComponents
 	url = https://github.com/madosuki/CubismWebMotionSyncComponents.git
