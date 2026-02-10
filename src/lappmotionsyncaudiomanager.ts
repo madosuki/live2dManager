@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { csmVector, iterator } from "../CubismSdkForWeb/src/type/csmvector";
 import { CubismMotionSync } from "../CubismWebMotionSyncComponents/Framework/src/live2dcubismmotionsync";
 import * as LAppMotionSyncDefine from "./lappmotionsyncdefine";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
