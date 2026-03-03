@@ -24,7 +24,6 @@ import {
 import { CubismMotion } from "../CubismSdkForWeb/src/motion/cubismmotion";
 import {
   CubismMotionQueueEntryHandle,
-  InvalidMotionQueueEntryHandleValue,
 } from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
 import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
 import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";

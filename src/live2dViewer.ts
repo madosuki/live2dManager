@@ -6,19 +6,17 @@
  */
 
 import {
-  CubismMotionSync,
   MotionSyncOption,
 } from "@motionsyncframework/live2dcubismmotionsync";
 import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
 import {
-  CubismFramework,
   Option,
 } from "../CubismSdkForWeb/src/live2dcubismframework";
 import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
 import { LAppPal } from "./lapppal";
 import { TouchManager } from "./touchmanager";
 
-import { csmMap, csmPair, iterator } from "../CubismSdkForWeb/src/type/csmmap";
+import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
 import { Live2dModel } from "./live2dModel";
 import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 

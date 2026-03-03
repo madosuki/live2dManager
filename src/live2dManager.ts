@@ -4,7 +4,6 @@ import { CubismMotionSync, MotionSyncOption } from "@motionsyncframework/live2dc
 import { Live2dViewer } from "./live2dViewer";
 import { Live2dModel } from "./live2dModel";
 import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
-import { csmVector } from "@framework/type/csmvector";
 import { csmPair } from "@framework/type/csmmap";
 
 export class Live2dManager {
