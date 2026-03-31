@@ -132,3 +132,5 @@ dist
 # Cubism Core is proprietary
 Core/*
 !Core/README.md
+
+.direnv
