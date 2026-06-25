@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "fetch:cubismframework": "git submodule add -b change/embed_shader_files https://github.com/madosuki/CubismWebFramework.git CubismSdkForWeb && cd CubismSdkForWeb && git checkout 30615439322d76acf079820096630e66008c4f91 || exit 0",
+    "fetch:cubismframework": "git submodule add -b change/embed_shader_files https://github.com/madosuki/CubismWebFramework.git CubismSdkForWeb && cd CubismSdkForWeb && git checkout 6a6e2151a5f1697bdae99fca9346134679f574cd || exit 0",
     "preinstall": "git init",
     "prepare": "npm run fetch:cubismframework && npm run build",
     "build": "vite build",
