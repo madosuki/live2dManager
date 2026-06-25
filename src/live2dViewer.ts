@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
+import { CubismViewMatrix } from "../CubismSdkForWeb/src/math/cubismviewmatrix";
 import {
   Option,
 } from "../CubismSdkForWeb/src/live2dcubismframework";
