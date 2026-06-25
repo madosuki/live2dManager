@@ -270,7 +270,7 @@ export class Live2dViewer {
     for (const [key, val] of this._models.entries()) {
       if (key === targetKey) {
         const model: Live2dModel = val;
-        model.releaseTextures();
+        model.releaseTextures(this.gl);
         model.releaseExpressions();
         model.releaseMotions();
         model.release();
@@ -283,7 +283,7 @@ export class Live2dViewer {
   public releaseAllModel(): void {
     for (const [_key, val] of this._models.entries()) {
       const model: Live2dModel = val;
-      model.releaseTextures();
+      model.releaseTextures(this.gl);
       model.releaseExpressions();
       model.releaseMotions();
       model.release();

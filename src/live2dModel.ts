@@ -139,7 +139,7 @@ export class Live2dModel extends CubismUserModel {
     this._wavFileHandler.releasePcmData();
   }
 
-  public releaseTextures(gl: WebGL2RenderingContext): void {
+  public releaseTextures(gl: WebGLRenderingContext): void {
     if (this._textures.length === 0) {
       return;
     }
@@ -151,7 +151,7 @@ export class Live2dModel extends CubismUserModel {
     this._textures.length = 0;
   }
 
-  public releaseTextureByTexture(gl: WebGL2RenderingContext, texture: WebGLTexture): void {
+  public releaseTextureByTexture(gl: WebGLRenderingContext, texture: WebGLTexture): void {
     for (let i = 0; i < this._textures.length; i++) {
       if (this._textures[i].id !== texture) {
         continue;
