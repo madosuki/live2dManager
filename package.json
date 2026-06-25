@@ -7,10 +7,10 @@
   "main": "dist/live2dmanager.umd.cjs",
   "module": "./dist/live2dmanger.js",
   "type": "module",
-  "types": "./dist/src/index.d.ts",
+  "types": "./types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
+      "types": "./types/index.d.ts",
       "import": "./dist/live2dmanager.js",
       "require": "./dist/live2dmanager.umd.cjs"
     }
