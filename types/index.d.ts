@@ -136,7 +136,7 @@ export declare class Live2dViewer {
   transformViewX(deviceX: number): number;
   transformViewY(deviceY: number): number;
   addModel(key: string, model: Live2dModel): void;
-  setCurrentModelk(targetKey: string): boolean;
+  setCurrentModelkey(targetKey: string): boolean;
   getModelFromKey(targetKey: string): Live2dModel | undefined;
   updateCoordinate(x: number, y: number): void;
   initializeSprite(): void;

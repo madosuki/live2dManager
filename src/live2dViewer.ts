@@ -98,7 +98,7 @@ export class Live2dViewer {
     this._models.set(key, model);
   }
 
-  public setCurrentModelk(targetKey: string): boolean {
+  public setCurrentModelkey(targetKey: string): boolean {
     for (const [key, _val] of this._models.entries()) {
       if (key === targetKey) {
         this.targetCurrentModelKey = key;
