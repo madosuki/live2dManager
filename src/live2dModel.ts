@@ -6,45 +6,45 @@ om a:messagel* Copyright(c) Live2D Inc. All rights reserved.
  */
 
 // Cubism Framework
-import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
-import { CubismModelSettingJson } from "../CubismSdkForWeb/src/cubismmodelsettingjson";
+import { CubismDefaultParameterId } from "@framework/cubismdefaultparameterid";
+import { CubismModelSettingJson } from "@framework/cubismmodelsettingjson";
 import {
   BreathParameterData,
   CubismBreath,
-} from "../CubismSdkForWeb/src/effect/cubismbreath";
-import { CubismEyeBlink } from "../CubismSdkForWeb/src/effect/cubismeyeblink";
-import { ICubismModelSetting } from "../CubismSdkForWeb/src/icubismmodelsetting";
-import { CubismIdHandle } from "../CubismSdkForWeb/src/id/cubismid";
-import { CubismFramework } from "../CubismSdkForWeb/src/live2dcubismframework";
-import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
-import { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel";
+} from "@framework/effect/cubismbreath";
+import { CubismEyeBlink } from "@framework/effect/cubismeyeblink";
+import { ICubismModelSetting } from "@framework/icubismmodelsetting";
+import { CubismIdHandle } from "@framework/id/cubismid";
+import { CubismFramework } from "@framework/live2dcubismframework";
+import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
+import { CubismUserModel } from "@framework/model/cubismusermodel";
 import {
   ACubismMotion,
   FinishedMotionCallback,
-} from "../CubismSdkForWeb/src/motion/acubismmotion";
-import { CubismMotion } from "../CubismSdkForWeb/src/motion/cubismmotion";
+} from "@framework/motion/acubismmotion";
+import { CubismMotion } from "@framework/motion/cubismmotion";
 import {
   CubismMotionQueueEntryHandle,
-} from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
+} from "@framework/motion/cubismmotionqueuemanager";
 
-import { CubismUpdateScheduler } from "../CubismSdkForWeb/src/motion/cubismupdatescheduler";
-import { CubismBreathUpdater } from "../CubismSdkForWeb/src/motion/cubismbreathupdater";
-import { CubismLookUpdater } from "../CubismSdkForWeb/src/motion/cubismlookupdater";
-import { CubismEyeBlinkUpdater } from "../CubismSdkForWeb/src/motion/cubismeyeblinkupdater";
-import { CubismExpressionUpdater } from "../CubismSdkForWeb/src/motion/cubismexpressionupdater";
-import { CubismPhysicsUpdater } from "../CubismSdkForWeb/src/motion/cubismphysicsupdater";
-import { CubismPoseUpdater } from "../CubismSdkForWeb/src/motion/cubismposeupdater";
-import { CubismLipSyncUpdater } from "../CubismSdkForWeb/src/motion/cubismlipsyncupdater";
+import { CubismUpdateScheduler } from "@framework/motion/cubismupdatescheduler";
+import { CubismBreathUpdater } from "@framework/motion/cubismbreathupdater";
+import { CubismLookUpdater } from "@framework/motion/cubismlookupdater";
+import { CubismEyeBlinkUpdater } from "@framework/motion/cubismeyeblinkupdater";
+import { CubismExpressionUpdater } from "@framework/motion/cubismexpressionupdater";
+import { CubismPhysicsUpdater } from "@framework/motion/cubismphysicsupdater";
+import { CubismPoseUpdater } from "@framework/motion/cubismposeupdater";
+import { CubismLipSyncUpdater } from "@framework/motion/cubismlipsyncupdater";
 
-import { LookParameterData, CubismLook } from "../CubismSdkForWeb/src/effect/cubismlook";
+import { LookParameterData, CubismLook } from "@framework/effect/cubismlook";
 
-import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";
+import { csmRect } from "@framework/type/csmrectf";
 
 // local
-import * as LAppDefine from "./lappdefine";
-import { LAppPal } from "./lapppal";
-import { LAppWavFileHandler } from "./lappwavfilehandler";
-import { Live2dViewer } from "./live2dViewer";
+import * as LAppDefine from "@/lappdefine";
+import { LAppPal } from "@/lapppal";
+import { LAppWavFileHandler } from "@/lappwavfilehandler";
+import { Live2dViewer } from "@/live2dViewer";
 
 class TextureInfo {
   public imageUrl: string;

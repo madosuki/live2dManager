@@ -1,7 +1,7 @@
 import { CubismFramework, Option } from "@framework/live2dcubismframework";
 
-import { Live2dViewer } from "./live2dViewer";
-import { Live2dModel } from "./live2dModel";
+import { Live2dViewer } from "@/live2dViewer";
+import { Live2dModel } from "@/live2dModel";
 
 export class Live2dManager {
   live2dViewer: Live2dViewer;

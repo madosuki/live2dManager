@@ -5,15 +5,15 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismViewMatrix } from "../CubismSdkForWeb/src/math/cubismviewmatrix";
+import { CubismViewMatrix } from "@framework/math/cubismviewmatrix";
 import {
   Option,
-} from "../CubismSdkForWeb/src/live2dcubismframework";
-import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
-import { LAppPal } from "./lapppal";
-import { TouchManager } from "./touchmanager";
+} from "@framework/live2dcubismframework";
+import { CubismMatrix44 } from "@framework/math/cubismmatrix44";
+import { LAppPal } from "@/lapppal";
+import { TouchManager } from "@/touchmanager";
 
-import { Live2dModel } from "./live2dModel";
+import { Live2dModel } from "@/live2dModel";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);

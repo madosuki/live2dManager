@@ -1,16 +1,16 @@
-import type { Option } from "../CubismSdkForWeb/src/live2dcubismframework.d.ts";
-import type { CubismLook } from "../CubismSdkForWeb/src/effect/cubismlook.d.ts";
-import type { ICubismModelSetting } from "../CubismSdkForWeb/src/icubismmodelsetting.d.ts";
-import type { CubismIdHandle } from "../CubismSdkForWeb/src/id/cubismid.d.ts";
-import type { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44.d.ts";
-import type { CubismViewMatrix } from "../CubismSdkForWeb/src/math/cubismviewmatrix.d.ts";
-import type { CubismUserModel } from "../CubismSdkForWeb/src/model/cubismusermodel.d.ts";
+import type { Option } from "@framework/live2dcubismframework.d.ts";
+import type { CubismLook } from "@framework/effect/cubismlook.d.ts";
+import type { ICubismModelSetting } from "@framework/icubismmodelsetting.d.ts";
+import type { CubismIdHandle } from "@framework/id/cubismid.d.ts";
+import type { CubismMatrix44 } from "@framework/math/cubismmatrix44.d.ts";
+import type { CubismViewMatrix } from "@framework/math/cubismviewmatrix.d.ts";
+import type { CubismUserModel } from "@framework/model/cubismusermodel.d.ts";
 import type {
   ACubismMotion,
   FinishedMotionCallback,
-} from "../CubismSdkForWeb/src/motion/acubismmotion.d.ts";
-import type { CubismMotionQueueEntryHandle } from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager.d.ts";
-import type { csmRect } from "../CubismSdkForWeb/src/type/csmrectf.d.ts";
+} from "@framework/motion/acubismmotion.d.ts";
+import type { CubismMotionQueueEntryHandle } from "@framework/motion/cubismmotionqueuemanager.d.ts";
+import type { csmRect } from "@framework/type/csmrectf.d.ts";
 
 declare class TextureInfo {
   imageUrl: string;
