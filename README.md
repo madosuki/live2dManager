@@ -4,8 +4,8 @@ This library codes is based on [Live2D Web Official Typescript Sample](https://g
 Currently do not manage. Only provied helper functions.  
   
 Using gitsubmodule for CubismWebFramework.  
-If use this library, should set [lib2dcubismcore](https://www.live2d.com/sdk/download/web/) files to public dir of your projects and add load process into your html(like: index.html).  
-Because lib2dcubismcore files lincense is `proprietary`, and can only obtain in https://www.live2d.com/sdk/download/web/ .  
+If use this library, should set [live2dcubismcore](https://www.live2d.com/sdk/download/web/) files to public dir of your projects and add load process into your html(like: index.html).  
+Because live2dcubismcore files lincense is `proprietary`, and can only obtain in https://www.live2d.com/sdk/download/web/ .  
 
 # LICENSE
 See in LICENSE.md
