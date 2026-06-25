@@ -17,6 +17,7 @@ Instead do npm install --ignore-script. Because avoid defined scripts in preinst
 - Install  
   npm install https://github.com/madosuki/live2dManager.git
 - Example
+  simple example code below. more detail is [here](https://github.com/madosuki/example_live2dmanager).
 ```typescript
 const canvas = document.createElement("canvas");
 const live2dViewer = new Live2dViewer(canvas, width, height);
