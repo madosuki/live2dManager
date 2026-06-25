@@ -3,9 +3,9 @@ This library is unofficial.
 This library codes is based on [Live2D Web Official Typescript Sample](https://github.com/Live2D/CubismWebSamples). Therefore, this library license is same on based, and use Live2D SDK For Web.  
 Currently do not manage. Only provied helper functions.  
   
-Using gitsubmodule for CubismWebFramework and CubismWebMotionSyncComponents.  
-If use this library, should set [lib2dcubismcore](https://www.live2d.com/sdk/download/web/) files and [CRI/live2dcubismmotionsynccore.min.js](https://www.live2d.com/sdk/download/motionsync/) to public dir of your projects and add load process into your html(like: index.html).  
-Because lib2dcubismcore files and CRI/live2dcubismmotionsynccore.min.js is `proprietary`, and can only obtain in https://www.live2d.com/sdk/download/web/ and https://www.live2d.com/sdk/download/motionsync/.  
+Using gitsubmodule for CubismWebFramework.  
+If use this library, should set [lib2dcubismcore](https://www.live2d.com/sdk/download/web/) files to public dir of your projects and add load process into your html(like: index.html).  
+Because lib2dcubismcore files lincense is `proprietary`, and can only obtain in https://www.live2d.com/sdk/download/web/ .  
 
 # LICENSE
 See in LICENSE.md
@@ -57,7 +57,7 @@ const loop = () => {
 
       const projection = live2dViewer.getNewMatrix44();
 
-      const model: Live2dModel | Live2dMotionSyncModel | undefined =
+      const model: Live2dModel | undefined =
       live2dViewer.getModelFromKey(live2dViewer.getCurrentModelKey());
       
       const draw = () => {

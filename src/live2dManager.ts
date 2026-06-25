@@ -1,15 +1,12 @@
 import { CubismFramework, Option } from "@framework/live2dcubismframework";
-import { CubismMotionSync, MotionSyncOption } from "@motionsyncframework/live2dcubismmotionsync";
 
 import { Live2dViewer } from "./live2dViewer";
 import { Live2dModel } from "./live2dModel";
-import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 import { csmPair } from "@framework/type/csmmap";
 
 export class Live2dManager {
   live2dViewer: Live2dViewer;
   _cubismOptions: Option;
-  _cubismMotionSyncOptions: MotionSyncOption;
 
   constructor(live2dViewer: Live2dViewer) {
     this.live2dViewer = live2dViewer;
@@ -24,21 +21,17 @@ export class Live2dManager {
         CubismFramework.startUp(this._cubismOptions);
         CubismFramework.initialize(allocationMemorySize);
 
-        CubismMotionSync.startUp(this._cubismMotionSyncOptions);
-        CubismMotionSync.initialize();
-
         if (outLogFunction != null) {
           this._cubismOptions.logFunction = outLogFunction;
-          this._cubismMotionSyncOptions.logFunction = outLogFunction;
         }
   }
 
   public setOffScreenSize(width: number, height: number): void {
-    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this.live2dViewer._models._keyValues;
+    const keys: csmPair<string, Live2dModel>[] = this.live2dViewer._models._keyValues;
     for (const i of keys) {
         // It's a workaround. prepend missing property when after build.
         if (i != null && i.second != null) {
-          const model: Live2dModel | Live2dMotionSyncModel = i.second;
+          const model: Live2dModel = i.second;
           model.setRenderTargetSize(width, height);
         }
     }

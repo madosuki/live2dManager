@@ -5,9 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import {
-  MotionSyncOption,
-} from "@motionsyncframework/live2dcubismmotionsync";
 import { CubismViewMatrix } from "CubismSdkForWeb/src/math/cubismviewmatrix";
 import {
   Option,
@@ -18,7 +15,6 @@ import { TouchManager } from "./touchmanager";
 
 import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
 import { Live2dModel } from "./live2dModel";
-import { Live2dMotionSyncModel } from "./live2dMotionSyncModel";
 
 function outLog(message: string): void {
   console.log(`log message: ${message}`);
@@ -28,11 +24,10 @@ export class Live2dViewer {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
-  _models: csmMap<string, Live2dModel | Live2dMotionSyncModel>;
+  _models: csmMap<string, Live2dModel>;
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
-  _cubismMotionSyncOptions: MotionSyncOption;
   isSetupComplete: boolean;
   isDown: boolean;
   _deviceToScreen: CubismMatrix44;
@@ -52,7 +47,6 @@ export class Live2dViewer {
 
     this._viewMatrix = new CubismViewMatrix();
     this._cubismOptions = new Option();
-    this._cubismMotionSyncOptions = new MotionSyncOption();
     this._deviceToScreen = new CubismMatrix44();
     this.isSetupComplete = false;
     this.isDown = false;
@@ -100,7 +94,7 @@ export class Live2dViewer {
 
   public addModel(
     key: string,
-    model: Live2dModel | Live2dMotionSyncModel,
+    model: Live2dModel,
   ): void {
     this._models.appendKey(key);
     this._models.setValue(key, model);
@@ -120,7 +114,7 @@ export class Live2dViewer {
 
   public getModelFromKey(
     key: string,
-  ): Live2dModel | Live2dMotionSyncModel | undefined {
+  ): Live2dModel | undefined {
     const keyValues = this._models._keyValues;
     for (const k of keyValues) {
       if (k != null && k.first != null && k.second != null && k.first === key) {
@@ -132,7 +126,7 @@ export class Live2dViewer {
   }
 
   public updateCoordinate(x: number, y: number): void {
-    const model: Live2dModel | Live2dMotionSyncModel | undefined =
+    const model: Live2dModel | undefined =
       this.getModelFromKey(this.targetCurrentModelKey);
     if (model != null) {
       model.setDragging(x, y);
@@ -277,13 +271,13 @@ export class Live2dViewer {
   }
 
   public releaseModel(key: string): void {
-    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] = this._models._keyValues;
+    const keys: csmPair<string, Live2dModel>[] = this._models._keyValues;
     let index = 0;
     let isModelReleased = false;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
       if (i != null && i.first === key  && i.second != null) {
-        const model: Live2dModel | Live2dMotionSyncModel = i.second;
+        const model: Live2dModel = i.second;
         model.releaseTextures();
         model.releaseExpressions();
         model.releaseMotions();
@@ -300,12 +294,12 @@ export class Live2dViewer {
   }
 
   public releaseAllModel(): void {
-    const keys: csmPair<string, Live2dModel | Live2dMotionSyncModel>[] =
+    const keys: csmPair<string, Live2dModel>[] =
       this._models._keyValues;
     for (const i of keys) {
       // It's a workaround. prepend missing property when after build.
       if (i != null && i.second != null) {
-        const model: Live2dModel | Live2dMotionSyncModel = i.second;
+        const model: Live2dModel = i.second;
         model.releaseTextures();
         model.releaseExpressions();
         model.releaseMotions();

@@ -1,6 +1,7 @@
 import path from "path";
 import { defineConfig } from "vite";
 import { fileURLToPath } from "url";
+// import dts from "vite-plugin-dts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,5 +25,6 @@ export default defineConfig (() => {
               name: "live2dmanager"
           }
       },
+      // plugins: [dts({ exclude: ["src/main.ts", "CubismSdkForWeb", "CubismWebMotionSyncComponents"]})]
   }
 });

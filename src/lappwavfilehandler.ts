@@ -22,7 +22,8 @@ export class LAppWavFileHandler {
     }
 
     // 経過時間後の状態を保持
-    this._userTimeSeconds += deltaTimeSeconds;
+    const acutalDeltaTime: number = delaTimeSeconds ?? 1.0 / 60.0;
+    this._userTimeSeconds += actualDelataTime;
     goalOffset = Math.floor(
       this._userTimeSeconds * this._wavFileInfo._samplingRate,
     );
