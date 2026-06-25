@@ -21,7 +21,7 @@ function outLog(message: string): void {
 
 export class Live2dViewer {
   canvas: HTMLCanvasElement;
-  gl: WebGLRenderingContext | null;
+  gl: WebGL2RenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
   _models: Map<string, Live2dModel>;
   _programId: WebGLProgram | undefined;
@@ -176,7 +176,7 @@ export class Live2dViewer {
   }
 
   public initialize(): void {
-    this.gl = this.canvas.getContext("webgl2") as WebGLRenderingContext | null;
+    this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext | null;
     if (this.gl == null) {
       throw new Error(this.gl.getError().toString());
     }
