@@ -6,7 +6,6 @@
     "moduleResolution": "bundler",
     "outDir": "./dist",
     "strictNullChecks": false,
-    "baseUrl": ".",
     "esModuleInterop": true,
     "strict": true,
     "noImplicitAny": true,
@@ -15,9 +14,9 @@
     "sourceMap": true,
     "isolatedModules": true,
     "paths": {
-        "@/*": ["src/*"],
-        "@framework/*": ["CubismSdkForWeb/src/*"],
-        "@motionsyncframework/*": ["CubismWebMotionSyncComponents/Framework/src/*"],
+        "@/*": ["./src/*"],
+        "@framework/*": ["./CubismSdkForWeb/src/*"],
+        "@motionsyncframework/*": ["./CubismWebMotionSyncComponents/Framework/src/*"],
     }
   },
   "include": [

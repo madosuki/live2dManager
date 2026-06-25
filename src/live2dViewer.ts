@@ -13,7 +13,6 @@ import { CubismMatrix44 } from "../CubismSdkForWeb/src/math/cubismmatrix44";
 import { LAppPal } from "./lapppal";
 import { TouchManager } from "./touchmanager";
 
-import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
 import { Live2dModel } from "./live2dModel";
 
 function outLog(message: string): void {
@@ -24,7 +23,7 @@ export class Live2dViewer {
   canvas: HTMLCanvasElement;
   gl: WebGLRenderingContext | null;
   frameBuffer: WebGLFramebuffer | null;
-  _models: csmMap<string, Live2dModel>;
+  _models: Map<string, Live2dModel>;
   _programId: WebGLProgram | undefined;
   _viewMatrix: CubismViewMatrix;
   _cubismOptions: Option;
@@ -51,7 +50,7 @@ export class Live2dViewer {
     this.isSetupComplete = false;
     this.isDown = false;
 
-    this._models = new csmMap();
+    this._models = new Map();
 
     this._touchManager = new TouchManager();
     this.targetCurrentModelKey = "";
@@ -96,14 +95,12 @@ export class Live2dViewer {
     key: string,
     model: Live2dModel,
   ): void {
-    this._models.appendKey(key);
-    this._models.setValue(key, model);
+    this._models.set(key, model);
   }
 
-  public setCurrentModel(key: string): boolean {
-    const keyValues = this._models._keyValues;
-    for (const k of keyValues) {
-      if (k != null && k.first != null && k.second != null && k.first === key) {
+  public setCurrentModelk(targetKey: string): boolean {
+    for (const [key, _val] of this._models.entries()) {
+      if (key === targetKey) {
         this.targetCurrentModelKey = key;
         return true;
       }
@@ -113,12 +110,11 @@ export class Live2dViewer {
   }
 
   public getModelFromKey(
-    key: string,
+    targetKey: string,
   ): Live2dModel | undefined {
-    const keyValues = this._models._keyValues;
-    for (const k of keyValues) {
-      if (k != null && k.first != null && k.second != null && k.first === key) {
-        return k.second;
+    for (const [key, val] of this._models.entries()) {
+      if (key === targetKey) {
+        return val;
       }
     }
 
@@ -270,41 +266,27 @@ export class Live2dViewer {
     this.gl.deleteTexture(webGlTexture);
   }
 
-  public releaseModel(key: string): void {
-    const keys: csmPair<string, Live2dModel>[] = this._models._keyValues;
-    let index = 0;
-    let isModelReleased = false;
-    for (const i of keys) {
-      // It's a workaround. prepend missing property when after build.
-      if (i != null && i.first === key  && i.second != null) {
-        const model: Live2dModel = i.second;
+  public releaseModel(targetKey: string): void {
+    for (const [key, val] of this._models.entries()) {
+      if (key === targetKey) {
+        const model: Live2dModel = val;
         model.releaseTextures();
         model.releaseExpressions();
         model.releaseMotions();
         model.release();
-        isModelReleased = true;
+        this._models.delete(key);
         break;
       }
-      ++index;
-    }
-    if (isModelReleased) {
-      this._models._keyValues.splice(index, 1);
-      --this._models._size;
     }
   }
 
   public releaseAllModel(): void {
-    const keys: csmPair<string, Live2dModel>[] =
-      this._models._keyValues;
-    for (const i of keys) {
-      // It's a workaround. prepend missing property when after build.
-      if (i != null && i.second != null) {
-        const model: Live2dModel = i.second;
-        model.releaseTextures();
-        model.releaseExpressions();
-        model.releaseMotions();
-        model.release();
-      }
+    for (const [_key, val] of this._models.entries()) {
+      const model: Live2dModel = val;
+      model.releaseTextures();
+      model.releaseExpressions();
+      model.releaseMotions();
+      model.release();
     }
 
     this._models.clear();
@@ -328,8 +310,8 @@ export class Live2dViewer {
 
   public runSingleModel(): void {
     let isValidTargetCurrentModelKey = false;
-    for (let i = 0; i < this._models.getSize(); ++i) {
-      if (this._models._keyValues[i].first === this.targetCurrentModelKey) {
+    for (const [key, _val] of this._models.entries()) {
+      if (key === this.targetCurrentModelKey) {
         isValidTargetCurrentModelKey = true;
       }
     }
@@ -361,7 +343,7 @@ export class Live2dViewer {
 
       const projection = new CubismMatrix44();
 
-      const model: Live2dModel | Live2dMotionSyncModel = this._models.getValue(
+      const model: Live2dModel = this._models.get(
         this.targetCurrentModelKey,
       );
       const draw = () => {

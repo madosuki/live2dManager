@@ -2,7 +2,6 @@ import { CubismFramework, Option } from "@framework/live2dcubismframework";
 
 import { Live2dViewer } from "./live2dViewer";
 import { Live2dModel } from "./live2dModel";
-import { csmPair } from "@framework/type/csmmap";
 
 export class Live2dManager {
   live2dViewer: Live2dViewer;
@@ -27,13 +26,9 @@ export class Live2dManager {
   }
 
   public setOffScreenSize(width: number, height: number): void {
-    const keys: csmPair<string, Live2dModel>[] = this.live2dViewer._models._keyValues;
-    for (const i of keys) {
-        // It's a workaround. prepend missing property when after build.
-        if (i != null && i.second != null) {
-          const model: Live2dModel = i.second;
-          model.setRenderTargetSize(width, height);
-        }
+    for (const [_key, val] of this.live2dViewer._models.entries()) {
+      const model: Live2dModel = val;
+      model.setRenderTargetSize(width, height);
     }
   }
 

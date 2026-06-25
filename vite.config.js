@@ -17,7 +17,7 @@ export default defineConfig (() => {
           }
       },
       build: {
-          target: "es2015",
+          target: "es2017",
           outDir: path.resolve(__dirname, "dist"),
           sourcemap: false,
           lib: {

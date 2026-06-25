@@ -1,10 +1,11 @@
 /**
- * Copyright(c) Live2D Inc. All rights reserved.
+om a:messagel* Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
+// Cubism Framework
 import { CubismDefaultParameterId } from "../CubismSdkForWeb/src/cubismdefaultparameterid";
 import { CubismModelSettingJson } from "../CubismSdkForWeb/src/cubismmodelsettingjson";
 import {
@@ -25,9 +26,21 @@ import { CubismMotion } from "../CubismSdkForWeb/src/motion/cubismmotion";
 import {
   CubismMotionQueueEntryHandle,
 } from "../CubismSdkForWeb/src/motion/cubismmotionqueuemanager";
-import { csmMap, csmPair } from "../CubismSdkForWeb/src/type/csmmap";
+
+import { CubismUpdateScheduler } from "../CubismSdkForWeb/src/motion/cubismupdatescheduler";
+import { CubismBreathUpdater } from "../CubismSdkForWeb/src/motion/cubismbreathupdater";
+import { CubismLookUpdater } from "../CubismSdkForWeb/src/motion/cubismlookupdater";
+import { CubismEyeBlinkUpdater } from "../CubismSdkForWeb/src/motion/cubismeyeblinkupdater";
+import { CubismExpressionUpdater } from "../CubismSdkForWeb/src/motion/cubismexpressionupdater";
+import { CubismPhysicsUpdater } from "../CubismSdkForWeb/src/motion/cubismphysicsupdater";
+import { CubismPoseUpdater } from "../CubismSdkForWeb/src/motion/cubismposeupdater";
+import { CubismLipSyncUpdater } from "../CubismSdkForWeb/src/motion/cubismlipsyncupdater";
+
+import { LookParameterData, CubismLook } from "../CubismSdkForWeb/src/effect/cubismlook";
+
 import { csmRect } from "../CubismSdkForWeb/src/type/csmrectf";
-import { csmVector } from "../CubismSdkForWeb/src/type/csmvector";
+
+// local
 import * as LAppDefine from "./lappdefine";
 import { LAppPal } from "./lapppal";
 import { LAppWavFileHandler } from "./lappwavfilehandler";
@@ -64,14 +77,14 @@ export class Live2dModel extends CubismUserModel {
   _modelJsonFileName: string;
   _userTimeSeconds: number;
 
-  _eyeBlinkIds: csmVector<CubismIdHandle>;
-  _lipSyncIds: csmVector<CubismIdHandle>;
+  _eyeBlinkIds: Array<CubismIdHandle>;
+  _lipSyncIds: Array<CubismIdHandle>;
 
-  _motions: csmMap<string, ACubismMotion>;
-  _expressions: csmMap<string, ACubismMotion>;
+  _motions: Map<string, ACubismMotion>;
+  _expressions: Map<string, ACubismMotion>;
 
-  _hitArea: csmVector<csmRect>;
-  _userArea: csmVector<csmRect>;
+  _hitArea: Array<csmRect>;
+  _userArea: Array<csmRect>;
 
   _idParamAngleX: CubismIdHandle;
   _idParamAngleY: CubismIdHandle;
@@ -88,13 +101,18 @@ export class Live2dModel extends CubismUserModel {
   _motionCount: number;
   _allMotionCount: number;
 
-  _textures: csmVector<TextureInfo>;
+  _textures: Array<TextureInfo>;
   isCompleteSetup: boolean;
   readFileFunction: (arg: string) => Promise<ArrayBuffer>;
   _wavFileHandler: LAppWavFileHandler;
   lipSyncWeight: number;
   eyeOpenParams: EyeOpenParams;
   isKeepOpenEyeValue: boolean;
+  
+  _look: CubismLook | null;
+
+  private _updateScheduler: CubismUpdateScheduler;
+  private _motionUpdated: boolean;
 
   protected manualClosedEye: boolean;
   protected motionFileList: string[];
@@ -105,40 +123,55 @@ export class Live2dModel extends CubismUserModel {
     await this._wavFileHandler.startWithBytes(bytes);
   }
 
+  public relase(): void {
+    if (this._look != null) {
+      CubismLook.delete(this._look);
+    }
+
+    if (this._updateScheduler != null) {
+      this._updateScheduler.release();
+    }
+
+    super.release();
+  }
+
   public stopLipSync(): void {
     this._wavFileHandler.releasePcmData();
   }
 
-  public releaseTextures(): void {
-    if (this._textures == null || this._textures.getSize() === 0) {
+  public releaseTextures(gl: WebGL2RenderingContext): void {
+    if (this._textures.length === 0) {
       return;
     }
 
-    for (let i = 0; i < this._textures.getSize(); i++) {
-      this._textures.set(i, null);
+    for (const i of this._textures) {
+      gl.deleteTexture(i);
     }
-    this._textures.clear();
+
+    this._textures.length = 0;
   }
 
-  public releaseTextureByTexture(texture: WebGLTexture): void {
-    for (let i = 0; i < this._textures.getSize(); i++) {
-      if (this._textures.at(i).id !== texture) {
+  public releaseTextureByTexture(gl: WebGL2RenderingContext, texture: WebGLTexture): void {
+    for (let i = 0; i < this._textures.length; i++) {
+      if (this._textures[i].id !== texture) {
         continue;
       }
 
-      this._textures.set(i, null);
-      this._textures.remove(i);
+      gl.deleteTexture(i);
+      this._textures[i] = null;
+      this._textures.splice(i, 1);
+      break;
     }
   }
 
   public releaseMotions(): void {
-    if (this._motions != null && this._motions.getSize() > 0) {
+    if (this._motions.size > 0) {
       this._motions.clear();
     }
   }
 
   public releaseExpressions(): void {
-    if (this._expressions != null && this._motions.getSize() > 0) {
+    if (this._expressions.size > 0) {
       this._expressions.clear();
     }
   }
@@ -178,8 +211,6 @@ export class Live2dModel extends CubismUserModel {
     this._userTimeSeconds += deltaTimeSeconds;
 
     this._dragManager.update(deltaTimeSeconds);
-    this._dragX = this._dragManager.getX();
-    this._dragY = this._dragManager.getY();
 
     // モーションによるパラメーター更新の有無
     let isMotionUpdated = false;
@@ -193,92 +224,14 @@ export class Live2dModel extends CubismUserModel {
         deltaTimeSeconds,
       );
     }
+
+    this._motionUpdated = false;
+
     // 状態を保存
     this._model.saveParameters();
-
-    if (!this.isKeepOpenEyeValue) {
-      // まばたき
-      if (!isMotionUpdated && this._eyeBlink != null) {
-        if (this.manualClosedEye) {
-          this._model.setParameterValueById(this._idParamEyeLOpen, -0.5);
-          this._model.setParameterValueById(this._idParamEyeROpen, -0.5);
-        }
-
-        if (!this.manualClosedEye) {
-          this._eyeBlink.updateParameters(this._model, deltaTimeSeconds);
-        }
-      }
-    } else {
-      if (!isMotionUpdated && this._eyeBlink != null) {
-        if (this.eyeOpenParams.lOpen != null) {
-          this._model.setParameterValueById(
-            this._idParamEyeLOpen,
-            this.eyeOpenParams.lOpen,
-          );
-        }
-
-        if (this.eyeOpenParams.rOpen != null) {
-          this._model.setParameterValueById(
-            this._idParamEyeROpen,
-            this.eyeOpenParams.rOpen,
-          );
-        }
-      }
-    }
-
-    // 表情
-    if (this._expressionManager != null) {
-      this._expressionManager.updateMotion(this._model, deltaTimeSeconds);
-    }
-
-    // ドラッグによる顔の向きの調整
-    this._model.addParameterValueById(this._idParamAngleX, this._dragX * 30);
-    this._model.addParameterValueById(this._idParamAngleY, this._dragY * 30);
-    this._model.addParameterValueById(
-      this._idParamAngleZ,
-      this._dragX * this._dragY * -30,
-    ); // -30から30の値を加える
-
-    // ドラッグによる体の向きの調整
-    this._model.addParameterValueById(
-      this._idParamBodyAngleX,
-      this._dragX * 10,
-    ); // -10から10の値を加える
-
-    // ドラッグによる目の向きの調整
-    this._model.addParameterValueById(this._idParamEyeBallX, this._dragX);
-    this._model.addParameterValueById(this._idParamEyeBallY, this._dragY);
-
-    // 呼吸など
-    if (this._breath != null) {
-      this._breath.updateParameters(this._model, deltaTimeSeconds);
-    }
-
-    // 物理演算の設定
-    if (this._physics != null) {
-      this._physics.evaluate(this._model, deltaTimeSeconds);
-    }
-
-    // リップシンクの設定
-    if (this._lipsync) {
-      let value = 0.0;
-      this._wavFileHandler.update(deltaTimeSeconds);
-      value = this._wavFileHandler.getRms();
-
-      for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
-        if (value <= 0.0) break;
-        this._model.addParameterValueById(
-          this._lipSyncIds.at(i),
-          value,
-          this.lipSyncWeight,
-        );
-      }
-    }
-
-    // ポーズの設定
-    if (this._pose != null) {
-      this._pose.updateParameters(this._model, deltaTimeSeconds);
-    }
+    
+    this._updateScheduler.onLateUpdate(this._model, deltaTimeSeconds);
+    
 
     this._model.update();
   }
@@ -342,7 +295,7 @@ export class Live2dModel extends CubismUserModel {
       textureInfo.height = img.height;
       textureInfo.id = _texture;
       textureInfo.usePremulitply = usePremultiply;
-      this._textures.pushBack(textureInfo);
+      this._textures.push(textureInfo);
 
       const id = textureInfo.id;
       if (!id) {
@@ -434,22 +387,34 @@ export class Live2dModel extends CubismUserModel {
         expressionName,
       );
 
-      if (this._expressions.getValue(expressionName) != null) {
-        ACubismMotion.delete(this._expressions.getValue(expressionName));
-        this._expressions.setValue(expressionName, null);
+      if (this._expressions.get(expressionName) != null) {
+        ACubismMotion.delete(this._expressions.get(expressionName));
+        this._expressions.set(expressionName, null);
       }
 
-      this._expressions.setValue(expressionName, motion);
+      this._expressions.set(expressionName, motion);
       this._expressionCount++;
+
+      if (this._expressionCount >= expressionCount) {
+        if (this._expressionManager != null) {
+          const expressionUpdater = new CubismExpressionUpdater(this._expressionManager);
+          this._updateScheduler.addUpdatableList(expressionUpdater);
+        }
+      }
     }
 
     // Load Physics
     const physicsFileName = this._modelSetting.getPhysicsFileName();
-    if (physicsFileName !== "") {
+    if (physicsFileName != null && physicsFileName !== "") {
       const readResult = await this.readFileFunction(
         `${this._modelHomeDir}${physicsFileName}`,
       );
       this.loadPhysics(readResult, readResult.byteLength);
+
+      if (this._physics != null) {
+        const physicsUpdater = new CubismPhysicsUpdater(this._physics);
+        this._updateScheduler.addUpdatableList(physicsUpdater);
+      }
     }
 
     // Load Pose
@@ -459,47 +424,53 @@ export class Live2dModel extends CubismUserModel {
         `${this._modelHomeDir}${poseFileName}`,
       );
       this.loadPose(readResult, readResult.byteLength);
+
+      if (this._pose != null) {
+        const poseUpdater = new CubismPoseUpdater(this._pose);
+        this._updateScheduler.addUpdatableList(poseUpdater);
+      }
     }
 
     // Set Eye Blink params
     const eyeBlinkParameterSize =
       this._modelSetting.getEyeBlinkParameterCount();
-    // 本来はmoc3.jsonにEyeBlinkIdsが記述されている場合のみ実行すべきだが、記述されていない一部のモデルのために敢えてこうしている。
-    this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
-    /*
     if (eyeBlinkParameterSize > 0) {
       this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
-    }
-    */
-    if (eyeBlinkParameterSize > 0) {
+      const eyeBlinkUpdater = new CubismEyeBlinkUpdater(() => this._motionUpdated, this._eyeBlink);
+      this._updateScheduler.addUpdatableList(eyeBlinkUpdater);
+
       for (let i = 0; i < this._modelSetting.getEyeBlinkParameterCount(); ++i) {
-        this._eyeBlinkIds.pushBack(
+        this._eyeBlinkIds.push(
           this._modelSetting.getEyeBlinkParameterId(i),
         );
       }
     } else {
-      this._eyeBlinkIds.pushBack(this._idParamEyeLOpen);
-      this._eyeBlinkIds.pushBack(this._idParamEyeROpen);
+      // 本来はmoc3.jsonにEyeBlinkIdsが記述されている場合のみ実行すべきだが、記述されていない一部のモデルのために敢えてこうしている。
+      this._eyeBlink = CubismEyeBlink.create(this._modelSetting);
+      this._eyeBlinkIds.push(this._idParamEyeLOpen);
+      this._eyeBlinkIds.push(this._idParamEyeROpen);
       this._eyeBlink.setParameterIds(this._eyeBlinkIds);
+      const eyeBlinkUpdater = new CubismEyeBlinkUpdater(() => this._motionUpdated, this._eyeBlink);
+      this._updateScheduler.addUpdatableList(eyeBlinkUpdater);
     }
 
     // Breath
     this._breath = CubismBreath.create();
-    const breathParameters: csmVector<BreathParameterData> = new csmVector();
-    breathParameters.pushBack(
+    const breathParameters: Array<BreathParameterData> = new Array();
+    breathParameters.push(
       new BreathParameterData(this._idParamAngleX, 0.0, 15.0, 6.5345, 0.5),
     );
 
-    breathParameters.pushBack(
+    breathParameters.push(
       new BreathParameterData(this._idParamAngleY, 0.0, 8.0, 3.5345, 0.5),
     );
-    breathParameters.pushBack(
+    breathParameters.push(
       new BreathParameterData(this._idParamAngleZ, 0.0, 10.0, 5.5345, 0.5),
     );
-    breathParameters.pushBack(
+    breathParameters.push(
       new BreathParameterData(this._idParamBodyAngleX, 0.0, 4.0, 15.5345, 0.5),
     );
-    breathParameters.pushBack(
+    breathParameters.push(
       new BreathParameterData(
         CubismFramework.getIdManager().getId(
           CubismDefaultParameterId.ParamBreath,
@@ -511,6 +482,8 @@ export class Live2dModel extends CubismUserModel {
       ),
     );
     this._breath.setParameters(breathParameters);
+    const breathUpdater = new CubismBreathUpdater(this._breath);
+    this._updateScheduler.addUpdatableList(breathUpdater);
 
     const userDataFileName = this._modelSetting.getUserDataFile();
     if (userDataFileName !== "") {
@@ -523,18 +496,56 @@ export class Live2dModel extends CubismUserModel {
     // set lipsync id
     const lipSyncIdCount = this._modelSetting.getLipSyncParameterCount();
     if (lipSyncIdCount > 0) {
-      this._lipSyncIds.clear();
+      this._lipSyncIds.length = 0;
     }
     for (let i = 0; i < lipSyncIdCount; ++i) {
-      this._lipSyncIds.pushBack(this._modelSetting.getLipSyncParameterId(i));
+      this._lipSyncIds.push(this._modelSetting.getLipSyncParameterId(i));
+    }
+
+    if (this._lipSyncIds.length > 0) {
+      const lipSyncUpdater = new CubismLipSyncUpdater(
+        this._lipSyncIds,
+        this._wavFileHandler
+      );
+      this._updateScheduler.addUpdatableList(lipSyncUpdater);
     }
 
     if (!this._modelMatrix) {
       console.log("modelMatrix is null");
       return;
     }
+
+
+    this._look = CubismLook.create();
+    const lookParameters: Array<LookParameterData> = [
+      new LookParameterData(this._idParamAngleX, 30.0, 0.0, 0.0),
+      new LookParameterData(this._idParamAngleY, 0.0, 30.0, 0.0),
+      new LookParameterData(this._idParamAngleZ, 0.0, 0.0, -30.0),
+      new LookParameterData(this._idParamBodyAngleX, 10.0, 0.0, 0.0),
+      new LookParameterData(
+        CubismFramework.getIdManager().getId(
+          CubismDefaultParameterId.ParamEyeBallX
+        ),
+        1.0,
+        0.0,
+        0.0
+      ),
+      new LookParameterData(
+        CubismFramework.getIdManager().getId(
+          CubismDefaultParameterId.ParamEyeBallY
+        ),
+        0.0,
+        1.0,
+        0.0
+      )
+    ];
+    this._look.setParameters(lookParameters);
+    const lookUpdater = new CubismLookUpdater(this._look, this._dragManager);
+    this._updateScheduler.addUpdatableList(lookUpdater);
+
+    
     // Layout
-    const layout = new csmMap<string, number>();
+    const layout = new Map<string, number>();
     this._modelSetting.getLayoutMap(layout);
     this._modelMatrix.setupFromLayout(layout);
 
@@ -625,7 +636,7 @@ export class Live2dModel extends CubismUserModel {
 
     // ex) idle_0
     const name = `${group}_${no}`;
-    let motion: CubismMotion = this._motions.getValue(name) as CubismMotion;
+    let motion: CubismMotion = this._motions.get(name) as CubismMotion;
     let autoDelete = false;
 
     if (motion == null) {
@@ -723,11 +734,11 @@ export class Live2dModel extends CubismUserModel {
         }
         tmpMotion.setEffectIds(this._eyeBlinkIds, this._lipSyncIds);
 
-        if (this._motions.getValue(name) != null) {
-          ACubismMotion.delete(this._motions.getValue(name));
+        if (this._motions.get(name) != null) {
+          ACubismMotion.delete(this._motions.get(name));
         }
 
-        this._motions.setValue(name, tmpMotion);
+        this._motions.set(name, tmpMotion);
         this._allMotionCount++;
       } else {
         // loadMotionできなかった場合はモーションの総数がずれるので1つ減らす
@@ -759,7 +770,7 @@ export class Live2dModel extends CubismUserModel {
    * @param expressionId 表情モーションのID
    */
   public setExpression(expressionId: string): void {
-    const motion: ACubismMotion = this._expressions.getValue(expressionId);
+    const motion: ACubismMotion = this._expressions.get(expressionId);
 
     if (this._debugMode) {
       LAppPal.printMessage(`expression: [${expressionId}]`);
@@ -783,13 +794,8 @@ export class Live2dModel extends CubismUserModel {
 
   public getExpressionIdList(): string[] {
     const result: string[] = [];
-    const keys: csmPair<string, ACubismMotion>[] = this._expressions._keyValues;
-    for (const i of keys) {
-      // It's a workaround. prepend missing property when after build.
-      if (i != null && i.first != null) {
-        const expressionId = i.first;
-        result.push(expressionId);
-      }
+    for (const [key, _val] of this._expressions.entries()) {
+      result.push(key);
     }
 
     return result;
@@ -847,14 +853,14 @@ export class Live2dModel extends CubismUserModel {
     this._modelJsonFileName = modelJsonFileName;
     this._userTimeSeconds = 0.0;
 
-    this._eyeBlinkIds = new csmVector<CubismIdHandle>();
-    this._lipSyncIds = new csmVector<CubismIdHandle>();
+    this._eyeBlinkIds = new Array<CubismIdHandle>();
+    this._lipSyncIds = new Array<CubismIdHandle>();
 
-    this._motions = new csmMap<string, ACubismMotion>();
-    this._expressions = new csmMap<string, ACubismMotion>();
+    this._motions = new Map<string, ACubismMotion>();
+    this._expressions = new Map<string, ACubismMotion>();
 
-    this._hitArea = new csmVector<csmRect>();
-    this._userArea = new csmVector<csmRect>();
+    this._hitArea = new Array<csmRect>();
+    this._userArea = new Array<csmRect>();
 
     if (is_old_param_name) {
       this._idParamAngleX =
@@ -877,7 +883,7 @@ export class Live2dModel extends CubismUserModel {
 
       const idParamMouthOpenY =
         CubismFramework.getIdManager().getId("PARAM_MOUTH_OPEN_Y");
-      this._lipSyncIds.pushBack(idParamMouthOpenY);
+      this._lipSyncIds.push(idParamMouthOpenY);
     } else {
       this._idParamAngleX = CubismFramework.getIdManager().getId(
         CubismDefaultParameterId.ParamAngleX,
@@ -906,7 +912,7 @@ export class Live2dModel extends CubismUserModel {
         CubismFramework.getIdManager().getId("ParamEyeROpen");
       const idParamMouthOpenY =
         CubismFramework.getIdManager().getId("ParamMouthOpenY");
-      this._lipSyncIds.pushBack(idParamMouthOpenY);
+      this._lipSyncIds.push(idParamMouthOpenY);
     }
 
     if (LAppDefine.MOCConsistencyValidationEnable) {
@@ -919,7 +925,7 @@ export class Live2dModel extends CubismUserModel {
     this._expressionCount = 0;
     this._state = 0;
 
-    this._textures = new csmVector<TextureInfo>();
+    this._textures = new Array<TextureInfo>();
     this._live2dViewer = live2dViewer;
 
     this.isCompleteSetup = false;
@@ -931,5 +937,8 @@ export class Live2dModel extends CubismUserModel {
     this.motionMap = new Map();
     this.eyeOpenParams = {};
     this.isKeepOpenEyeValue = false;
+    this._look = null;
+    this._updateScheduler = new CubismUpdateScheduler();
+    this._motionUpdated = false;
   }
 }
