@@ -238,6 +238,14 @@ export declare class Live2dModel extends CubismUserModel {
   // parent method type
   getModel(): CubismModel;
   getModelMatrix(): CubismModelMatrix;
+
+}
+
+export declare class CubismModel {
+  getCanvasWidth(): number;
+}
+
+export declare class CubismModelMatrix {
   setWidth(w: number): void;
   setHeight(h: number): void;
 }
