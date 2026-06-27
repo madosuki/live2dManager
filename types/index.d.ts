@@ -1,16 +1,18 @@
-import type { Option } from "@framework/live2dcubismframework.d.ts";
-import type { CubismLook } from "@framework/effect/cubismlook.d.ts";
-import type { ICubismModelSetting } from "@framework/icubismmodelsetting.d.ts";
-import type { CubismIdHandle } from "@framework/id/cubismid.d.ts";
-import type { CubismMatrix44 } from "@framework/math/cubismmatrix44.d.ts";
-import type { CubismViewMatrix } from "@framework/math/cubismviewmatrix.d.ts";
-import type { CubismUserModel } from "@framework/model/cubismusermodel.d.ts";
+import type { Option } from "@framework/live2dcubismframework.ts";
+import type { CubismLook } from "@framework/effect/cubismlook.ts";
+import type { ICubismModelSetting } from "@framework/icubismmodelsetting.ts";
+import type { CubismIdHandle } from "@framework/id/cubismid.ts";
+import type { CubismMatrix44 } from "@framework/math/cubismmatrix44.ts";
+import type { CubismViewMatrix } from "@framework/math/cubismviewmatrix.ts";
+import type { CubismUserModel } from "@framework/model/cubismusermodel.ts";
+import type { CubismModel } from "@framework/model/cubismmodel.ts";
+import type { CubismModelMatrix } from "@framework/math/cubismmodelmatrix.ts";
 import type {
   ACubismMotion,
   FinishedMotionCallback,
-} from "@framework/motion/acubismmotion.d.ts";
-import type { CubismMotionQueueEntryHandle } from "@framework/motion/cubismmotionqueuemanager.d.ts";
-import type { csmRect } from "@framework/type/csmrectf.d.ts";
+} from "@framework/motion/acubismmotion.ts";
+import type { CubismMotionQueueEntryHandle } from "@framework/motion/cubismmotionqueuemanager.ts";
+import type { csmRect } from "@framework/type/csmrectf.ts";
 
 declare class TextureInfo {
   imageUrl: string;
@@ -232,6 +234,12 @@ export declare class Live2dModel extends CubismUserModel {
   stopAllMotion(): void;
   setIdleMotion(): void;
   reloadRenderer(): void;
+
+  // parent method type
+  getModel(): CubismModel;
+  getModelMatrix(): CubismModelMatrix;
+  setWidth(w: number): void;
+  setHeight(h: number): void;
 }
 
 export declare class Live2dManager {
