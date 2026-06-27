@@ -212,20 +212,17 @@ export class Live2dModel extends CubismUserModel {
 
     this._dragManager.update(deltaTimeSeconds);
 
-    // モーションによるパラメーター更新の有無
-    let isMotionUpdated = false;
-
     // 前回セーブされたをロード
     this._model.loadParameters();
+    
+    this._motionUpdated = false;
     // モーションを更新
     if (!this._motionManager.isFinished()) {
-      isMotionUpdated = this._motionManager.updateMotion(
+      this._motionUpdated = this._motionManager.updateMotion(
         this._model,
         deltaTimeSeconds,
       );
     }
-
-    this._motionUpdated = false;
 
     // 状態を保存
     this._model.saveParameters();
